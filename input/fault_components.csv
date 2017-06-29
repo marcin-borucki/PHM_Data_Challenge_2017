@@ -1,0 +1,23 @@
+Number;Bogie;Component;Position
+1;leading;Primary Spring;czp_1r
+2;leading;Primary Spring;czp_1l
+3;leading;Primary Spring;czp_2r
+4;leading;Primary Spring;czp_2l
+5;leading;Primary Damper;dzp_1r
+6;leading;Primary Damper;dzp_1l
+7;leading;Primary Damper;dzp_2r
+8;leading;Primary Damper;dzp_2l
+9;leading;Secondary Spring;czs_1
+10;leading;Secondary Damper;dzs_1r
+11;leading;Secondary Damper;dzs_1l
+12;trailing;Primary Spring;czp_3r
+13;trailing;Primary Spring;czp_3l
+14;trailing;Primary Spring;czp_4r
+15;trailing;Primary Spring;czp_4l
+16;trailing;Primary Damper;dzp_3r
+17;trailing;Primary Damper;dzp_3l
+18;trailing;Primary Damper;dzp_4r
+19;trailing;Primary Damper;dzp_4l
+20;trailing;Secondary Spring;czs_2
+21;trailing;Secondary Damper;dzs_2r
+22;trailing;Secondary Damper;dzs_2l
