@@ -115,12 +115,9 @@ calc_residules <-
              lr = "l" ,
              freq_band = 1) {
         vars <- paste0(var, "_", par_range, lr, "_", freq_band)
-        # vars_res <- setNames(vars, paste0(vars, "_res")) 
-        # df %>% select(one_of(vars)) %>% group_by(row_number()) %>% 
-        #     mutate_each_(funs(res = mean(vars) - sum(.) ), vars_res)  %>% ungroup()
-        vars
+        
         df %>%  
-            #dplyr::select(one_of(vars)) %>%
+            dplyr::select(one_of(vars)) %>%
             mutate(mean_v = rowMeans(.,na.rm=TRUE) )%>%
             mutate_each_(funs(res = (mean_v - .) ), vars) %>%
             dplyr::select(-mean_v)
