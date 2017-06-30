@@ -66,8 +66,8 @@ fault_codes <- read.csv2("./input/fault_components.csv",
 
 # Loading previously saved data ------------------------------------------------
 
-readRDS("./input/train_data.RDS")
-readRDS("./input/test_data.RDS")
+train_data <- readRDS("./input/train_data.RDS")
+test_data <- readRDS("./input/test_data.RDS")
 
 # Data review & testing --------------------------------------------------------
 
