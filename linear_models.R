@@ -4,6 +4,7 @@ library("dplyr")
 
 data<-readRDS("input/train_data.RDS")
 
+data_test<-readRDS("input/test_data.RDS")
 
 ################################################################
 #
@@ -94,9 +95,12 @@ for( n in 2:nrow(models)){
   
 }
 
-results %>% filter(model==1) %>%
+results %>% filter(model==6) %>%
   ggplot(.,aes(x=freq,y=c2))+geom_boxplot(aes(fill=as.factor(freq)))
 
+ggplot(results[results$model==6,],aes(x=freq,y=c2))+geom_boxplot(aes(fill=as.factor(freq)))
+
+#ggsave("plot1.png")
 
 results %>% filter(model==2) %>%
   ggplot(.,aes(x=freq,y=c2))+geom_boxplot(aes(fill=as.factor(freq)))
@@ -107,7 +111,36 @@ results %>% filter(model==3) %>%
 results %>% filter(model==4) %>%
   ggplot(.,aes(x=freq,y=c2))+geom_boxplot(aes(fill=as.factor(freq)))
 
-results %>% filter(model==9) %>%
+results %>% filter(model==10) %>%
   ggplot(.,aes(x=freq,y=c2))+geom_boxplot(aes(fill=as.factor(freq)))
 
+
+results_test<-data.frame("model"=0,cmd="null",freq=0,ID=0,c1=0,c2=0,c3=0,c4=0,c5=0,c6=0)
+
+for( n in 2:nrow(models)){
+  
+  for(k in 1:200){
+    fit1 <-  lm(models$lm_cmd[n],data_test[data_test$ExperimentID==k,])
+    v<-coef(fit1)
+    results_test <- add_row(results_test, 
+                       model = models$model[n], 
+                       cmd = models$lm_cmd[n], 
+                       freq = models$freq[n],
+                       ID = k,
+                       c1=v[1],
+                       c2=v[2],
+                       c3=v[3],
+                       c4=v[4],
+                       c5=v[5],
+                       c6=v[6])
+    
+  }
+  
+  
+}
+
+
+ggplot(results[results$model==2,],aes(x=freq,y=c2))+
+  geom_boxplot(aes(fill=as.factor(freq)))+
+  geom_boxplot(data=results_test[results_test$model==2,],aes(x=freq+0.5,y=c2,color=ID,fill=as.factor(freq)))
 
