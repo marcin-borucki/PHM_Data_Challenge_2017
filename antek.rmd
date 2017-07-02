@@ -1,0 +1,257 @@
+---
+title: "Antek"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(ggplot2)
+#library(dplyr)
+
+```
+
+## Intro
+
+This is an analysis file - its intention is to be used as a high level pre- and post-processing, data visualization etc...
+
+
+##Read in data
+
+```{r read in data and functions}
+
+data_train <- readRDS("./input/train_data.RDS")
+
+data_test  <- readRDS("./input/test_data.RDS")
+
+#linear models:
+source("./R Scripts/linear_models.R")
+
+```
+
+## Linear models  
+  
+this part is focused on separate linear models for all spring- dumper pairs.
+
+```{r linear models}
+
+# original models
+source("./R Scripts/models_eq1.R")
+
+res1<-run_fits(model_df = models, data_df = data_train)
+
+res1$Track<-ifelse(res1$ExperimentID<101,1,2)
+# boggie models without platform
+source("./R Scripts/models_eq2.R")
+
+res2<-run_fits(model_df = models, data_df = data_train)
+
+res2$Track<-ifelse(res2$ExperimentID<101,1,2)
+
+# boggie models just with wheels
+source("./R Scripts/models_eq3.R")
+
+res3<-run_fits(model_df = models, data_df = data_train)
+
+res3$Track<-ifelse(res2$ExperimentID<101,1,2)
+
+```
+
+## First attempt models - with all neighbouring acc-meters
+
+```{r linear analysis post proc, echo = FALSE, fig.height=10, fig.width=14, fig.cap="---  \n" }
+
+for(modeli in min(res1$model):max(res1$model)){
+ model_id=modeli
+
+ p <- ggplot(res1[res1$model == model_id,],aes(x = freq, y= c2)) + 
+  geom_violin(aes(fill = as.factor(freq))) +
+  geom_violin(data = res1[res1$model == model_id,],aes(
+         x = freq + 0.25,
+         y = c2/Speed,
+         color = ExperimentID,
+         fill = as.factor(freq)
+  )) +
+  geom_violin(data = res1[res1$model == model_id, ], aes(
+       x = freq + 0.5,
+         y = c2/((Speed)*(Payload)),
+         color = ExperimentID,
+         fill = as.factor(freq)
+       ))  +
+     geom_violin(data = res1[res1$model == model_id, ], aes(
+         x = freq + 0.75,
+         y = c2/((Speed^2)*(Payload^2)),
+         color = ExperimentID,
+         fill = as.factor(freq)
+     ))+
+  facet_grid(as.factor(Track) ~ as.factor(Speed)) +
+  labs(title=paste("Normalization by Speed, Speed x Payload and Speed^2 x Payload^2 \n model:",modeli,sep=""))
+ 
+ show(p)
+
+ p <- ggplot(res1[res1$model == model_id,],aes(x = freq, y= c2)) + 
+  geom_violin(aes(fill = as.factor(freq))) +
+  geom_violin(data = res1[res1$model == model_id,],aes(
+         x = freq + 0.25,
+         y = c2/Payload,
+         color = ExperimentID,
+         fill = as.factor(freq)
+  )) +
+  geom_violin(data = res1[res1$model == model_id, ], aes(
+       x = freq + 0.5,
+         y = c2/(Payload^0.5),
+         color = ExperimentID,
+         fill = as.factor(freq)
+       ))  +
+     geom_violin(data = res1[res1$model == model_id, ], aes(
+         x = freq + 0.75,
+         y = c2/(Payload^2),
+         color = ExperimentID,
+         fill = as.factor(freq)
+     ))+
+  facet_grid(as.factor(Track) ~ as.factor(Speed)) +
+  labs(title=paste(" Normalization by payload, sqrt(Payload) and Payload^2 \n model:",modeli,sep=""))
+ 
+ show(p)
+
+}
+
+
+```
+## Boggies Without platform
+```{r plots boggies without platforms, echo = FALSE, fig.height=10, fig.width=14, fig.cap="---  \n"}
+
+for(modeli in min(res2$model):max(res2$model)){
+ model_id=modeli
+
+ p <- ggplot(res2[res2$model == model_id,],aes(x = freq, y= c2)) + 
+  geom_violin(aes(fill = as.factor(freq))) +
+  geom_violin(data = res2[res2$model == model_id,],aes(
+         x = freq + 0.25,
+         y = c2/Speed,
+         color = ExperimentID,
+         fill = as.factor(freq)
+  )) +
+  geom_violin(data = res2[res2$model == model_id, ], aes(
+       x = freq + 0.5,
+         y = c2/((Speed)*(Payload)),
+         color = ExperimentID,
+         fill = as.factor(freq)
+       ))  +
+     geom_violin(data = res2[res2$model == model_id, ], aes(
+         x = freq + 0.75,
+         y = c2/((Speed^2)*(Payload^2)),
+         color = ExperimentID,
+         fill = as.factor(freq)
+     ))+
+  facet_grid(as.factor(Track) ~ as.factor(Speed)) +
+  labs(title=paste("Normalization by Speed, Speed x Payload and Speed^2 x Payload^2 \n model:",modeli,sep=""))
+ 
+ show(p)
+
+ p <- ggplot(res2[res2$model == model_id,],aes(x = freq, y= c2)) + 
+  geom_violin(aes(fill = as.factor(freq))) +
+  geom_violin(data = res2[res2$model == model_id,],aes(
+         x = freq + 0.25,
+         y = c2/Payload,
+         color = ExperimentID,
+         fill = as.factor(freq)
+  )) +
+  geom_violin(data = res2[res2$model == model_id, ], aes(
+       x = freq + 0.5,
+         y = c2/(Payload^0.5),
+         color = ExperimentID,
+         fill = as.factor(freq)
+       ))  +
+     geom_violin(data = res2[res2$model == model_id, ], aes(
+         x = freq + 0.75,
+         y = c2/(Payload^2),
+         color = ExperimentID,
+         fill = as.factor(freq)
+     ))+
+  facet_grid(as.factor(Track) ~ as.factor(Speed)) +
+  labs(title=paste(" Normalization by payload, sqrt(Payload) and Payload^2 \n model:",modeli,sep=""))
+ 
+ show(p)
+
+}
+
+```
+
+## Boggies with just wheels
+
+```{r just wheel, echo = FALSE,fig.height=10, fig.width=14, fig.cap="---  \n"}
+
+for(modeli in min(res3$model):max(res3$model)){
+ model_id=modeli
+
+ p <- ggplot(res3[res3$model == model_id,],aes(x = freq, y= c2)) + 
+  geom_violin(aes(fill = as.factor(freq))) +
+  geom_violin(data = res3[res3$model == model_id,],aes(
+         x = freq + 0.25,
+         y = c2/Speed,
+         color = ExperimentID,
+         fill = as.factor(freq)
+  )) +
+  geom_violin(data = res3[res3$model == model_id, ], aes(
+       x = freq + 0.5,
+         y = c2/((Speed)*(Payload)),
+         color = ExperimentID,
+         fill = as.factor(freq)
+       ))  +
+     geom_violin(data = res3[res3$model == model_id, ], aes(
+         x = freq + 0.75,
+         y = c2/((Speed^2)*(Payload^2)),
+         color = ExperimentID,
+         fill = as.factor(freq)
+     ))+
+  facet_grid(as.factor(Track) ~ as.factor(Speed)) +
+  labs(title=paste("Wheels only \n Normalization by Speed, Speed x Payload and Speed^2 x Payload^2 \n model:",modeli,sep=""))
+ 
+ show(p)
+
+ p <- ggplot(res3[res3$model == model_id,],aes(x = freq, y= c2)) + 
+  geom_violin(aes(fill = as.factor(freq))) +
+  geom_violin(data = res3[res3$model == model_id,],aes(
+         x = freq + 0.25,
+         y = c2/Payload,
+         color = ExperimentID,
+         fill = as.factor(freq)
+  )) +
+  geom_violin(data = res3[res3$model == model_id, ], aes(
+       x = freq + 0.5,
+         y = c2/(Payload^0.5),
+         color = ExperimentID,
+         fill = as.factor(freq)
+       ))  +
+     geom_violin(data = res3[res3$model == model_id, ], aes(
+         x = freq + 0.75,
+         y = c2/(Payload^2),
+         color = ExperimentID,
+         fill = as.factor(freq)
+     ))+
+  facet_grid(as.factor(Track) ~ as.factor(Speed)) +
+  labs(title=paste("Wheels only \n  Normalization by payload, sqrt(Payload) and Payload^2 \n model:",modeli,sep=""))
+ 
+ show(p)
+ 
+}
+
+```
+
+
+## Conclusions (from Antek)
+
+Simplest model (only wheel excitation) seems best. 
+Normalization - at first glance - by sqrt(payload)
+
+additionally - track 2 may have different type of excitation than track 1 - to be continued
+
+to do:
+1. theoretical validation - C2 >0 (should be)
+2. analytical validation - k-folds? lets see how many healthy cars we mark as failed?
+3. prob(outside normal bounds) per freq and per ID
+

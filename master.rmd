@@ -1,0 +1,21 @@
+---
+title: "Master_analysis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Intro
+
+This document is intende to run as a master control for analysis
+
+## Antek 
+
+<a href=antek.html> sub-page with analysis by Antek </a>
+
+
+```{r stuff, echo = FALSE}
+
+```
