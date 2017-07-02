@@ -221,48 +221,49 @@ models <-
 #         c6 = numeric()
 #     )
 
+update(as.formula(models$lm_cmd), . ~ . *I(Payload^(-1)) )
 
-require(plyr)
-system.time(
-results <- inner_join(models %>% mutate(k = 1), data_train %>% mutate(k = 1), by = "k") %>%
+#' run_fits
+#'
+#' @param model_df data frame with model definitions
+#' @param data_df data frame with actual esperiment data
+#'
+#' @return
+#' @export
+#'
+#' @examples
+run_fits <- function(model_df = models, data_df = data_train){
+inner_join(model_df %>% mutate(k = 1), data_df %>% mutate(k = 1), by = "k") %>%
     select(-k)  %>% ddply(.(modeled_element, freq , ExperimentID),
                           function(df) {
-                              x <- coef(lm(df$lm_cmd, df))
+                              model_f <-
+                                  update(as.formula(df$lm_cmd), . ~ . )
+                              fit <- lm(model_f, df)
+                              # print(summary(fit)) 
+                              x <- coef(fit)
                               x <- t(x)
                               x <- as.data.frame(x)
                               k <- names(x)
                               k <- t(k)
                               k <- as.data.frame(k)
                               names(x) <- paste0("c", 1:ncol(x))
-                              names(k) <- paste0("x_name", 1:ncol(k))
-                              h <- df[1,] %>%
+                              names(k) <-
+                                  paste0("x_name", 1:ncol(k))
+                              h <- df[1, ] %>%
                                   select(model, lm_cmd)
                               # h <- as.data.frame(h)
-                              bind_cols(h, x, k)
-                          }, .progress= progress_text(char = ".")
-                          # .parallel = TRUE
-                          )
+                              bind_cols(h, df[1,] %>% select(Payload, Speed), x, k)
+                          }, .progress = progress_text(char = ".")
+                          # .parallel = TRUE)
+    )
+}
+
+system.time(
+    results <- run_fits(model_df = models, data_df = data_train)
 )
 
 system.time(
-    results <- inner_join(models %>% mutate(k = 1), data_test %>% mutate(k = 1), by = "k") %>%
-        select(-k)  %>% ddply(.(modeled_element, freq , ExperimentID),
-                              function(df) {
-                                  x <- coef(lm(df$lm_cmd, df))
-                                  x <- t(x)
-                                  x <- as.data.frame(x)
-                                  k <- names(x)
-                                  k <- t(k)
-                                  k <- as.data.frame(k)
-                                  names(x) <- paste0("c", 1:ncol(x))
-                                  names(k) <- paste0("x_name", 1:ncol(k))
-                                  h <- df[1,] %>%
-                                      select(model, lm_cmd)
-                                  # h <- as.data.frame(h)
-                                  bind_cols(h, x, k)
-                              }, .progress= progress_text(char = ".")
-                              # .parallel = TRUE
-        )
+    results_test <- run_fits(model_df = models, data_df = data_test)
 )
 
 
@@ -275,24 +276,43 @@ ggplot(results[results$model == 6, ], aes(x = freq, y = c2)) + geom_boxplot(aes(
 #ggsave("plot1.png")
 
 results %>% filter(model == 2) %>%
-    ggplot(., aes(x = freq, y = c2)) + geom_boxplot(aes(fill = as.factor(freq)))
+    ggplot(., aes(x = freq, y = c2)) + geom_violin(aes(fill = as.factor(freq)))
 
 results %>% filter(model == 3) %>%
     ggplot(., aes(x = freq, y = c2)) + geom_boxplot(aes(fill = as.factor(freq)))
 
 results %>% filter(model == 4) %>%
-    ggplot(., aes(x = freq, y = c2)) + geom_boxplot(aes(fill = as.factor(freq)))
+    ggplot(., aes(x = freq, y = c5)) + geom_boxplot(aes(fill = as.factor(freq)))
 
 results %>% filter(model == 10) %>%
-    ggplot(., aes(x = freq, y = c)) + geom_boxplot(aes(fill = as.factor(freq)))
+    ggplot(., aes(x = freq, y = c3)) + geom_boxplot(aes(fill = as.factor(freq)))
 
 
+model_id = 5
+# C2- normalizacja chyna działa
+# c4 - normalizaca przestaje działać
 
-ggplot(results[results$model == 2, ], aes(x = freq, y = c2)) +
-    geom_boxplot(aes(fill = as.factor(freq))) +
-    geom_boxplot(data = results_test[results_test$model == 2, ], aes(
+normalizcja <- ggplot(results[results$model == model_id, ], aes(x = freq, y = c4)) +
+    geom_violin(aes(fill = as.factor(freq))) +
+    geom_violin(data = results[results$model == model_id, ], aes(
+        x = freq + 0.25,
+        y = c4/Speed,
+        color = ExperimentID,
+        fill = as.factor(freq)
+    ))  +
+    
+    geom_violin(data = results[results$model == model_id, ], aes(
         x = freq + 0.5,
-        y = c2,
+        y = c4/((Speed)*(Payload)),
+        color = ExperimentID,
+        fill = as.factor(freq)
+    ))  +
+    geom_violin(data = results[results$model == model_id, ], aes(
+        x = freq + 0.75,
+        y = c4/((Speed^2)*(Payload^2)),
         color = ExperimentID,
         fill = as.factor(freq)
     ))
+normalizcja
+# ggsave("./output/normalizacja.png")
+
