@@ -9,297 +9,265 @@
 # Version: 0.1
 ###############################################################################
 
+# 
+# if(require("formula.tools")) {
+#     install.packages("formula.tools")
+#     require("formula.tools")
+# }
 
 library("ggplot2")
 library("dplyr")
+library("plyr")
+library("tidyr")
 
+data_train <- readRDS("./input/train_data.RDS")
 
-data_train <- readRDS("input/train_data.RDS")
+data_test  <- readRDS("./input/test_data.RDS")
 
-data_test  <- readRDS("input/test_data.RDS")
-
-################################################################
+################################################################################
 #
-# Creating linear models to reflect car geometry and constraints
+# Creating linear models to reflect car geometry and constraints ---------------
 #
-################################################################
+################################################################################
 
-#looping over frequency bands
+# Creating Model Dictionary ----------------------------------------------------
 
-models <- data.frame("model" = 0,
-                     "lm_cmd" = as.character("null"),
-                     freq = 0)
-
-models$lm_cmd <- as.character(models$lm_cmd)
-
-for (i in 1:5) {
-    model1 = 1
-    cmd1 <-
-        paste(
-            "azp_1r_",
-            i,
-            " ~ az_1r_",
-            i,
-            " + azp_1l_",
-            i,
-            " + azp_2r_",
-            i,
-            " + azp_2l_",
-            i,
-            " + azs_1_",
-            i,
-            sep = ""
-        )
-    models <- add_row(models,
-                      model = model1,
-                      lm_cmd = cmd1,
-                      freq = i)
+models <- data.frame(model = numeric(),
+                     modeled_element = character(),
+                     lm_cmd = character(), 
+                     freq = numeric(), 
+                     stringsAsFactors = FALSE) 
     
-    model1 = 2
-    cmd1 <-
-        paste(
-            "azp_2r_",
-            i,
-            " ~ az_2r_",
-            i,
-            " + azp_2l_",
-            i,
-            " + azp_1r_",
-            i,
-            " + azp_1l_",
-            i,
-            " + azs_1_",
-            i,
-            sep = ""
+#' add_model_to_dict
+#'
+#' @param df dictionary data frame to be processe migh be null to start a new dict
+#' @param element element name to be modeled. Used as Left hand side of the formula. 
+#' Don't provide freq band suffix. Obligaroty.
+#' If already present will overide the previous instance of the model
+#' @param model_no not obligatory number denoting the model name, 
+#' if supplemented will remove the previous instance to avoid conflicts. 
+#' Function will not check for potential missmatch with element name. 
+#' @param model_RHS_var model right hand side variables. This might be refined. For reference
+#'  please look review i.e. http://faculty.chicagobooth.edu/richard.hahn/teaching/formulanotation.pdf
+#'  A potential extended formula package: https://cran.r-project.org/web/packages/Formula/vignettes/Formula.pdf
+#'
+#' @return
+#' @export
+#'
+#' @examples
+add_model_to_dict <- function(df = NULL, element, model_no = NULL, model_RHS_var){
+require(dplyr)
+        # creatating sceleton data frame if not provided
+    if (is.null(df)) {
+        df <- data.frame(
+            model = numeric(),
+            modeled_element = character(),
+            lm_cmd = character(),
+            freq = numeric(),
+            stringsAsFactors = FALSE
         )
-    models <- add_row(models,
-                      model = model1,
-                      lm_cmd = cmd1,
-                      freq = i)
-    
-    model1 = 3
-    cmd1 <-
-        paste(
-            "azp_1l_",
-            i,
-            " ~ az_1l_",
-            i,
-            " + azp_1r_",
-            i,
-            " + azp_2r_",
-            i,
-            " + azp_2l_",
-            i,
-            " + azs_1_",
-            i,
-            sep = ""
-        )
-    models <- add_row(models,
-                      model = model1,
-                      lm_cmd = cmd1,
-                      freq = i)
-    
-    model1 = 4
-    cmd1 <-
-        paste(
-            "azp_2l_",
-            i,
-            " ~ az_2l_",
-            i,
-            " + azp_2r_",
-            i,
-            " + azp_1r_",
-            i,
-            " + azp_1l_",
-            i,
-            " + azs_1_",
-            i,
-            sep = ""
-        )
-    models <- add_row(models,
-                      model = model1,
-                      lm_cmd = cmd1,
-                      freq = i)
-    
-    model1 = 5
-    cmd1 <-
-        paste(
-            "azp_3r_",
-            i,
-            " ~ az_3r_",
-            i,
-            " + azp_3l_",
-            i,
-            " + azp_4r_",
-            i,
-            " + azp_4l_",
-            i,
-            " + azs_2_",
-            i,
-            sep = ""
-        )
-    models <- add_row(models,
-                      model = model1,
-                      lm_cmd = cmd1,
-                      freq = i)
-    
-    model1 = 6
-    cmd1 <-
-        paste(
-            "azp_4r_",
-            i,
-            " ~ az_4r_",
-            i,
-            " + azp_4l_",
-            i,
-            " + azp_3r_",
-            i,
-            " + azp_3l_",
-            i,
-            " + azs_2_",
-            i,
-            sep = ""
-        )
-    models <- add_row(models,
-                      model = model1,
-                      lm_cmd = cmd1,
-                      freq = i)
-    
-    model1 = 7
-    cmd1 <-
-        paste(
-            "azp_3l_",
-            i,
-            " ~ az_3l_",
-            i,
-            " + azp_3r_",
-            i,
-            " + azp_4r_",
-            i,
-            " + azp_4l_",
-            i,
-            " + azs_2_",
-            i,
-            sep = ""
-        )
-    models <- add_row(models,
-                      model = model1,
-                      lm_cmd = cmd1,
-                      freq = i)
-    
-    model1 = 8
-    cmd1 <-
-        paste(
-            "azp_4l_",
-            i,
-            " ~ az_4l_",
-            i,
-            " + azp_4r_",
-            i,
-            " + azp_3l_",
-            i,
-            " + azp_3r_",
-            i,
-            " + azs_2_",
-            i,
-            sep = ""
-        )
-    models <- add_row(models,
-                      model = model1,
-                      lm_cmd = cmd1,
-                      freq = i)
-    
-    model1 = 9
-    cmd1 <-
-        paste(
-            "azs_1_",
-            i,
-            " ~ azp_1r_",
-            i,
-            " + azp_1l_",
-            i,
-            " + azp_2r_",
-            i,
-            " + azp_2l_",
-            i,
-            " + azs_2_",
-            i,
-            sep = ""
-        )
-    models <- add_row(models,
-                      model = model1,
-                      lm_cmd = cmd1,
-                      freq = i)
-    
-    model1 = 10
-    cmd1 <-
-        paste(
-            "azs_2_",
-            i,
-            " ~ azp_3r_",
-            i,
-            " + azp_3l_",
-            i,
-            " + azp_4r_",
-            i,
-            " + azp_4l_",
-            i,
-            " + azs_1_",
-            i,
-            sep = ""
-        )
-    models <- add_row(models,
-                      model = model1,
-                      lm_cmd = cmd1,
-                      freq = i)
-}
-
-
-
-fit1 <- lm(models$lm_cmd[2], data_train[data_train$ExperimentID == 1, ])
-
-fit1$coefficients
-
-summary(fit1)
-v <- coef(fit1)
-v[2]
-
-results <-
-    data.frame(
-        "model" = 0,
-        cmd = "null",
-        freq = 0,
-        ID = 0,
-        c1 = 0,
-        c2 = 0,
-        c3 = 0,
-        c4 = 0,
-        c5 = 0,
-        c6 = 0
-    )
-
-for (n in 2:nrow(models)) {
-    for (k in 1:200) {
-        fit1 <-  lm(models$lm_cmd[n], data[data_train$ExperimentID == k, ])
-        v <- coef(fit1)
-        results <- add_row(
-            results,
-            model = models$model[n],
-            cmd = models$lm_cmd[n],
-            freq = models$freq[n],
-            ID = k,
-            c1 = v[1],
-            c2 = v[2],
-            c3 = v[3],
-            c4 = v[4],
-            c5 = v[5],
-            c6 = v[6]
-        )
-        
+        model_no = 1
     }
     
+    # removing potential model id conflicts
+    if (is.null(model_no)) {
+        if ( nrow(df) == 0) {
+            model_no = 1
+        }
+        else{
+            model_no = max(df$model, na.rm = TRUE) + 1
+        }
+    } 
     
+    if (!is.null(nrow(df))){
+        df <- df %>% filter(  model != model_no & modeled_element != element )
+    }
+    
+    # Overriding modeled element
+    
+    # loop over frequency bands
+    for (i in 1:5) {
+        # model_formula <- as.formula()
+        lhs <- paste(element, i, sep="_" )
+        rhs <- paste( paste(model_RHS_var, i, sep="_" ) , collapse=" + ")
+        model_formula <- paste0( lhs ,  "~" , rhs )
+        
+        df <- add_row(df, model = model_no,
+                   modeled_element = element, 
+                   lm_cmd = model_formula,
+                   freq = i)
+    }
+    df
 }
+
+models <- add_model_to_dict(
+        element = "azp_1r",
+        model_RHS_var = c("az_1r",
+                          "azp_1l",
+                          "azp_2r",
+                          "azp_2l",
+                          "azs_1")
+    )
+
+
+models <-
+    models %>% add_model_to_dict(
+        element = "azp_2r",
+        model_RHS_var = c("az_2r",
+                          "azp_2l",
+                          "azp_1r",
+                          "azp_1l",
+                          "azs_1")
+    )
+
+
+models <-
+    models %>% add_model_to_dict(
+        element = "azp_1l",
+        model_RHS_var = c("az_1l",
+                          "azp_1r",
+                          "azp_2r",
+                          "azp_2l",
+                          "azs_1")
+    )
+
+
+models <-
+    models %>% add_model_to_dict(
+        element = "azp_2l",
+        model_RHS_var = c("az_2l",
+                          "azp_2r",
+                          "azp_1r",
+                          "azp_1l",
+                          "azs_1")
+    )
+
+
+models <-
+    models %>% add_model_to_dict(
+        element = "azp_3r",
+        model_RHS_var = c("az_3r",
+                          "azp_3l",
+                          "azp_4r",
+                          "azp_4l",
+                          "azs_2")
+    )
+
+
+models <-
+    models %>% add_model_to_dict(
+        element = "azp_4r",
+        model_RHS_var = c("az_4r",
+                          "azp_4l",
+                          "azp_3r",
+                          "azp_3l",
+                          "azs_2")
+    )
+
+models <-
+    models %>% add_model_to_dict(
+        element = "azp_3l",
+        model_RHS_var = c("az_3l",
+                          "azp_3r",
+                          "azp_4r",
+                          "azp_4l",
+                          "azs_2")
+    )
+
+
+models <-
+    models %>% add_model_to_dict(
+        element = "azp_4l",
+        model_RHS_var = c("az_4l",
+                          "azp_4r",
+                          "azp_3r",
+                          "azp_3l",
+                          "azs_2")
+    )
+
+models <-
+    models %>% add_model_to_dict(
+        element = "azs_1",
+        model_RHS_var = c("azp_1r",
+                          "azp_1l",
+                          "azp_2r",
+                          "azp_2l",
+                          "azs_2")
+    )
+
+
+
+models <-
+    models %>% add_model_to_dict(
+        element = "azs_2",
+        model_RHS_var = c("azp_3r",
+                          "azp_3l",
+                          "azp_4r",
+                          "azp_4l",
+                          "azs_1")
+    )
+
+# 
+# results_A <-
+#     data.frame(
+#         "model" = numeric(),
+#         cmd = character(),
+#         elemetn = character(),
+#         freq = numeric(),
+#         ID = numeric(),
+#         c1 = numeric(),
+#         c2 = numeric(),
+#         c3 = numeric(),
+#         c4 = numeric(),
+#         c5 = numeric(),
+#         c6 = numeric()
+#     )
+
+update(as.formula(models$lm_cmd), . ~ . *I(Payload^(-1)) )
+
+#' run_fits
+#'
+#' @param model_df data frame with model definitions
+#' @param data_df data frame with actual esperiment data
+#'
+#' @return
+#' @export
+#'
+#' @examples
+run_fits <- function(model_df = models, data_df = data_train){
+inner_join(model_df %>% mutate(k = 1), data_df %>% mutate(k = 1), by = "k") %>%
+    select(-k)  %>% ddply(.(modeled_element, freq , ExperimentID),
+                          function(df) {
+                              model_f <-
+                                  update(as.formula(df$lm_cmd), . ~ . )
+                              fit <- lm(model_f, df)
+                              # print(summary(fit)) 
+                              x <- coef(fit)
+                              x <- t(x)
+                              x <- as.data.frame(x)
+                              k <- names(x)
+                              k <- t(k)
+                              k <- as.data.frame(k)
+                              names(x) <- paste0("c", 1:ncol(x))
+                              names(k) <-
+                                  paste0("x_name", 1:ncol(k))
+                              h <- df[1, ] %>%
+                                  select(model, lm_cmd)
+                              # h <- as.data.frame(h)
+                              bind_cols(h, df[1,] %>% select(Payload, Speed), x, k)
+                          }, .progress = progress_text(char = ".")
+                          # .parallel = TRUE)
+    )
+}
+
+system.time(
+    results <- run_fits(model_df = models, data_df = data_train)
+)
+
+system.time(
+    results_test <- run_fits(model_df = models, data_df = data_test)
+)
+
 
 results %>% filter(model == 6) %>%
     ggplot(., aes(x = freq, y = c2)) + geom_boxplot(aes(fill = as.factor(freq)))
@@ -310,61 +278,58 @@ ggplot(results[results$model == 6, ], aes(x = freq, y = c2)) + geom_boxplot(aes(
 #ggsave("plot1.png")
 
 results %>% filter(model == 2) %>%
-    ggplot(., aes(x = freq, y = c2)) + geom_boxplot(aes(fill = as.factor(freq)))
+    ggplot(., aes(x = freq, y = c2)) + geom_violin(aes(fill = as.factor(freq)))
 
 results %>% filter(model == 3) %>%
     ggplot(., aes(x = freq, y = c2)) + geom_boxplot(aes(fill = as.factor(freq)))
 
 results %>% filter(model == 4) %>%
-    ggplot(., aes(x = freq, y = c2)) + geom_boxplot(aes(fill = as.factor(freq)))
+    ggplot(., aes(x = freq, y = c5)) + geom_boxplot(aes(fill = as.factor(freq)))
 
 results %>% filter(model == 10) %>%
-    ggplot(., aes(x = freq, y = c2)) + geom_boxplot(aes(fill = as.factor(freq)))
+    ggplot(., aes(x = freq, y = c3)) + geom_boxplot(aes(fill = as.factor(freq)))
 
 
-results_test <-
-    data.frame(
-        "model" = 0,
-        cmd = "null",
-        freq = 0,
-        ID = 0,
-        c1 = 0,
-        c2 = 0,
-        c3 = 0,
-        c4 = 0,
-        c5 = 0,
-        c6 = 0
-    )
+model_id = 6
+model_el = "azs_1"
+model_el = "azp_1l"
 
-for (n in 2:nrow(models)) {
-    for (k in 1:200) {
-        fit1 <-  lm(models$lm_cmd[n], data_test[data_test$ExperimentID == k, ])
-        v <- coef(fit1)
-        results_test <- add_row(
-            results_test,
-            model = models$model[n],
-            cmd = models$lm_cmd[n],
-            freq = models$freq[n],
-            ID = k,
-            c1 = v[1],
-            c2 = v[2],
-            c3 = v[3],
-            c4 = v[4],
-            c5 = v[5],
-            c6 = v[6]
-        )
-        
-    }
-    
-    
-}
+# C2- normalizacja chyna działa
+# c4 - normalizaca przestaje działać
 
+modeled_element_tit <- results %>%
+    # filter(model == model_id) %>%
+    filter(modeled_element == model_el ) %>%
+    slice(1) %>%
+    select(lm_cmd)
 
-ggplot(results[results$model == 2, ], aes(x = freq, y = c2)) +
-    geom_boxplot(aes(fill = as.factor(freq))) +
-    geom_boxplot(data = results_test[results_test$model == 2, ], aes(
+modeled_element_tit <- paste(modeled_element_tit)
+
+# normalizcja <-
+    results %>% 
+        # filter(model == model_id) %>% 
+        filter(modeled_element == model_el & ExperimentID < 100 ) %>%
+        gather(param_name, param_val,  num_range("c",1:6) )%>%
+    ggplot(aes(
+               x = freq,
+               y = param_val,
+               color = ExperimentID,
+               fill = as.factor(freq)
+           )) +
+    geom_violin() +
+    geom_violin(aes(x = freq + 0.25,
+                    y = param_val / Speed))  +
+    geom_violin(aes(
         x = freq + 0.5,
-        y = c2,
-        color = ID,
-        fill = as.factor(freq)
-    ))
+        y = param_val / ((Speed) * (Payload))))  +
+    geom_violin(aes(
+                    x = freq + 0.75,
+                    y = param_val / ((Speed ^ 2) * (Payload ^ 2)))) +
+    facet_wrap(~ param_name, scales = "free") +
+    labs(title = paste(modeled_element_tit, "Scales Free" , sep = " - "))
+    # labs(title = paste(model_el, "Scales Free" , sep = " - "))
+    
+normalizcja
+# ggsave("./output/normalizacja_azs_1.png")
+ggsave("./output/normalizacja_azp_1l.png")
+
