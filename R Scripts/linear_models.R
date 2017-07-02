@@ -17,6 +17,8 @@
 
 library("ggplot2")
 library("dplyr")
+library("plyr")
+library("tidyr")
 
 data_train <- readRDS("./input/train_data.RDS")
 
@@ -288,31 +290,46 @@ results %>% filter(model == 10) %>%
     ggplot(., aes(x = freq, y = c3)) + geom_boxplot(aes(fill = as.factor(freq)))
 
 
-model_id = 5
+model_id = 6
+model_el = "azs_1"
+model_el = "azp_1l"
+
 # C2- normalizacja chyna działa
 # c4 - normalizaca przestaje działać
 
-normalizcja <- ggplot(results[results$model == model_id, ], aes(x = freq, y = c4)) +
-    geom_violin(aes(fill = as.factor(freq))) +
-    geom_violin(data = results[results$model == model_id, ], aes(
-        x = freq + 0.25,
-        y = c4/Speed,
-        color = ExperimentID,
-        fill = as.factor(freq)
-    ))  +
-    
-    geom_violin(data = results[results$model == model_id, ], aes(
+modeled_element_tit <- results %>%
+    # filter(model == model_id) %>%
+    filter(modeled_element == model_el ) %>%
+    slice(1) %>%
+    select(lm_cmd)
+
+modeled_element_tit <- paste(modeled_element_tit)
+
+# normalizcja <-
+    results %>% 
+        # filter(model == model_id) %>% 
+        filter(modeled_element == model_el & ExperimentID < 100 ) %>%
+        gather(param_name, param_val,  num_range("c",1:6) )%>%
+    ggplot(aes(
+               x = freq,
+               y = param_val,
+               color = ExperimentID,
+               fill = as.factor(freq)
+           )) +
+    geom_violin() +
+    geom_violin(aes(x = freq + 0.25,
+                    y = param_val / Speed))  +
+    geom_violin(aes(
         x = freq + 0.5,
-        y = c4/((Speed)*(Payload)),
-        color = ExperimentID,
-        fill = as.factor(freq)
-    ))  +
-    geom_violin(data = results[results$model == model_id, ], aes(
-        x = freq + 0.75,
-        y = c4/((Speed^2)*(Payload^2)),
-        color = ExperimentID,
-        fill = as.factor(freq)
-    ))
+        y = param_val / ((Speed) * (Payload))))  +
+    geom_violin(aes(
+                    x = freq + 0.75,
+                    y = param_val / ((Speed ^ 2) * (Payload ^ 2)))) +
+    facet_wrap(~ param_name, scales = "free") +
+    labs(title = paste(modeled_element_tit, "Scales Free" , sep = " - "))
+    # labs(title = paste(model_el, "Scales Free" , sep = " - "))
+    
 normalizcja
-# ggsave("./output/normalizacja.png")
+# ggsave("./output/normalizacja_azs_1.png")
+ggsave("./output/normalizacja_azp_1l.png")
 

@@ -1,0 +1,153 @@
+---
+title: "PHM Data Challange 2017"
+root.dir: C:/Users/Marcin-Dell/Documents/PHM_Data_challange_2017/
+output:
+  html_document: default
+  html_notebook: default
+---
+# Loading Data
+
+Loding data and functionas plus some trivial histogram script
+
+```{r Loading Data}
+print(getwd())
+setwd("../")
+source("./R Scripts/Load_data.R")
+
+source("./R/Data_challenge_functions.R")
+
+
+# exp_tst1 %>%
+#     gather() %>%
+#     ggplot(aes(value)) +
+#     facet_wrap(~ key, scales = "free") +
+#     geom_histogram()
+
+```
+# Time lag in data
+I want to check if there is some lag in the time series data... Due to velocity and progresion of train car on uneaven rails... Let's plot some examples...
+
+```{r}
+
+# exp_tr1 <- load_expetiment(101, dir = "../input/training/", names = TRUE)
+
+
+# az
+plot_groups(train_data %>% filter(ExperimentID == 1 ),
+             var = "az",
+             par_range = c(1:4),
+             lr = "l" ,
+             freq_band = 1)
+# azs
+plot_groups(train_data %>% filter(ExperimentID == 1 ),
+             var = "azs",
+             par_range = c(1:2),
+             lr = "" ,
+             freq_band = 2)
+
+# azp
+plot_groups(train_data %>% filter(ExperimentID == 1 ),
+             var = "azp",
+             par_range = c(1:4),
+             lr = "r" ,
+             freq_band = 3)
+
+```
+There is no time lag in data between sensors!
+Someone have already tidied the data for us!
+Checked on all types of data and now on different data file:
+
+```{r}
+
+
+ some_trainig <- train_data %>% filter(ExperimentID == 121 )
+lr = "r"
+band = 1
+# az
+plot_groups(some_trainig,
+             var = "az",
+             par_range = c(1:4),
+             lr = lr,
+             freq_band = band)
+# azs
+plot_groups(some_trainig,
+             var = "azs",
+             par_range = c(1:2),
+             lr = "" ,
+             freq_band = band)
+
+# azp
+plot_groups(some_trainig,
+             var = "azp",
+             par_range = c(1:4),
+             lr = lr ,
+             freq_band = band)
+```
+
+# Paralel Parts
+
+```{r}
+band = 1
+
+# az
+plot_groups(some_trainig,
+             var = "az",
+             par_range = 1,
+             lr = c("l","r"),
+             freq_band = band)
+
+# azp
+plot_groups(some_trainig,
+             var = "azp",
+             par_range = 1,
+             lr = c("l","r") ,
+             freq_band = band)
+
+# azs
+plot_groups(some_trainig,
+             var = "azs",
+             par_range = c(1:2),
+             lr = "" ,
+             freq_band = band)
+```
+
+
+
+# Residules
+We will operate on residules to find potential failures or failuer modes.
+We know we need to run "detection" of failure type analysis not predictive or cumulative damage models.
+
+```{r Residual calculation example}
+# Residual calculation
+band = 1
+
+# az
+rest_1 <- calc_residules(some_trainig,
+             var = "az",
+             par_range = 1,
+             lr = c("l","r"),
+             freq_band = band)
+
+# azp
+rest_2 <- calc_residules(some_trainig,
+             var = "azp",
+             par_range = 1,
+             lr = c("l","r") ,
+             freq_band = band)
+
+# azs
+rest_3 <- calc_residules(some_trainig,
+             var = "azs",
+             par_range = c(1:2),
+             lr = "" ,
+             freq_band = band)
+
+```
+
+```{r Apmlitude dumpening rations examples}
+
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
