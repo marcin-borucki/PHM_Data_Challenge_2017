@@ -56,7 +56,7 @@ source("./R Scripts/models_eq3.R")
 
 res3<-run_fits(model_df = models, data_df = data_train)
 
-res3$Track<-ifelse(res2$ExperimentID<101,1,2)
+res3$Track<-ifelse(res3$ExperimentID<101,1,2)
 
 ```
 
@@ -242,34 +242,169 @@ for(modeli in min(res3$model):max(res3$model)){
 
 ```
 
-## what about Payload
+## what about Payload -train - model1
 
-```{r payload, echo = FALSE}
+```{r payload - res1, echo = FALSE,fig.height=10, fig.width=14, fig.cap="---  \n"}
 
-models3<-summarize(group_by(res3,modeled_element,model))
+#models2<-summarize(group_by(res2,modeled_element,model))
 for(modeli in min(res3$model):max(res3$model)){
 #modeli=1
-  p <- res3 %>% filter(model == modeli) %>%
+  p <- res1 %>% filter(model == modeli) %>%
     ggplot(.,aes(x=Payload,y=c2,color=as.factor(Track)))+
     geom_point()+
-    facet_grid(.~freq)
+    facet_grid(.~freq)+
+    labs(title="res1, train set only, c2")
   show(p)
 #modeli=1
-  p <- res3 %>% filter(model == modeli) %>%
+  p <- res1 %>% filter(model == modeli) %>%
     ggplot(.,aes(x=Payload,y=c2,color=as.factor(Speed)))+
     geom_point()+
-    facet_grid(.~freq)
+    facet_grid(.~freq)+
+    labs(title="res1, train set only, c2")
   show(p)
   
-  p <- res3 %>% filter(model == modeli) %>%
+  p <- res1 %>% filter(model == modeli) %>%
     ggplot(.,aes(x=Payload,y=c2,color=as.factor(Speed)))+
     geom_point()+
-    facet_grid(freq~.)
+    facet_grid(freq~.)+
+    labs(title="res1, train set only, c2")
   show(p)
 }
 
 ```
 
+
+## what about Payload -train - model2
+
+```{r payload - res2, echo = FALSE,fig.height=10, fig.width=14, fig.cap="---  \n"}
+
+#models2<-summarize(group_by(res2,modeled_element,model))
+for(modeli in min(res3$model):max(res3$model)){
+#modeli=1
+  p <- res2 %>% filter(model == modeli) %>%
+    ggplot(.,aes(x=Payload,y=c2,color=as.factor(Track)))+
+    geom_point()+
+    facet_grid(.~freq)+
+    labs(title="res2, train set only, c2")
+  show(p)
+#modeli=1
+  p <- res2 %>% filter(model == modeli) %>%
+    ggplot(.,aes(x=Payload,y=c2,color=as.factor(Speed)))+
+    geom_point()+
+    facet_grid(.~freq)+
+    labs(title="res2, train set only, c2")
+  show(p)
+  
+  p <- res2 %>% filter(model == modeli) %>%
+    ggplot(.,aes(x=Payload,y=c2,color=as.factor(Speed)))+
+    geom_point()+
+    facet_grid(freq~.)+
+    labs(title="res2, train set only, c2")
+  show(p)
+}
+
+```
+
+## what about Payload -train - model3
+
+```{r payload -res3, echo = FALSE,fig.height=10, fig.width=14, fig.cap="---  \n"}
+
+#models3<-summarize(group_by(res3,modeled_element,model))
+for(modeli in min(res3$model):max(res3$model)){
+#modeli=1
+  p <- res3 %>% filter(model == modeli) %>%
+    ggplot(.,aes(x=Payload,y=c2,color=as.factor(Track)))+
+    geom_point()+
+    facet_grid(.~freq)+
+    labs(title="res3, train set only, c2")
+  show(p)
+#modeli=1
+  p <- res3 %>% filter(model == modeli) %>%
+    ggplot(.,aes(x=Payload,y=c2,color=as.factor(Speed)))+
+    geom_point()+
+    facet_grid(.~freq)+
+    labs(title="res3, train set only, c2")
+  show(p)
+  
+  p <- res3 %>% filter(model == modeli) %>%
+    ggplot(.,aes(x=Payload,y=c2,color=as.factor(Speed)))+
+    geom_point()+
+    facet_grid(freq~.)+
+    labs(title="res3, train set only, c2")
+  show(p)
+}
+
+```
+##Estimating on test data
+
+```{r test data model 3, echo = FALSE,fig.height=10, fig.width=14, fig.cap="---  \n"}
+
+# boggie models just with wheels
+source("./R Scripts/models_eq3.R")
+
+res3_test<-run_fits(model_df = models, data_df = data_test)
+
+res3_test$Track<-ifelse(res3_test$ExperimentID<101,1,2)
+
+```
+## plots with test set
+
+```{r plots train + test - model 3, echo = FALSE,fig.height=10, fig.width=14, fig.cap="---  \n"}
+
+#models3<-summarize(group_by(res3,modeled_element,model))
+
+for(modeli in min(res3$model):max(res3$model)){
+#modeli=1
+  p <- res3 %>% filter(model == modeli) %>%
+    ggplot(.,aes(x=Payload,y=c2,color=as.factor(Track)))+
+    geom_point()+
+    facet_grid(.~freq)+
+    geom_point(data=res3_test[res3_test$model == modeli,],aes(
+      x=Payload,
+      y=c2),color="black")
+  show(p)
+  
+  #track 1 only
+}
+  #track 1 only
+
+wrk<-filter(res3,Track==1)
+wrk_test<-filter(res3_test,Track==1)
+for(modeli in min(res3$model):max(res3$model)){
+
+#modeli=1
+  p <- wrk %>% filter(model == modeli) %>%
+    ggplot(.,aes(x=Payload,y=c2))+
+    geom_point(color = "black")+
+    facet_grid(.~freq)+
+    geom_point(data=wrk_test[wrk_test$model == modeli,],aes(
+      x=Payload,
+      y=c2,color=as.factor(Speed)),shape=2,size=3)+
+    labs(title="Track 1 - train'n'test - model3")
+  show(p)
+  
+
+}
+
+wrk<-filter(res3,Track==2)
+wrk_test<-filter(res3_test,Track==2)
+for(modeli in min(res3$model):max(res3$model)){
+
+#modeli=1
+  p <- wrk %>% filter(model == modeli) %>%
+    ggplot(.,aes(x=Payload,y=c2))+
+    geom_point(color="black")+
+    facet_grid(.~freq)+
+    geom_point(data=wrk_test[wrk_test$model == modeli,],aes(
+      x=Payload,
+      y=c2,color=as.factor(Speed)),shape=2,size=3)+
+    labs(title="Track 2 - train'n'test - model3")
+  show(p)
+  
+
+}
+
+```
 ## Conclusions (from Antek)
 
 Simplest model (only wheel excitation) seems best. 
