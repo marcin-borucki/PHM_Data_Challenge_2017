@@ -309,6 +309,7 @@ modeled_element_tit <- paste(modeled_element_tit)
     results %>% 
         # filter(model == model_id) %>% 
         filter(modeled_element == model_el & ExperimentID >= 101 ) %>%
+        # filter(modeled_element == model_el & ExperimentID < 100 ) %>%
         gather(param_name, param_val,  num_range("c",1:6) )%>%
     ggplot(aes(
                x = freq,
@@ -332,4 +333,5 @@ modeled_element_tit <- paste(modeled_element_tit)
 normalizcja
 # ggsave("./output/normalizacja_azs_1.png")
 ggsave("./output/normalizacja_azp_1l_tr2.png")
+# ggsave("./output/normalizacja_azp_1l.png")
 
