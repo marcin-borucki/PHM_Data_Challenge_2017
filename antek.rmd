@@ -242,6 +242,33 @@ for(modeli in min(res3$model):max(res3$model)){
 
 ```
 
+## what about Payload
+
+```{r payload, echo = FALSE}
+
+models3<-summarize(group_by(res3,modeled_element,model))
+for(modeli in min(res3$model):max(res3$model)){
+#modeli=1
+  p <- res3 %>% filter(model == modeli) %>%
+    ggplot(.,aes(x=Payload,y=c2,color=as.factor(Track)))+
+    geom_point()+
+    facet_grid(.~freq)
+  show(p)
+#modeli=1
+  p <- res3 %>% filter(model == modeli) %>%
+    ggplot(.,aes(x=Payload,y=c2,color=as.factor(Speed)))+
+    geom_point()+
+    facet_grid(.~freq)
+  show(p)
+  
+  p <- res3 %>% filter(model == modeli) %>%
+    ggplot(.,aes(x=Payload,y=c2,color=as.factor(Speed)))+
+    geom_point()+
+    facet_grid(freq~.)
+  show(p)
+}
+
+```
 
 ## Conclusions (from Antek)
 

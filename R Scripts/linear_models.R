@@ -5,22 +5,38 @@
 # Author's e-mail:  Marcin.Borucki@gmail.com
 # Colaborator's e-mail:
 # Creation date: 07/01/2017
-# Modification:
+# Modification: 1 (AT)
 # Version: 0.1
 ###############################################################################
+
+#
+# moved model definitions to separate files
+# commented out running the fits
+# overall goal - this file to be a library only - no "execution" - just functions prep
+#
 
 # 
 # if(require("formula.tools")) {
 #     install.packages("formula.tools")
 #     require("formula.tools")
 # }
-
+library("plyr")
 library("ggplot2")
 library("dplyr")
 
-data_train <- readRDS("./input/train_data.RDS")
+#read-in data frames only if not already available...
 
-data_test  <- readRDS("./input/test_data.RDS")
+if(exists("data_train")){
+  paste("data_train already available")
+}else{
+  data_train <- readRDS("./input/train_data.RDS")
+}
+
+if(exists("data_test")){
+  paste("data_test already available")
+}else{
+  data_train <- readRDS("./input/train_data.RDS")
+}
 
 ################################################################################
 #
@@ -78,7 +94,7 @@ require(dplyr)
     } 
     
     if (!is.null(nrow(df))){
-        df <- df %>% filter(  model != model_no & modeled_element != element )
+        df <- df %>% filter(  model != model_no & modeled_element != element) #comment out? - this forbids using two models for the same element...
     }
     
     # Overriding modeled element
@@ -98,112 +114,251 @@ require(dplyr)
     df
 }
 
-models <- add_model_to_dict(
-        element = "azp_1r",
-        model_RHS_var = c("az_1r",
-                          "azp_1l",
-                          "azp_2r",
-                          "azp_2l",
-                          "azs_1")
-    )
+# models <- add_model_to_dict(
+#         element = "azp_1r",
+#         model_RHS_var = c("az_1r",
+#                           "azp_1l",
+#                           "azp_2r",
+#                           "azp_2l",
+#                           "azs_1")
+#     )
 
 
-models <-
-    models %>% add_model_to_dict(
-        element = "azp_2r",
-        model_RHS_var = c("az_2r",
-                          "azp_2l",
-                          "azp_1r",
-                          "azp_1l",
-                          "azs_1")
-    )
+# models <-
+#     models %>% add_model_to_dict(
+#         element = "azp_2r",
+#         model_RHS_var = c("az_2r",
+#                           "azp_2l",
+#                           "azp_1r",
+#                           "azp_1l",
+#                           "azs_1")
+#     )
 
 
-models <-
-    models %>% add_model_to_dict(
-        element = "azp_1l",
-        model_RHS_var = c("az_1l",
-                          "azp_1r",
-                          "azp_2r",
-                          "azp_2l",
-                          "azs_1")
-    )
+# models <-
+#     models %>% add_model_to_dict(
+#         element = "azp_1l",
+#         model_RHS_var = c("az_1l",
+#                           "azp_1r",
+#                           "azp_2r",
+#                           "azp_2l",
+#                           "azs_1")
+#     )
 
 
-models <-
-    models %>% add_model_to_dict(
-        element = "azp_2l",
-        model_RHS_var = c("az_2l",
-                          "azp_2r",
-                          "azp_1r",
-                          "azp_1l",
-                          "azs_1")
-    )
+# models <-
+#     models %>% add_model_to_dict(
+#         element = "azp_2l",
+#         model_RHS_var = c("az_2l",
+#                           "azp_2r",
+#                           "azp_1r",
+#                           "azp_1l",
+#                           "azs_1")
+#     )
 
 
-models <-
-    models %>% add_model_to_dict(
-        element = "azp_3r",
-        model_RHS_var = c("az_3r",
-                          "azp_3l",
-                          "azp_4r",
-                          "azp_4l",
-                          "azs_2")
-    )
+# models <-
+#     models %>% add_model_to_dict(
+#         element = "azp_3r",
+#         model_RHS_var = c("az_3r",
+#                           "azp_3l",
+#                           "azp_4r",
+#                           "azp_4l",
+#                           "azs_2")
+#     )
 
 
-models <-
-    models %>% add_model_to_dict(
-        element = "azp_4r",
-        model_RHS_var = c("az_4r",
-                          "azp_4l",
-                          "azp_3r",
-                          "azp_3l",
-                          "azs_2")
-    )
+# models <-
+#     models %>% add_model_to_dict(
+#         element = "azp_4r",
+#         model_RHS_var = c("az_4r",
+#                           "azp_4l",
+#                           "azp_3r",
+#                           "azp_3l",
+#                           "azs_2")
+#     )
 
-models <-
-    models %>% add_model_to_dict(
-        element = "azp_3l",
-        model_RHS_var = c("az_3l",
-                          "azp_3r",
-                          "azp_4r",
-                          "azp_4l",
-                          "azs_2")
-    )
-
-
-models <-
-    models %>% add_model_to_dict(
-        element = "azp_4l",
-        model_RHS_var = c("az_4l",
-                          "azp_4r",
-                          "azp_3r",
-                          "azp_3l",
-                          "azs_2")
-    )
-
-models <-
-    models %>% add_model_to_dict(
-        element = "azs_1",
-        model_RHS_var = c("azp_1r",
-                          "azp_1l",
-                          "azp_2r",
-                          "azp_2l",
-                          "azs_2")
-    )
+# models <-
+#     models %>% add_model_to_dict(
+#         element = "azp_3l",
+#         model_RHS_var = c("az_3l",
+#                           "azp_3r",
+#                           "azp_4r",
+#                           "azp_4l",
+#                           "azs_2")
+#     )
 
 
+# models <-
+#     models %>% add_model_to_dict(
+#         element = "azp_4l",
+#         model_RHS_var = c("az_4l",
+#                           "azp_4r",
+#                           "azp_3r",
+#                           "azp_3l",
+#                           "azs_2")
+#     )
 
-models <-
-    models %>% add_model_to_dict(
-        element = "azs_2",
-        model_RHS_var = c("azp_3r",
-                          "azp_3l",
-                          "azp_4r",
-                          "azp_4l",
-                          "azs_1")
-    )
+# models <-
+#     models %>% add_model_to_dict(
+#         element = "azs_1",
+#         model_RHS_var = c("azp_1r",
+#                           "azp_1l",
+#                           "azp_2r",
+#                           "azp_2l",
+#                           "azs_2")
+#     )
+
+
+
+# models <-
+#     models %>% add_model_to_dict(
+#         element = "azs_2",
+#         model_RHS_var = c("azp_3r",
+#                           "azp_3l",
+#                           "azp_4r",
+#                           "azp_4l",
+#                           "azs_1")
+#     )
+
+# # bogiie models without platform
+# models <-
+#     models %>% add_model_to_dict(
+#         element = "azp_1r",
+#         model_RHS_var = c("az_1r",
+#                           "azp_2l",
+#                           "azp_1r",
+#                           "azp_1l")
+#     )
+
+
+
+# models <-
+#     models %>% add_model_to_dict(
+#         element = "azp_2r",
+#         model_RHS_var = c("az_2r",
+#                           "azp_2l",
+#                           "azp_1r",
+#                           "azp_1l")
+#     )
+
+
+# models <-
+#     models %>% add_model_to_dict(
+#         element = "azp_1l",
+#         model_RHS_var = c("az_1l",
+#                           "azp_1r",
+#                           "azp_2r",
+#                           "azp_2l")
+#     )
+
+
+# models <-
+#     models %>% add_model_to_dict(
+#         element = "azp_2l",
+#         model_RHS_var = c("az_2l",
+#                           "azp_2r",
+#                           "azp_1r",
+#                           "azp_1l")
+#     )
+
+
+# models <-
+#     models %>% add_model_to_dict(
+#         element = "azp_3r",
+#         model_RHS_var = c("az_3r",
+#                           "azp_3l",
+#                           "azp_4r",
+#                           "azp_4l")
+#     )
+
+
+# models <-
+#     models %>% add_model_to_dict(
+#         element = "azp_4r",
+#         model_RHS_var = c("az_4r",
+#                           "azp_4l",
+#                           "azp_3r",
+#                           "azp_3l")
+#     )
+
+# models <-
+#     models %>% add_model_to_dict(
+#         element = "azp_3l",
+#         model_RHS_var = c("az_3l",
+#                           "azp_3r",
+#                           "azp_4r",
+#                           "azp_4l")
+#     )
+
+
+# models <-
+#     models %>% add_model_to_dict(
+#         element = "azp_4l",
+#         model_RHS_var = c("az_4l",
+#                           "azp_4r",
+#                           "azp_3r",
+#                           "azp_3l")
+#     )
+
+# # bogie models - just wheels
+
+# models <-
+#     models %>% add_model_to_dict(
+#         element = "azp_1r",
+#         model_RHS_var = c("az_2r")
+#     )
+
+
+
+# models <-
+#     models %>% add_model_to_dict(
+#         element = "azp_2r",
+#         model_RHS_var = c("az_2r")
+#     )
+
+
+# models <-
+#     models %>% add_model_to_dict(
+#         element = "azp_1l",
+#         model_RHS_var = c("az_1l")
+#     )
+
+
+# models <-
+#     models %>% add_model_to_dict(
+#         element = "azp_2l",
+#         model_RHS_var = c("az_2l")
+#     )
+
+
+# models <-
+#     models %>% add_model_to_dict(
+#         element = "azp_3r",
+#         model_RHS_var = c("az_3r")
+#     )
+
+
+# models <-
+#     models %>% add_model_to_dict(
+#         element = "azp_4r",
+#         model_RHS_var = c("az_4r")
+#     )
+
+# models <-
+#     models %>% add_model_to_dict(
+#         element = "azp_3l",
+#         model_RHS_var = c("az_3l")
+#     )
+
+
+# models <-
+#     models %>% add_model_to_dict(
+#         element = "azp_4l",
+#         model_RHS_var = c("az_4l")
+#     )
+
+
 
 # 
 # results_A <-
@@ -221,7 +376,7 @@ models <-
 #         c6 = numeric()
 #     )
 
-update(as.formula(models$lm_cmd), . ~ . *I(Payload^(-1)) )
+#update(as.formula(models$lm_cmd), . ~ . *I(Payload^(-1)) )
 
 #' run_fits
 #'
@@ -253,66 +408,66 @@ inner_join(model_df %>% mutate(k = 1), data_df %>% mutate(k = 1), by = "k") %>%
                                   select(model, lm_cmd)
                               # h <- as.data.frame(h)
                               bind_cols(h, df[1,] %>% select(Payload, Speed), x, k)
-                          }, .progress = progress_text(char = ".")
+                          }  #commented out .progress="progress_text(char = ".")" 
                           # .parallel = TRUE)
     )
 }
 
-system.time(
-    results <- run_fits(model_df = models, data_df = data_train)
-)
+# system.time(
+#     results <- run_fits(model_df = models, data_df = data_train)
+# )
 
-system.time(
-    results_test <- run_fits(model_df = models, data_df = data_test)
-)
+# system.time(
+#     results_test <- run_fits(model_df = models, data_df = data_test)
+# )
 
 
-results %>% filter(model == 6) %>%
-    ggplot(., aes(x = freq, y = c2)) + geom_boxplot(aes(fill = as.factor(freq)))
+# results %>% filter(model == 6) %>%
+#     ggplot(., aes(x = freq, y = c2)) + geom_boxplot(aes(fill = as.factor(freq)))
 
-ggplot(results[results$model == 6, ], aes(x = freq, y = c2)) + geom_boxplot(aes(fill =
-                                                                                    as.factor(freq)))
+# ggplot(results[results$model == 6, ], aes(x = freq, y = c2)) + geom_boxplot(aes(fill =
+#                                                                                     as.factor(freq)))
 
 #ggsave("plot1.png")
 
-results %>% filter(model == 2) %>%
-    ggplot(., aes(x = freq, y = c2)) + geom_violin(aes(fill = as.factor(freq)))
+# results %>% filter(model == 2) %>%
+#     ggplot(., aes(x = freq, y = c2)) + geom_violin(aes(fill = as.factor(freq)))
 
-results %>% filter(model == 3) %>%
-    ggplot(., aes(x = freq, y = c2)) + geom_boxplot(aes(fill = as.factor(freq)))
+# results %>% filter(model == 3) %>%
+#     ggplot(., aes(x = freq, y = c2)) + geom_boxplot(aes(fill = as.factor(freq)))
 
-results %>% filter(model == 4) %>%
-    ggplot(., aes(x = freq, y = c5)) + geom_boxplot(aes(fill = as.factor(freq)))
+# results %>% filter(model == 4) %>%
+#     ggplot(., aes(x = freq, y = c5)) + geom_boxplot(aes(fill = as.factor(freq)))
 
-results %>% filter(model == 10) %>%
-    ggplot(., aes(x = freq, y = c3)) + geom_boxplot(aes(fill = as.factor(freq)))
+# results %>% filter(model == 10) %>%
+#     ggplot(., aes(x = freq, y = c3)) + geom_boxplot(aes(fill = as.factor(freq)))
 
 
-model_id = 5
+# model_id = 5
 # C2- normalizacja chyna działa
 # c4 - normalizaca przestaje działać
 
-normalizcja <- ggplot(results[results$model == model_id, ], aes(x = freq, y = c4)) +
-    geom_violin(aes(fill = as.factor(freq))) +
-    geom_violin(data = results[results$model == model_id, ], aes(
-        x = freq + 0.25,
-        y = c4/Speed,
-        color = ExperimentID,
-        fill = as.factor(freq)
-    ))  +
+# normalizcja <- ggplot(results[results$model == model_id, ], aes(x = freq, y = c4)) +
+#     geom_violin(aes(fill = as.factor(freq))) +
+#     geom_violin(data = results[results$model == model_id, ], aes(
+#         x = freq + 0.25,
+#         y = c4/Speed,
+#         color = ExperimentID,
+#         fill = as.factor(freq)
+#     ))  +
     
-    geom_violin(data = results[results$model == model_id, ], aes(
-        x = freq + 0.5,
-        y = c4/((Speed)*(Payload)),
-        color = ExperimentID,
-        fill = as.factor(freq)
-    ))  +
-    geom_violin(data = results[results$model == model_id, ], aes(
-        x = freq + 0.75,
-        y = c4/((Speed^2)*(Payload^2)),
-        color = ExperimentID,
-        fill = as.factor(freq)
-    ))
-normalizcja
+#     geom_violin(data = results[results$model == model_id, ], aes(
+#         x = freq + 0.5,
+#         y = c4/((Speed)*(Payload)),
+#         color = ExperimentID,
+#         fill = as.factor(freq)
+#     ))  +
+#     geom_violin(data = results[results$model == model_id, ], aes(
+#         x = freq + 0.75,
+#         y = c4/((Speed^2)*(Payload^2)),
+#         color = ExperimentID,
+#         fill = as.factor(freq)
+#     ))
+# normalizcja
 # ggsave("./output/normalizacja.png")
 
