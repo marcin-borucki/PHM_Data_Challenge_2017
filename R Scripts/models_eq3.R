@@ -37,7 +37,7 @@ models <- data.frame(model = numeric(),
 
 models <-add_model_to_dict(
         element = "azp_1r",
-        model_RHS_var = c("az_2r")
+        model_RHS_var = c("az_1r")
     )
 
 
