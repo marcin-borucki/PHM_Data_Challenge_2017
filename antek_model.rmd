@@ -24,7 +24,7 @@ data_train <- readRDS("./input/train_data.RDS")
 data_test  <- readRDS("./input/test_data.RDS")
 
 #linear models:
-source("./R Scripts/linear_models.R")
+#source("./R Scripts/linear_models.R")
 
 ```
 
@@ -33,14 +33,14 @@ source("./R Scripts/linear_models.R")
 ### eq3
 
 kept here for reference - as it might be the best thing so far
-
-```{eq3, echo = FALSE}
+  
+```{r eq3, echo = FALSE}
 
 source("./R Scripts/models_eq3.R")
 
-res3<-run_fits(model_df = models, data_df = data_train)
+#res3<-run_fits(model_df = models, data_df = data_train)
 
-res3$Track<-ifelse(res3$ExperimentID<101,1,2)
+#res3$Track<-ifelse(res3$ExperimentID<101,1,2)
 
 ```
 
@@ -48,13 +48,7 @@ res3$Track<-ifelse(res3$ExperimentID<101,1,2)
 
 platform added as source of excitation for bogie acc
 
-```{eq with platform, echo = FALSE}
-
-df_endo<-data_train[,c("azs_1_1","azp_1r_1","azp_2r_1","azp_1l_1","azp_2l_1")]
-
-df_exo<-data_train[,c("az_1r_1","az_1l_1","az_2r_1","az_2l_1")]
-
-res<-VAR(y=df_endo,type="const",p=0,exogen=df_exo)
+```{r eq with platform, echo = FALSE}
 
 
 
@@ -65,6 +59,15 @@ res<-VAR(y=df_endo,type="const",p=0,exogen=df_exo)
 considering a VAR model with wheels as exogenous variables and platform and bogie as endogenous ones
 
 ```{r var, echo = FALSE}
+
+df_endo<-data_train[,c("azs_1_1","azp_1r_1","azp_2r_1","azp_1l_1","azp_2l_1")]
+
+df_exo<-data_train[,c("az_1r_1","az_1l_1","az_2r_1","az_2l_1")]
+
+res<-VAR(df_endo,type="const",p=0,exogen=df_exo)
+
+
+
 ```
 
 ## Comparison plots
