@@ -7,9 +7,13 @@ output:
 ---
 
 ```{r setup, include=FALSE}
+
+rm(list=ls())
 knitr::opts_chunk$set(echo = TRUE)
 
-library(vars)
+library(ggplot2)
+
+#library(vars)
 ```
 
 ## Intro
@@ -24,7 +28,7 @@ data_train <- readRDS("./input/train_data.RDS")
 data_test  <- readRDS("./input/test_data.RDS")
 
 #linear models:
-#source("./R Scripts/linear_models.R")
+source("./R Scripts/linear_models.R")
 
 ```
 
@@ -38,9 +42,44 @@ kept here for reference - as it might be the best thing so far
 
 source("./R Scripts/models_eq3.R")
 
-#res3<-run_fits(model_df = models, data_df = data_train)
+res3<-run_fits(model_df = models, data_df = data_train)
 
-#res3$Track<-ifelse(res3$ExperimentID<101,1,2)
+res3$Track<-ifelse(res3$ExperimentID<101,1,2)
+
+res3_test<-run_fits(model_df = models, data_df = data_test)
+
+res3_test$Track<- ifelse (res3_test$ExperimentID<101,1,2)
+
+```
+
+### test set flags - based on eq3 and normal distribution
+
+```{r flags eq3, echo = FALSE}
+
+summary_res_3<-summarize(group_by(res3,Track,Speed,freq,model),avg=mean(c2),st_dev=sd(c2))
+
+res3_test_flags<-merge(res3_test,summary_res_3,by=c("Track","Speed","freq","model"),all.x=TRUE)
+
+res3_test_flags$pdb_up<-pnorm(res3_test_flags$c2,
+                              mean = res3_test_flags$avg,
+                              sd = res3_test_flags$st_dev,
+                              lower.tail = FALSE)
+
+
+res3_test_flags$pdb<-pnorm(res3_test_flags$c2,
+                              mean = res3_test_flags$avg,
+                              sd = res3_test_flags$st_dev)
+
+sum_pdb<- summarize(group_by(res3_test_flags,ExperimentID,modeled_element),
+                    max_pdb=max(pdb_up),
+                    count_up_50=sum(pdb_up>0.5),
+                    count_pdb_50=sum(pdb>.50))
+
+sum_pdb_id<- summarize(group_by(res3_test_flags,ExperimentID),
+                    max_pdb=max(pdb_up),
+                    count_up_50=sum(pdb_up>0.5),
+                    count_pdb_50=sum(pdb>.50))
+
 
 ```
 
@@ -59,13 +98,6 @@ platform added as source of excitation for bogie acc
 considering a VAR model with wheels as exogenous variables and platform and bogie as endogenous ones
 
 ```{r var, echo = FALSE}
-
-df_endo<-data_train[,c("azs_1_1","azp_1r_1","azp_2r_1","azp_1l_1","azp_2l_1")]
-
-df_exo<-data_train[,c("az_1r_1","az_1l_1","az_2r_1","az_2l_1")]
-
-res<-VAR(df_endo,type="const",p=0,exogen=df_exo)
-
 
 
 ```
