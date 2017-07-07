@@ -11,7 +11,7 @@ output:
 rm(list=ls())
 knitr::opts_chunk$set(echo = TRUE)
 
-library(ggplot2)
+require(ggplot2)
 
 #library(vars)
 ```
@@ -52,6 +52,52 @@ res3_test$Track<- ifelse (res3_test$ExperimentID<101,1,2)
 
 ```
 
+### eq4
+
+this is an attempt at estimating bogie and platform models  
+each model is a simple "y = a + b * x" linear model  
+for bogie corner acc - there are one each model - all using wheels as inputs
+for platforms - there are four models for each platform acc each using a single bogie acc as input
+
+```{r eq4, echo = FALSE}
+
+
+source("./R Scripts/models_eq4.R")
+
+res4<-run_fits(model_df = models, data_df = data_train)
+
+res4$Track<-ifelse(res4$ExperimentID<101,1,2)
+
+res4$x1<-substr(res4$lm_cmd,9,14)
+
+```
+
+### ploting eq4
+
+```{r eq4 plots, echo = FALSE}
+
+res4 %>% filter(model > 8 & model < 13) %>%
+  ggplot(.,aes(x=Payload,y=c2,color=as.factor(Track)))+
+  geom_point()+
+  facet_grid(model~freq)+
+  labs(title="c2 platform=f(bogie), by freq (1-5) and eq4 model (9-12)")
+
+res4 %>% filter(model > 8 & model < 13) %>%
+  ggplot(.,aes(x=Speed,y=c2,color=as.factor(Track)))+
+  geom_point()+
+  facet_grid(model~freq)+
+  labs(title="c2 platform=f(bogie), by freq (1-5) and eq4 model (9-12), color by Track")
+
+res4 %>% filter(model > 8 & model < 13) %>%
+  ggplot(.,aes(x=Speed,y=c2,color=as.factor(x1)))+
+  geom_point()+
+  facet_grid(model~freq)+
+  labs(title="c2 platform=f(bogie), by freq (1-5) and eq4 model (9-12)")
+
+
+```
+
+
 ### test set flags - based on eq3 and normal distribution
 
 ```{r flags eq3, echo = FALSE}
@@ -83,24 +129,47 @@ sum_pdb_id<- summarize(group_by(res3_test_flags,ExperimentID),
 
 ```
 
-### eq3 + platform
+## eq4 vs. test
 
-platform added as source of excitation for bogie acc
+### run
+this part runs the linear fits
 
-```{r eq with platform, echo = FALSE}
+```{r eq4 test, echo = FALSE}
 
+source("./R Scripts/models_eq4.R")
 
+res4_test<-run_fits(model_df = models, data_df = data_test)
 
-```
+#res4$Track<-ifelse(res4$ExperimentID<101,1,2)
 
-### vector model
-
-considering a VAR model with wheels as exogenous variables and platform and bogie as endogenous ones
-
-```{r var, echo = FALSE}
-
+res4_test$x1<-substr(res4_test$lm_cmd,9,14)
 
 ```
 
-## Comparison plots
+### plots
 
+here we compare plots - healthy vs. unhealthy
+```{r eq3 test plots, echo = FALSE}
+
+p <- res4_test %>% filter(model > 8 & model < 13) %>%
+  ggplot(.,aes(x=Speed,y=c2,color=as.factor(x1)))+
+  geom_point()+
+  facet_grid(model~freq)
+
+p + res4 %>% filter(model > 8 & model < 13) %>%
+  geom_point(data=.,aes(x=Speed,y=c2),color="green", alpha = 0.5)+
+  facet_grid(model~freq)+
+  labs(title="c2 forward platform=f(bogie), by freq (1-5) and eq4 model (9-12)")
+
+
+p <- res4_test %>% filter(model > 12 & model < 17) %>%
+  ggplot(.,aes(x=Speed,y=c2,color=as.factor(x1)))+
+  geom_point()+
+  facet_grid(model~freq)
+
+p + res4 %>% filter(model > 12 & model < 17) %>%
+  geom_point(data=.,aes(x=Speed,y=c2),color="green", alpha = 0.5)+
+  facet_grid(model~freq)+
+  labs(title="c2 aft platform=f(bogie), by freq (1-5) and eq4 model (9-12)")
+
+```

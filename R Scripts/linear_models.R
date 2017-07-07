@@ -94,7 +94,8 @@ require(dplyr)
     } 
     
     if (!is.null(nrow(df))){
-        df <- df %>% filter(  model != model_no & modeled_element != element) #comment out? - this forbids using two models for the same element...
+        df <- df %>% filter(  model != model_no)
+        #df <- df %>% filter(  model != model_no & modeled_element != element) #comment out? - this forbids using two models for the same element...
     }
     
     # Overriding modeled element
@@ -389,7 +390,7 @@ require(dplyr)
 #' @examples
 run_fits <- function(model_df = models, data_df = data_train){
 inner_join(model_df %>% mutate(k = 1), data_df %>% mutate(k = 1), by = "k") %>%
-    select(-k)  %>% ddply(.(modeled_element, freq , ExperimentID),
+    select(-k)  %>% ddply(.(model,modeled_element, freq , ExperimentID),
                           function(df) {
                               model_f <-
                                   update(as.formula(df$lm_cmd), . ~ . )
