@@ -1,0 +1,94 @@
+---
+title: "Tracks"
+author: "Antek"
+date: "8 July 2017"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+require(ggplot2)
+require(dplyr)
+
+```
+
+## Tory {.tabset}
+
+<b> Cel:</b> sprawdzic, czy wystepuja istotnie roznice pomiedzy torami (Track 1 vs. Track 2):  
+1. dla roznych predkosci  
+2. dla roznych czestotliwosci  
+3. lewy prawy  
+4. masa (Payload?)
+5. dla obu set'ow - train i test  
+
+### Wczytanie danych
+```{r data in}
+
+# reading in data
+data_train <- readRDS("./input/train_data.RDS")
+
+data_test  <- readRDS("./input/test_data.RDS")
+
+names<-names(data_test) #nrow(names)
+
+names<-names[substr(names,1,3) == "az_"]
+
+names_df<-data.frame(name=names,
+                     side=substr(names,5,5),
+                     freq=as.numeric(substr(names,7,8)),
+                     axis=as.numeric(substr(names,4,4)))
+
+```
+
+### Tory vs. predkosci
+
+
+```{r Speed, echo=FALSE, fig.height=12, fig.width=12}
+
+#length(names)
+
+for(j in c(1:length(names))){
+  for(i in c(1:1)){
+   p <- data_train %>% 
+     ggplot(.,aes_string(x="Speed",y=paste(names[j],sep=""))) + 
+     geom_point(color="green", shape = 1)+
+     facet_wrap(~Track)
+
+   p <- p + data_test %>%  
+     geom_point(data=.,aes_string(x="Speed",y=paste(names[j],sep="")),shape = 2, color="red")+
+     facet_wrap(~Track)+
+     labs(title=paste(names[j]," vs Speed, green = train set, red = test set",sep=""),color = "Set")+
+     scale_color_discrete(name = "Set")
+
+  show(p)
+  }
+}
+```
+
+
+
+### Payload
+
+```{r Paylod, echo=FALSE, fig.height=12, fig.width=12}
+
+for(j in c(1:length(names))){
+  for(i in c(1:1)){
+   p <- data_train %>% 
+     ggplot(.,aes_string(x="Payload",y=paste(names[j],sep=""))) + 
+     geom_point(color="green", shape =1)+
+     facet_wrap(~Track)
+
+   p <- p + data_test %>%  
+     geom_point(data=.,aes_string(x="Payload",y=paste(names[j],sep="")),shape = 2, color = "red")+
+     facet_wrap(~Track)+
+     labs(title=paste(names[j]," vs Speed, green = train set, red = test set",sep=""),colour = "Set")
+
+  show(p)
+  }
+}
+```
