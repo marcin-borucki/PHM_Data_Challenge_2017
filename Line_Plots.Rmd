@@ -224,4 +224,104 @@ p <- bind_rows(mutate(res_test, data_set = "test_set") , mutate(res3, data_set =
     show(p)
     
     
+p <- bind_rows(res_test, res3) %>% 
+    ggplot(., aes(x = freq,
+                  y = c2,
+                  color = as.factor(grepl("([12])",modeled_element) ),
+                  alpha = 0.5,
+                  group = interaction(modeled_element,ExperimentID)
+    )) +
+    geom_line() +
+    facet_grid(Speed ~ .) +
+    labs(title = paste("Res3, test set and train set, c2, grouping by bogie "))
+
+    show(p)
+
+```
+## Excitation level analysis
+```{r Excitation level, echo=TRUE}
+
+# Track 1
+ some_trainig <- train_data %>% filter(ExperimentID == 12 )
+lr = c("r","l")
+band = 2
+# az
+plot_groups(some_trainig,
+             var = "az",
+             par_range = c(1:4),
+             lr = lr,
+             freq_band = band)
+# az
+# Track 2 strange speed
+ some_trainig <- train_data %>% filter(ExperimentID == 193 )
+plot_groups(some_trainig,
+             var = "az",
+             par_range = c(1:4),
+             lr = lr,
+             freq_band = band)
+
+
+substrRight <- function(x, n){
+  substr(x, nchar(x)-n+1, nchar(x))
+}
+
+# MIN
+train_data %>% select(ExperimentID, Payload, Speed, Track,State, matches("az_.")) %>% 
+    group_by(ExperimentID, Payload, Speed, Track,State) %>% 
+    summarise_each_( funs(min), matches("az_*")) %>% gather( "variable", "summart_val", -ExperimentID, -Payload, -Speed, -Track,-State) %>% mutate( freq_band =  substrRight(variable, 1)) %>%
+    ggplot(., aes(x = ExperimentID,
+                  y = summart_val,
+                  color = freq_band
+    )) + geom_point()
+
+# MAX
+train_data %>% select(ExperimentID, Payload, Speed, Track,State, matches("az_.")) %>% 
+    group_by(ExperimentID, Payload, Speed, Track,State) %>% 
+    summarise_each_( funs(max), matches("az_*")) %>% gather( "variable", "summart_val", -ExperimentID, -Payload, -Speed, -Track,-State) %>% mutate( freq_band =  substrRight(variable, 1)) %>%
+    ggplot(., aes(x = ExperimentID,
+                  y = summart_val,
+                  color = freq_band
+    )) + geom_point()
+# MEDIAN
+train_data %>% select(ExperimentID, Payload, Speed, Track,State, matches("az_.")) %>% 
+    group_by(ExperimentID, Payload, Speed, Track,State) %>% 
+    summarise_each_( funs(median), matches("az_*")) %>% gather( "variable", "summart_val", -ExperimentID, -Payload, -Speed, -Track,-State) %>% mutate( freq_band =  substrRight(variable, 1)) %>%
+    ggplot(., aes(x = ExperimentID,
+                  y = summart_val,
+                  color = freq_band
+    )) + geom_point()
+
+# MEDIAN Speed
+train_data %>% select(ExperimentID, Payload, Speed, Track,State, matches("az_.")) %>% 
+    group_by(#ExperimentID, Payload,
+             Speed, Track,State) %>% 
+    summarise_each_( funs(median), matches("az_*")) %>% gather( "variable", "summart_val", -ExperimentID, -Payload, -Speed, -Track,-State) %>% mutate( freq_band =  substrRight(variable, 1)) %>%
+    ggplot(., aes(x = (Speed),
+                  y = summart_val,
+                  color = freq_band
+    )) + geom_point()
+
+# mean
+train_data %>% select(ExperimentID, Payload, Speed, Track,State, matches("az_.")) %>% 
+    group_by(#ExperimentID, Payload,
+             Speed, Track,State) %>% 
+    summarise_each_( funs(mean), matches("az_*")) %>% gather( "variable", "summart_val", -ExperimentID, -Payload, -Speed, -Track,-State) %>% mutate( freq_band =  substrRight(variable, 1)) %>%
+    ggplot(., aes(x = (Speed),
+                  y = summart_val,
+                  color = freq_band
+    )) + geom_point()
+```
+## Cut off on excitation level
+
+```{r linear models - with higl low excitation cut-off}
+
+train_data %>% select(ExperimentID, Payload, Speed, Track,State, matches("az_.")) %>% 
+    group_by(ExperimentID, Payload, Speed, Track,State) %>% 
+    summarise_each_( funs(median), matches("az_*")) 
+    
+# boggie models just with wheels
+source("./R Scripts/models_eq3_azp.R")
+
+res3<-run_fits(model_df = models, data_df = data_train)
+
 ```

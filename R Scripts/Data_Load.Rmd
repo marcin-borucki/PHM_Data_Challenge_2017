@@ -37,7 +37,13 @@ plot_groups(train_data %>% filter(ExperimentID == 1 ),
              var = "az",
              par_range = c(1:4),
              lr = "l" ,
-             freq_band = 1)
+             freq_band = 2)
+
+plot_groups(train_data %>% filter(ExperimentID == 1 ),
+             var = "az",
+             par_range = c(1:4),
+             lr = "r" ,
+             freq_band = 2)
 # azs
 plot_groups(train_data %>% filter(ExperimentID == 1 ),
              var = "azs",
@@ -60,15 +66,22 @@ Checked on all types of data and now on different data file:
 ```{r}
 
 
- some_trainig <- train_data %>% filter(ExperimentID == 121 )
+ some_trainig <- train_data %>% filter(ExperimentID == 193 )
 lr = "r"
-band = 1
+band = 2
 # az
 plot_groups(some_trainig,
              var = "az",
              par_range = c(1:4),
              lr = lr,
              freq_band = band)
+# az
+plot_groups(some_trainig,
+             var = "az",
+             par_range = c(1:4),
+             lr ="l",
+             freq_band = band)
+# azs
 # azs
 plot_groups(some_trainig,
              var = "azs",
