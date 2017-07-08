@@ -237,6 +237,7 @@ p <- bind_rows(res_test, res3) %>%
 
     show(p)
 
+
 ```
 ## Excitation level analysis
 ```{r Excitation level, echo=TRUE}
@@ -310,6 +311,7 @@ train_data %>% select(ExperimentID, Payload, Speed, Track,State, matches("az_.")
                   y = summart_val,
                   color = freq_band
     )) + geom_point()
+
 ```
 ## Cut off on excitation level
 
