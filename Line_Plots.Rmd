@@ -224,4 +224,17 @@ p <- bind_rows(mutate(res_test, data_set = "test_set") , mutate(res3, data_set =
     show(p)
     
     
+p <- bind_rows(res_test, res3) %>% 
+    ggplot(., aes(x = freq,
+                  y = c2,
+                  color = as.factor(grepl("([12])",modeled_element) ),
+                  alpha = 0.5,
+                  group = interaction(modeled_element,ExperimentID)
+    )) +
+    geom_line() +
+    facet_grid(Speed ~ .) +
+    labs(title = paste("Res3, test set and train set, c2, grouping by bogie "))
+
+    show(p)
+
 ```
