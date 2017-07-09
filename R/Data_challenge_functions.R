@@ -241,3 +241,27 @@ run_fits <- function(model_df = models, data_df = data_train){
                               # .parallel = TRUE)
         )
 }
+
+
+#' plot_lines
+#' plot coefficients c2 as lines by freq band grouped by speed
+#' @param rev_dat 
+#' @param plot_tilte 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+plot_lines <- function(rev_dat, plot_tilte = NULL){
+    p <- rev_dat %>%
+        ggplot(., aes(x = freq,
+                      y = c2,
+                      color = as.factor(grepl('*r',modeled_element)),
+                      alpha = 0.5,
+                      group = interaction(modeled_element,ExperimentID)
+        )) +
+        geom_line() +
+        facet_grid(Speed ~ .) +
+        labs(title = paste(plot_tilte)) 
+    show(p)
+}

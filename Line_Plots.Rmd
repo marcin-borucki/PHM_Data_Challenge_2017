@@ -1,7 +1,7 @@
 ---
 title: "Line Plots"
 author: "Marcin Borucki"
-date: "4 lipca 2017"
+date: "9 lipca 2017"
 output: 
   html_document:
     toc: true
@@ -12,9 +12,10 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-library(ggplot2)
-#library(dplyr)
-
+require(ggplot2)
+require(dplyr)
+require(tidyr)
+# memory.limit(10000)
 ```
 
 ##  Intro
@@ -29,9 +30,13 @@ Applying final model for primary suspension:
 
 ```{r read in data and functions}
 
-data_train <- readRDS("./input/train_data.RDS")
+# data_train <- readRDS("./input/train_data.RDS")
+# 
+# data_test  <- readRDS("./input/test_data.RDS")
 
-data_test  <- readRDS("./input/test_data.RDS")
+train_data <- readRDS("./input/train_data.RDS")
+
+test_data  <- readRDS("./input/test_data.RDS")
 
 #functions :
 source("./R/Data_challenge_functions.R")
@@ -70,9 +75,9 @@ source("./R Scripts/models_eq3_azp.R")
 res3<-run_fits(model_df = models, data_df = data_train)
 
 # boggie models just with wheels and platform
-source("./R Scripts/models_eq4_azp.R")
-
-res4<-run_fits(model_df = models, data_df = data_train)
+# source("./R Scripts/models_eq4_azp.R")
+# 
+# res4<-run_fits(model_df = models, data_df = data_train)
 
 
 ```
@@ -80,7 +85,7 @@ res4<-run_fits(model_df = models, data_df = data_train)
 
 ## Runing lienar plot model3
 
-```{r Freq line plot -res3, echo = FALSE,fig.height=8, fig.width=14, fig.cap="---  \n"}
+```{r Freq line plot -res3, eval=FALSE, fig.cap="---  \n", fig.height=8, fig.width=14, include=FALSE}
 
 
 for (modeli in min(res3$model):max(res3$model)) {
@@ -131,7 +136,7 @@ Stick to model 3
 Verify potential grouping by right and left and 1&3 and 2&4...
 
 
-```{r Model -res4, echo = FALSE,fig.height=10, fig.width=14, fig.cap="---  \n"}
+```{r Model -res4, eval=FALSE, fig.cap="---  \n", fig.height=10, fig.width=14, include=FALSE}
 
 p <- res3 %>%
     ggplot(., aes(x = freq,
@@ -172,14 +177,14 @@ p <- res3 %>%
     
 ```
 
-```{r Run model 3 on test data}
-source("./R Scripts/models_eq3_azp.R")
-
+```{r Run model 3 on test data, eval=FALSE, include=FALSE}
+# source("./R Scripts/models_eq3_azp.R")
+# 
 res_test <- run_fits(model_df = models, data_df = data_test)
 
 ```
 
-```{r Model 3 test data, echo=FALSE, fig.cap="---  \n", fig.height=10, fig.width=14}
+```{r Model 3 test data, eval=FALSE, fig.cap="---  \n", fig.height=10, fig.width=14, include=FALSE}
 
 
 p <- bind_rows(mutate(res_test, data_set = "test_set") , mutate(res3, data_set = "train_set")) %>% filter(modeled_element == "azp_1r") %>%
@@ -240,11 +245,11 @@ p <- bind_rows(res_test, res3) %>%
 
 ```
 ## Excitation level analysis
-```{r Excitation level, echo=TRUE}
+```{r Excitation level, eval=FALSE, include=FALSE}
 
 # Track 1
  some_trainig <- train_data %>% filter(ExperimentID == 12 )
-lr = c("r","l")
+lr = "r"
 band = 2
 # az
 plot_groups(some_trainig,
@@ -315,15 +320,216 @@ train_data %>% select(ExperimentID, Payload, Speed, Track,State, matches("az_.")
 ```
 ## Cut off on excitation level
 
-```{r linear models - with higl low excitation cut-off}
-
-train_data %>% select(ExperimentID, Payload, Speed, Track,State, matches("az_.")) %>% 
+```{r linear models - with higl low excitation cut-off, eval=FALSE, include=FALSE}
+# source("./R Scripts/models_eq3_azp.R")
+# Median based filtering
+train_data_filter <- train_data %>% select(ExperimentID, Payload, Speed, Track,State, matches("az_.")) %>% 
     group_by(ExperimentID, Payload, Speed, Track,State) %>% 
-    summarise_each_( funs(median), matches("az_*")) 
-    
-# boggie models just with wheels
-source("./R Scripts/models_eq3_azp.R")
+    summarise_each_( funs(median), matches("az_*")) %>%
+    gather(filter_var, cut_off, matches("az_.") )
 
-res3<-run_fits(model_df = models, data_df = data_train)
+# left_join(train_data,  train_data_filter, by = "ExperimentID", suffix = c("", "_f") ) 
+# %>%
+ 
+  train_data_f_low <-  train_data %>%  gather(filter_var, value, matches("az_.") ) %>% ## pre filter stacked rows 2,416,000
+        left_join(train_data_filter ) %>% filter( value <= cut_off)  %>%  ## post filter rows 1,208,003
+        select(-cut_off) %>% spread(filter_var, value) %>%
+      adply(., 1, .fun = function(x) { data.frame(filter_na = !anyNA(x) ) }) %>%
+      filter(filter_na == TRUE)
+t <- train_data_f_low %>% group_by(ExperimentID) %>% dplyr::summarise(cr = n()) 
+  
+res3_f_low_1 <-run_fits(model_df = models, data_df = train_data_f_low)
+
+    train_data_f_high <-  train_data %>%  gather(filter_var, value, matches("az_.") ) %>% 
+        left_join(train_data_filter ) %>% filter( value >= cut_off)  %>%  
+        select(-cut_off) %>% spread(filter_var, value)  %>% 
+      adply(., 1, .fun = function(x) { data.frame(filter_na = !anyNA(x) ) }) %>%
+      filter(filter_na == TRUE)
+    
+t <- train_data_f_high %>% group_by(ExperimentID) %>% dplyr::summarise(cr = n()) 
+
+  res3_f_high_1 <-run_fits(model_df = models, data_df = train_data_f_high)
+# boggie models just with wheels
+
+
+
 
 ```
+
+### Filtering on Track level (not experiment level) and leaving NAs for lm to handle
+Using median and 85th quantile
+```{r linear models - with higl low excitation cut-off - 85th quantile, echo=TRUE}
+# source("./R Scripts/models_eq3_azp.R")
+# Median based filtering  res3_f_low_2
+
+train_data_filter <- train_data %>% select( Track, matches("az_.")) %>% 
+    group_by(Track) %>% 
+    # summarise_each_( funs(quantile(., c(.85))), matches("az_*")) %>%
+    summarise_each_( funs(median), matches("az_*")) %>%
+    gather(filter_var, cut_off, matches("az_.") )
+
+# left_join(train_data,  train_data_filter, by = "ExperimentID", suffix = c("", "_f") ) 
+# %>%
+ 
+  train_data_f_low <-  train_data %>%  gather(filter_var, value, matches("az_.") ) %>% ## pre filter stacked rows 2,416,000
+        left_join(train_data_filter ) %>% filter( value <= cut_off)  %>%  ## post filter rows 1,208,003
+        select(-cut_off) %>% spread(filter_var, value) 
+
+  
+res3_f_low_2 <-run_fits(model_df = models, data_df = train_data_f_low)
+
+
+    train_data_f_high <-  train_data %>%  gather(filter_var, value, matches("az_.") ) %>% 
+        left_join(train_data_filter ) %>% filter( value >= cut_off)  %>%  
+        select(-cut_off) %>% spread(filter_var, value) 
+
+res3_f_high_2 <-run_fits(model_df = models, data_df = train_data_f_high)
+
+
+# Quiteail 85% based filtering  res3_f_low_3
+train_data_filter <- train_data %>% select( Track, matches("az_.")) %>% 
+    group_by(Track) %>% 
+    summarise_each_( funs(quantile(., c(.85))), matches("az_*")) %>%
+    # summarise_each_( funs(median), matches("az_*")) %>%
+    gather(filter_var, cut_off, matches("az_.") )
+
+  train_data_f_low <-  train_data %>%  gather(filter_var, value, matches("az_.") ) %>% #
+        left_join(train_data_filter ) %>% filter( value <= cut_off)  %>%  
+        select(-cut_off) %>% spread(filter_var, value) 
+  
+      train_data_f_high <-  train_data %>%  gather(filter_var, value, matches("az_.") ) %>% 
+        left_join(train_data_filter ) %>% filter( value >= cut_off)  %>%  
+        select(-cut_off) %>% spread(filter_var, value) 
+
+res3_f_low_3 <-run_fits(model_df = models, data_df = train_data_f_low)
+res3_f_high_3 <-run_fits(model_df = models, data_df = train_data_f_high)
+
+```
+
+
+### Filtering on experiment levelel and leaving NAs to the LM with 85th quantail 
+
+```{r linear models - with higl low excitation cut-off - 85th quantile easy on  NA}
+# source("./R Scripts/models_eq3_azp.R")
+# Median based filtering
+train_data_filter <- train_data %>% select(ExperimentID, Payload, Speed, Track,State, matches("az_.")) %>% 
+    group_by(ExperimentID, Payload, Speed, Track,State) %>% 
+     summarise_each_( funs(quantile(., c(.85))), matches("az_*")) %>%
+   gather(filter_var, cut_off, matches("az_.") )
+
+# left_join(train_data,  train_data_filter, by = "ExperimentID", suffix = c("", "_f") ) 
+# %>%
+ 
+  train_data_f_low <-  train_data %>%  gather(filter_var, value, matches("az_.") ) %>% ## pre filter stacked rows 2,416,000
+        left_join(train_data_filter ) %>% filter( value <= cut_off)  %>%  ## post filter rows 1,208,003
+        select(-cut_off) %>% spread(filter_var, value) 
+  
+res3_f_low_4 <-run_fits(model_df = models, data_df = train_data_f_low)
+
+    train_data_f_high <-  train_data %>%  gather(filter_var, value, matches("az_.") ) %>% 
+        left_join(train_data_filter ) %>% filter( value >= cut_off)
+    
+  # res3_f_high_4 <-run_fits(model_df = models, data_df = train_data_f_high)
+# boggie models just with wheels
+
+
+```
+Doesn' work that well 
+
+## Review of the resutls
+```{r Model -res4 with high low filters, eval=FALSE, fig.cap="---  \n", include=FALSE}
+
+
+# plot_lines(res3_f_low_1, "Low Pass filter v1 fit")
+# plot_lines(res3_f_high_1, "High Pass filter v1 fit")
+# to aggresive filtering!!
+
+plot_lines(res3, "All data fit")
+
+plot_lines(res3_f_low_3, "Low Pass filter v3 fit q 85th track level")
+plot_lines(res3_f_high_3, "High Pass filter v3 fit q 85th track level")
+# 
+plot_lines(res3_f_low_2, "Low Pass filter v2 fit median track level")
+plot_lines(res3_f_high_2, "High Pass filter v2 fit median track level")
+
+
+p <- bind_rows(mutate(res3, origin = "res3"), mutate(res3_f_low_3, origin = "res3_f_low_3") ) %>%
+    ggplot(., aes(x = freq,
+                  y = c2,
+                  color = origin,
+                  group = interaction(origin,modeled_element,ExperimentID)
+    )) +
+    geom_line(alpha = 0.5) +
+    facet_grid(Speed ~ .) +
+    scale_y_continuous(limits = c(0.0, 1.5))+
+    labs(title = paste("Low Pass filter v4 fit q 85th track level vs base line")) 
+show(p)
+
+
+p <- bind_rows(mutate(res3, origin = "res3"), mutate(res3_f_low_4, origin = "res3_f_low_4") ) %>%
+    ggplot(., aes(x = freq,
+                  y = c2,
+                  color = origin,
+                  group = interaction(origin,modeled_element,ExperimentID)
+    )) +
+    geom_line(alpha = 0.5) +
+    facet_grid(Speed ~ .) +
+    scale_y_continuous(limits = c(0.0, 1.5))+
+    labs(title = paste("Low Pass filter v4 fit q 85th experiment level vs base line")) 
+show(p)
+
+
+    
+```
+```{r Track level comparison v3 and v4, echo=TRUE}
+t <- bind_rows(mutate(res3, origin = "res3"),
+               mutate(res3_f_low_4, origin = "res3_f_low_4"),
+               mutate(res3_f_low_3, origin = "res3_f_low_3")) %>%
+    group_by(origin, Track, freq) %>%
+    dplyr::summarise(mean_c2 = mean(c2), sd_c2 = sd(c2) )
+    
+
+p <- t  %>%
+    ggplot(., aes(x = freq + as.numeric(as.factor(origin))/10,
+                  y = mean_c2,
+                  color = origin,
+                  group = interaction(origin)
+    )) +
+    geom_line(alpha = 0.5) +
+    geom_linerange(aes(ymin = (mean_c2 - sd_c2), ymax = (mean_c2 + sd_c2))) +
+    facet_grid(Track ~ .) +
+    # scale_y_continuous(limits = c(0.0, 1.5))+
+    labs(title = paste("Low Pass filter v3 & v4 fit q 85th vs base line on over all agv + sd  track level ")) 
+show(p)
+
+# Per modeled element
+t <- bind_rows(mutate(res3, origin = "res3"),
+               mutate(res3_f_low_4, origin = "res3_f_low_4"),
+               mutate(res3_f_low_3, origin = "res3_f_low_3")) %>%
+    group_by(origin, Track, modeled_element, freq) %>%
+    dplyr::summarise(mean_c2 = mean(c2), sd_c2 = sd(c2) )
+    
+
+p <- t  %>%
+    ggplot(., aes(x = freq + as.numeric(as.factor(interaction(origin,modeled_element)))/100,
+                  y = mean_c2,
+                  color = origin,
+                  group = interaction(origin,modeled_element)
+    )) +
+    geom_line(alpha = 0.5) +
+    geom_linerange(aes(ymin = (mean_c2 - sd_c2), ymax = (mean_c2 + sd_c2))) +
+    facet_grid(Track ~ .) +
+    # scale_y_continuous(limits = c(0.0, 1.5))+
+    labs(title = paste("Low Pass filter v3 & v4 fit q 85th vs base line on over all agv + sd  track level ")) 
+show(p)
+```
+
+## Conclusions of the filtering
+
+It seems that filtering out hith excitation values is improving the variance of the fits.
+For Track 1 this conclusion not always hold but the change is in my opinion minor. 
+
+Real improvement is visible at Track 2.
+
+**Modeling approach: Preper the model per exact part & track, but not speed o payload.**
+**Use Low Pass filter v4 fit q 85th track level.** This will allow the model to perform also with unnknown payloads and speeds.
