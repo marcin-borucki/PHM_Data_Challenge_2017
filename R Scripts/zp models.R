@@ -31,9 +31,17 @@ names(res3_zp_test_clasify)
 res3_zp_test_clasify <- left_join(res3_zp_test,zp_train_set_models) %>%
     mutate(c2_above_m = ifelse(c2 > max_c2, 1, 0),
            c2_below_m = ifelse(c2 < min_c2, 1, 0)) %>%
-    mutate(c2_ = paste(modeled_element, freq, sep="_"),
-           c2_above_m_ = paste(modeled_element, freq, sep="_"),
-           c2_below_m_ = paste(modeled_element, freq, sep="_"),
+    # mutate(c2_ = paste(modeled_element, freq, sep="_"),
+    #        c2_above_m_ = paste(modeled_element, freq, sep="_"),
+    #        c2_below_m_ = paste(modeled_element, freq, sep="_"),
+    #        max_c2_ = paste(modeled_element, freq, sep="_"),
+    #        min_c2_ = paste(modeled_element, freq, sep="_"),
+    #        mean_c2_ = paste(modeled_element, freq, sep="_"),
+    #        sd_c2_ = paste(modeled_element, freq, sep="_")) %>%
+    # leave only freq
+    mutate(c2_ = paste( freq, sep="_"),
+           c2_above_m_ = paste( freq, sep="_"),
+           c2_below_m_ = paste( freq, sep="_"),
            max_c2_ = paste(modeled_element, freq, sep="_"),
            min_c2_ = paste(modeled_element, freq, sep="_"),
            mean_c2_ = paste(modeled_element, freq, sep="_"),
