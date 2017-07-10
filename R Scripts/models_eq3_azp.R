@@ -23,7 +23,7 @@
 require(dplyr)
 if(exists("models")){
     rm(models)
-
+    
 }
 
 models <- data.frame(model = numeric(),
@@ -36,9 +36,9 @@ models <- data.frame(model = numeric(),
 # bogie models - just wheels
 
 models <-add_model_to_dict(
-        element = "azp_1r",
-        model_RHS_var = c("az_1r")
-    )
+    element = "azp_1r",
+    model_RHS_var = c("az_1r")
+)
 
 
 
