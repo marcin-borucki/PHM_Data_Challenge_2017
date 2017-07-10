@@ -51,23 +51,19 @@ res3_zp_test <- run_fits(model_df = models, data_df = test_data_f_low)
 
 res3_zp_test_clasify <- left_join(res3_zp_test,zp_train_set_models) %>%
 
-    mutate(c2_above_m = ifelse(c2 > max_c2, 1, 0),
-           c2_below_m = ifelse(c2 < min_c2, 1, 0)) %>%
-    # mutate(c2_ = paste(modeled_element, freq, sep="_"),
-    #        c2_above_m_ = paste(modeled_element, freq, sep="_"),
-    #        c2_below_m_ = paste(modeled_element, freq, sep="_"),
-    #        max_c2_ = paste(modeled_element, freq, sep="_"),
-    #        min_c2_ = paste(modeled_element, freq, sep="_"),
-    #        mean_c2_ = paste(modeled_element, freq, sep="_"),
-    #        sd_c2_ = paste(modeled_element, freq, sep="_")) %>%
-    # leave only freq
+    mutate(c2_above_m = ifelse(c2 > (max_c2 + sd_c2), 1, 0),
+           c2_below_m = ifelse(c2 < (min_c2 - sd_c2/3), 1, 0),
+           residual_min =  c2 - min_c2, 
+           residual_max =  max_c2 - c2 ) %>%
     mutate(c2_ = paste( freq, sep="_"),
            c2_above_m_ = paste( freq, sep="_"),
            c2_below_m_ = paste( freq, sep="_"),
            max_c2_ = paste( freq, sep="_"),
            min_c2_ = paste( freq, sep="_"),
            mean_c2_ = paste( freq, sep="_"),
-           sd_c2_ = paste( freq, sep="_")) %>%
+           sd_c2_ = paste( freq, sep="_"),
+           residual_min_ = paste( freq, sep="_"),
+           residual_max_ = paste( freq, sep="_")) %>%
     select(-x_name1, -x_name2, -lm_cmd, -model, -freq, -c1) %>%
     tidyr::spread(c2_, c2, sep="") %>%
     tidyr::spread(c2_above_m_, c2_above_m, sep="") %>%
@@ -76,10 +72,91 @@ res3_zp_test_clasify <- left_join(res3_zp_test,zp_train_set_models) %>%
     tidyr::spread(min_c2_, min_c2, sep="") %>%
     tidyr::spread(mean_c2_, mean_c2, sep="") %>%
     tidyr::spread(sd_c2_, sd_c2, sep="") %>%
-    group_by(modeled_element, ExperimentID) %>% 
-    summarise_each(funs(max(., na.rm = TRUE))) %>%
-    mutate(c2_above_m = sum( num_range("c2_above_m_",1:5)),
-           c2_below_m = sum( num_range("c2_below_m_",1:5)))
-    #nie działą sumowanie...
-    
+    tidyr::spread(residual_min_, residual_min, sep="") %>%
+    tidyr::spread(residual_max_, residual_max, sep="") %>%
+    group_by(modeled_element, ExperimentID) %>%
+    summarise_each(funs(mean(., na.rm = TRUE))) %>%
+    ungroup() 
 
+res3_zp_test_clasify$c2_above_m <-
+    res3_zp_test_clasify %>% select(starts_with("c2_above_m_")) %>% rowSums()
+res3_zp_test_clasify$c2_below_m <-
+    res3_zp_test_clasify %>% select(starts_with("c2_below_m_")) %>% rowSums()
+res3_zp_test_clasify$residual_min <-
+    res3_zp_test_clasify %>% select(starts_with("residual_min_")) %>% rowSums()
+res3_zp_test_clasify$residual_max <-
+    res3_zp_test_clasify %>% select(starts_with("residual_max_")) %>% rowSums()
+
+res3_zp_test_clasify <-
+res3_zp_test_clasify  %>% select(-starts_with("c2_above_m_")) %>%
+    select(-starts_with("c2_below_m_")) %>% 
+    select(-starts_with("residual_min_")) %>% 
+    select(-starts_with("residual_max_")) %>% mutate(failure_zp = ifelse(c2_above_m >2, TRUE, ifelse(c2_below_m > 4, TRUE, FALSE))) %>% ungroup()
+
+
+# Checking for to much marks
+res3_zp_test_clasify %>%
+    filter(failure_zp == TRUE) %>% select(ExperimentID,residual_min, residual_max ) %>% ungroup() %>% 
+    group_by(ExperimentID) %>% summarise(count = n()) %>% ungroup() %>% filter(count > 2)
+
+
+# NEED TO SELECT the ones with most negative residules!
+res3_zp_test_clasify_selection <- res3_zp_test_clasify %>%
+    filter(failure_zp == TRUE) %>%
+    mutate(residual = ifelse(c2_above_m < c2_below_m ,residual_min, residual_max)) %>%
+    group_by(ExperimentID ) %>% top_n(- 2 ) %>% ungroup()
+
+
+# Formating output -------------------------------------------------------------
+primary_sus_clasification <-
+res3_zp_test_clasify_selection %>% select(ExperimentID, c2_above_m,
+                                          c2_below_m, modeled_element ) %>%
+    mutate(State = ifelse(c2_above_m < c2_below_m,
+                          sub("^.", "c" , modeled_element),
+                          sub("^.", "d" , modeled_element))) %>%
+    select(ExperimentID,State) %>%
+    ddply(.(ExperimentID), summarize, State=paste(State, collapse="+")) %>%
+    
+    right_join(data.frame(ExperimentID = 1:200)) %>%
+    mutate(State = ifelse(is.na(State), "healthy",State)) 
+
+
+table(primary_sus_clasification$State)
+write.csv(primary_sus_clasification,
+          "./output/primary_sus_clasification_20170711_MB.csv",
+            row.names = FALSE , quote = FALSE)
+
+# checking for oveall count ----------------------------------------------------
+res3_zp_test_clasify %>% 
+    filter(failure_zp == TRUE)%>% ungroup() %>% summarise(count = n())
+
+res3_zp_test_clasify %>%
+    filter(failure_zp == TRUE) %>% select(modeled_element,  
+                                          ExperimentID) %>% table()
+
+# Overall some example plots ---------------------------------------------------
+t <- table(res3_zp_test_clasify$modeled_element, res3_zp_test_clasify$c2_below_m)
+sum(t[,6])
+
+
+tt <-   res3_zp_train %>%
+    group_by(Track, modeled_element, freq) %>%
+    dplyr::summarise(mean_c2 = mean(c2), sd_c2 = sd(c2) )
+
+
+p <- bind_rows(mutate(res3_zp_train, origin = "train"), 
+               mutate(res3_zp_test %>% filter(ExperimentID == 177),
+                      origin = "test") ) %>%
+    filter(modeled_element %in% c("azp_1l", "azp_2l", "azp_2r", "azp_1r"),
+           Track == 2) %>%
+    ggplot(., aes(x = freq + as.numeric(as.factor(interaction(modeled_element)))/10,
+                  y = c2,
+                  color = interaction(origin,modeled_element),
+                  group = interaction(origin,modeled_element)
+    )) + 
+    geom_line(alpha = 0.5) 
+show(p)
+
+mutate(res3_zp_test %>% filter(ExperimentID == 3),
+       origin = "res3_zp_test")  %>%
+    filter(modeled_element %in% c("azp_1l", "azp_1r") )
