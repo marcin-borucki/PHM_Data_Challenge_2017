@@ -1,0 +1,776 @@
+---
+title: "System Models"
+author: "Antek"
+date: "15 July 2017"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+require(tidyr)
+library(plyr)
+library(dplyr)
+
+require(dplyr)
+require(ggplot2)
+
+```
+
+## System modeling
+
+the idea is to model "information" flow from wheels to platform.
+
+the first step is to run three regression models:  
+1. front bogie - sum of wheel reading vs. sum of bogie acc   
+2. rear bogie - as above  
+3. platform - sum of platform vs. sum of both bogie
+
+this hopefuly will allow to identify cars with faulty primary suspensions 
+
+```{r data prep, echo = FALSE}
+
+train_data <- readRDS("./input/train_data.RDS")
+test_data <- readRDS("./input/test_data.RDS")
+
+train_sum <- summarize(group_by(train_data,ExperimentID,Payload, Speed, Track),count = sum(ExperimentID > 0))
+test_sum <-  summarize(group_by(test_data,ExperimentID,Payload,Speed,Track),count = sum(ExperimentID > 0))
+
+#train_sum <- train_data %>% group_by(ExperimentID,Speed,Payload,Track) %>% summarize(n=count(Track>0))
+
+
+train_data$azp_1b_1 <- train_data$azp_1l_1 + 
+  train_data$azp_1r_1 + train_data$azp_2l_1 + train_data$azp_2r_1
+
+train_data$azp_1b_2 <- train_data$azp_1l_2 + 
+  train_data$azp_1r_2 + train_data$azp_2l_2 + train_data$azp_2r_2
+
+train_data$azp_1b_3 <- train_data$azp_1l_3 + 
+  train_data$azp_1r_3 + train_data$azp_2l_3 + train_data$azp_2r_3
+
+train_data$azp_1b_4<- train_data$azp_1l_4+ 
+  train_data$azp_1r_4 + train_data$azp_2l_4 + train_data$azp_2r_4
+
+train_data$azp_1b_5<- train_data$azp_1l_5+ 
+  train_data$azp_1r_5 + train_data$azp_2l_5 + train_data$azp_2r_5
+
+#rear bogie
+
+train_data$azp_2b_1 <- train_data$azp_3l_1 + 
+  train_data$azp_3r_1 + train_data$azp_4l_1 + train_data$azp_4r_1
+
+train_data$azp_2b_2 <- train_data$azp_3l_2 + 
+  train_data$azp_3r_2 + train_data$azp_4l_2 + train_data$azp_4r_2
+
+train_data$azp_2b_3 <- train_data$azp_3l_3 + 
+  train_data$azp_3r_3 + train_data$azp_4l_3 + train_data$azp_4r_3
+
+train_data$azp_2b_4<- train_data$azp_3l_4+ 
+  train_data$azp_3r_4 + train_data$azp_4l_4 + train_data$azp_4r_4
+
+train_data$azp_2b_5<- train_data$azp_3l_5+ 
+  train_data$azp_3r_5 + train_data$azp_4l_5 + train_data$azp_4r_5
+
+
+#front wheels
+
+train_data$az_1b_1 <- train_data$az_1l_1 + 
+  train_data$az_1r_1 + train_data$az_2l_1 + train_data$az_2r_1
+
+train_data$az_1b_2 <- train_data$az_1l_2 + 
+  train_data$az_1r_2 + train_data$az_2l_2 + train_data$az_2r_2
+
+train_data$az_1b_3 <- train_data$az_1l_3 + 
+  train_data$az_1r_3 + train_data$az_2l_3 + train_data$az_2r_3
+
+train_data$az_1b_4<- train_data$az_1l_4+ 
+  train_data$az_1r_4 + train_data$az_2l_4 + train_data$az_2r_4
+
+train_data$az_1b_5<- train_data$az_1l_5+ 
+  train_data$az_1r_5 + train_data$az_2l_5 + train_data$az_2r_5
+
+#rear wheels
+
+train_data$az_2b_1 <- train_data$az_3l_1 + 
+  train_data$az_3r_1 + train_data$az_4l_1 + train_data$az_4r_1
+
+train_data$az_2b_2 <- train_data$az_3l_2 + 
+  train_data$az_3r_2 + train_data$az_4l_2 + train_data$az_4r_2
+
+train_data$az_2b_3 <- train_data$az_3l_3 + 
+  train_data$az_3r_3 + train_data$az_4l_3 + train_data$az_4r_3
+
+train_data$az_2b_4<- train_data$az_3l_4+ 
+  train_data$az_3r_4 + train_data$az_4l_4 + train_data$az_4r_4
+
+train_data$az_2b_5<- train_data$az_3l_5+ 
+  train_data$az_3r_5 + train_data$az_4l_5 + train_data$az_4r_5
+
+#platform
+train_data$as_1 <- train_data$azs_1_1 + train_data$azs_2_1
+train_data$as_2 <- train_data$azs_1_2 + train_data$azs_2_2
+train_data$as_3 <- train_data$azs_1_3 + train_data$azs_2_3
+train_data$as_4 <- train_data$azs_1_4 + train_data$azs_2_4
+train_data$as_5 <- train_data$azs_1_5 + train_data$azs_2_5
+
+# both bogies total:
+train_data$azp_1 <- train_data$azp_1b_1 + train_data$azp_2b_1
+train_data$azp_2 <- train_data$azp_1b_2 + train_data$azp_2b_2
+train_data$azp_3 <- train_data$azp_1b_3 + train_data$azp_2b_3
+train_data$azp_4 <- train_data$azp_1b_4 + train_data$azp_2b_4
+train_data$azp_5 <- train_data$azp_1b_5 + train_data$azp_2b_5
+
+
+
+```
+
+```{r test sample prep, echo = FALSE}
+
+test_data$azp_1b_1 <- test_data$azp_1l_1 + 
+  test_data$azp_1r_1 + test_data$azp_2l_1 + test_data$azp_2r_1
+
+test_data$azp_1b_2 <- test_data$azp_1l_2 + 
+  test_data$azp_1r_2 + test_data$azp_2l_2 + test_data$azp_2r_2
+
+test_data$azp_1b_3 <- test_data$azp_1l_3 + 
+  test_data$azp_1r_3 + test_data$azp_2l_3 + test_data$azp_2r_3
+
+test_data$azp_1b_4<- test_data$azp_1l_4+ 
+  test_data$azp_1r_4 + test_data$azp_2l_4 + test_data$azp_2r_4
+
+test_data$azp_1b_5<- test_data$azp_1l_5+ 
+  test_data$azp_1r_5 + test_data$azp_2l_5 + test_data$azp_2r_5
+
+#rear bogie
+
+test_data$azp_2b_1 <- test_data$azp_3l_1 + 
+  test_data$azp_3r_1 + test_data$azp_4l_1 + test_data$azp_4r_1
+
+test_data$azp_2b_2 <- test_data$azp_3l_2 + 
+  test_data$azp_3r_2 + test_data$azp_4l_2 + test_data$azp_4r_2
+
+test_data$azp_2b_3 <- test_data$azp_3l_3 + 
+  test_data$azp_3r_3 + test_data$azp_4l_3 + test_data$azp_4r_3
+
+test_data$azp_2b_4<- test_data$azp_3l_4+ 
+  test_data$azp_3r_4 + test_data$azp_4l_4 + test_data$azp_4r_4
+
+test_data$azp_2b_5<- test_data$azp_3l_5+ 
+  test_data$azp_3r_5 + test_data$azp_4l_5 + test_data$azp_4r_5
+
+
+#front wheels
+
+test_data$az_1b_1 <- test_data$az_1l_1 + 
+  test_data$az_1r_1 + test_data$az_2l_1 + test_data$az_2r_1
+
+test_data$az_1b_2 <- test_data$az_1l_2 + 
+  test_data$az_1r_2 + test_data$az_2l_2 + test_data$az_2r_2
+
+test_data$az_1b_3 <- test_data$az_1l_3 + 
+  test_data$az_1r_3 + test_data$az_2l_3 + test_data$az_2r_3
+
+test_data$az_1b_4<- test_data$az_1l_4+ 
+  test_data$az_1r_4 + test_data$az_2l_4 + test_data$az_2r_4
+
+test_data$az_1b_5<- test_data$az_1l_5+ 
+  test_data$az_1r_5 + test_data$az_2l_5 + test_data$az_2r_5
+
+#rear wheels
+
+test_data$az_2b_1 <- test_data$az_3l_1 + 
+  test_data$az_3r_1 + test_data$az_4l_1 + test_data$az_4r_1
+
+test_data$az_2b_2 <- test_data$az_3l_2 + 
+  test_data$az_3r_2 + test_data$az_4l_2 + test_data$az_4r_2
+
+test_data$az_2b_3 <- test_data$az_3l_3 + 
+  test_data$az_3r_3 + test_data$az_4l_3 + test_data$az_4r_3
+
+test_data$az_2b_4<- test_data$az_3l_4+ 
+  test_data$az_3r_4 + test_data$az_4l_4 + test_data$az_4r_4
+
+test_data$az_2b_5<- test_data$az_3l_5+ 
+  test_data$az_3r_5 + test_data$az_4l_5 + test_data$az_4r_5
+
+#platform
+test_data$as_1 <- test_data$azs_1_1 + test_data$azs_2_1
+test_data$as_2 <- test_data$azs_1_2 + test_data$azs_2_2
+test_data$as_3 <- test_data$azs_1_3 + test_data$azs_2_3
+test_data$as_4 <- test_data$azs_1_4 + test_data$azs_2_4
+test_data$as_5 <- test_data$azs_1_5 + test_data$azs_2_5
+
+# both bogies total:
+test_data$azp_1 <- test_data$azp_1b_1 + test_data$azp_2b_1
+test_data$azp_2 <- test_data$azp_1b_2 + test_data$azp_2b_2
+test_data$azp_3 <- test_data$azp_1b_3 + test_data$azp_2b_3
+test_data$azp_4 <- test_data$azp_1b_4 + test_data$azp_2b_4
+test_data$azp_5 <- test_data$azp_1b_5 + test_data$azp_2b_5
+
+
+
+```
+
+## creating models
+
+```{r models}
+
+source("./R Scripts/linear_models.R")
+
+#defining models here - to be moved to an external file later on...
+
+require(dplyr)
+if(exists("models")){
+    rm(models)
+
+}
+
+models <- data.frame(model = numeric(),
+                     modeled_element = character(),
+                     lm_cmd = character(), 
+                     freq = numeric(), 
+                     stringsAsFactors = FALSE) 
+
+
+# front bogie vs. wheels
+
+models <- add_model_to_dict(
+        element = "azp_1b",
+        model_RHS_var = c("az_1b")
+    )
+
+# rear bogie vs. wheels
+
+models <-
+  models %>% add_model_to_dict(
+        element = "azp_2b",
+        model_RHS_var = c("az_2b")
+    )
+
+# platform vs. bogies (all)
+
+models <-
+  models %>% add_model_to_dict(
+        element = "as",
+        model_RHS_var = c("azp")
+    )
+
+res_train <- run_fits(model_df = models, data_df = train_data)
+
+res_test <- run_fits(model_df = models, data_df = test_data)
+
+test_sum$model1 <- "Healthy"
+test_sum$model2 <- "Healthy"
+test_sum$model3 <- "Healthy"
+
+
+```
+
+## result plots - train set
+
+```{r result plots, fig.height=10, fig.width=12}
+
+res_train %>% filter(model == 1) %>% 
+  ggplot(.,aes(x=Payload,y=c2,color=as.factor(Speed)))+
+    geom_point()+
+    facet_grid(.~freq)+
+    labs(title="res_train, front bogie vs. wheels, c2")
+
+res_train %>% filter(model == 2) %>% 
+  ggplot(.,aes(x=Payload,y=c2,color=as.factor(Speed)))+
+    geom_point()+
+    facet_grid(.~freq)+
+    labs(title="res_train, rear bogie vs. wheels, c2")
+
+
+res_train %>% filter(model == 3) %>% 
+  ggplot(.,aes(x=Payload,y=c2,color=as.factor(Speed)))+
+    geom_point()+
+    facet_grid(.~freq)+
+    labs(title="res_train, platform vs. bogies, c2")
+
+res_test %>% filter(model == 3) %>% 
+  ggplot(.,aes(x=Payload,y=c2,color=as.factor(Speed)))+
+    geom_point()+
+    facet_grid(.~freq)+
+    labs(title="res_test, platform vs. bogies, c2")
+
+
+p <- res_train %>% filter(model == 1) %>% 
+  ggplot(.,aes(x=Payload,y=c2))+
+    geom_point(color="green",alpha=0.5)+
+    facet_grid(as.factor(Speed)~freq)+
+    labs(title="res_train and test, front bogie vs. wheels, c2")
+
+p + res_test %>% filter(model == 1) %>%
+    geom_point(data=., aes(x=Payload,y=c2),color="orange",alpha=0.5)+
+    facet_grid(as.factor(Speed)~freq)
+
+
+p <- res_train %>% filter(model == 2) %>% 
+  ggplot(.,aes(x=Payload,y=c2))+
+    geom_point(color="green",alpha=0.5)+
+    facet_grid(as.factor(Speed)~freq)+
+    labs(title="res_train and test, rear bogie vs. wheels, c2")
+
+p + res_test %>% filter(model == 2) %>%
+    geom_point(data=., aes(x=Payload,y=c2),color="orange",alpha=0.5)+
+    facet_grid(as.factor(Speed)~freq)
+
+p <- res_train %>% filter(model == 3) %>% 
+  ggplot(.,aes(x=Payload,y=c2))+
+    geom_point(color="green",alpha=0.5)+
+    facet_grid(as.factor(Speed)~freq)+
+    labs(title="res_train and test, platform vs. bogies, c2")
+
+p + res_test %>% filter(model == 3) %>%
+    geom_point(data=., aes(x=Payload,y=c2),color="orange",alpha=0.5)+
+    facet_grid(as.factor(Speed)~freq)
+
+
+```
+
+## test set flags
+
+```{r test set flaging, fig.height=10, fig.width=12}
+
+res_train$Speed_f<-ifelse(res_train$Speed > 0.95,3,2)
+res_train$Speed_f<-ifelse(res_train$Speed < 0.93,1,res_train$Speed_f)
+
+res_test$Speed_f<-ifelse(res_test$Speed > 0.95,3,2)
+res_test$Speed_f<-ifelse(res_test$Speed < 0.93,1,res_test$Speed_f)
+
+res_test$State <- "Healthy"
+
+
+
+fit1 <- res_train %>% filter(model == 3 & freq == 1) %>% lm(c2 ~ Payload + Speed,.)
+
+summary(fit1)
+
+fit2 <- res_train %>% filter(model == 3 & freq == 2) %>% lm(c2 ~ Payload + Speed,.)
+
+summary(fit2)
+
+fit3 <- res_train %>% filter(model == 3 & freq == 3) %>% lm(c2 ~ Payload + Speed,.)
+
+summary(fit3)
+#backup
+res_test_wrk<-res_test
+
+#working df, substituting 0.87 for lower speeds from test set
+res_test_wrk$Speed<-ifelse(res_test_wrk$Speed < 0.8, 0.87, res_test_wrk$Speed)
+
+p <- res_train %>% filter(model == 3) %>% 
+  ggplot(.,aes(x=Payload,y=c2))+
+    geom_point(color="green",alpha=0.5)+
+    facet_grid(as.factor(Speed)~freq)+
+    labs(title="res_train and res_test_wrk, platform vs. bogies, c2")
+
+p + res_test_wrk %>% filter(model == 3) %>%
+    geom_point(data=., aes(x=Payload,y=c2),color="orange",alpha=0.5)+
+    facet_grid(as.factor(Speed)~freq)
+
+# front bogie per freq =2
+
+train_res_sum <- summarize(group_by(res_train,model,modeled_element,freq,Speed),avg_c2=mean(c2),st_dev=sd(c2))
+
+res_test_wrk <- merge(res_test_wrk,train_res_sum,by=c("Speed","freq","modeled_element"))
+
+res_test_wrk_2b2 <- filter(res_test_wrk, freq == 2 & model.x == 2)
+
+res_test_wrk_2b1 <- filter(res_test_wrk, freq == 2 & model.x == 1)
+
+res_test_wrk_2b1$p2 <- (res_test_wrk_2b1$c2 - res_test_wrk_2b1$avg_c2)/res_test_wrk_2b1$st_dev
+
+res_test_wrk_2b2$p2 <- (res_test_wrk_2b2$c2 - res_test_wrk_2b2$avg_c2)/res_test_wrk_2b2$st_dev
+
+
+
+p <- res_train %>% filter(model == 1) %>% 
+  ggplot(.,aes(x=Payload,y=c2))+
+    geom_point(color="grey",size =3, alpha=0.5)+
+    facet_grid(as.factor(Speed)~freq)+
+    labs(title="res_train and test, front bogie vs. wheels, c2")
+
+p + res_test_wrk_2b1 %>% filter(model.x == 1) %>%
+    geom_point(data=., aes(x=Payload,y=c2,color=p2),size=3,alpha=0.5)+
+    facet_grid(as.factor(Speed)~freq)
+
+# front bogie suspension should have roughly 50/51 failures ( 140 * 8 / 22)
+
+#so top 25 and bottom 25
+
+p2_top <- quantile(res_test_wrk_2b1$p2, 0.875)
+p2_low <- quantile(res_test_wrk_2b1$p2, 0.125)
+
+pb2_top<- quantile(res_test_wrk_2b2$p2, 0.875)
+pb2_low<- quantile(res_test_wrk_2b2$p2, 0.125)
+
+i=1
+prev <- read.csv("primary_dump_plus_sec_dump_20170716_KP.csv",sep=";",header = TRUE)
+for(i in c(1:nrow(prev))){
+  
+  b1 <- res_test_wrk_2b1 %>% filter(ExperimentID == prev$ExperimentID[i])
+  b2 <- res_test_wrk_2b2 %>% filter(ExperimentID == prev$ExperimentID[i])
+
+  if( b1$p2[1] > p2_low &
+                       b1$p2[1] < p2_top &
+                       b2$p2[1] > pb2_low &
+                       b2$p2[1] < pb2_top){
+    
+  prev$State[i] <- "healthy"
+    }else{
+      
+                         
+                       }
+}
+
+prev$State <-ifelse(is.na(prev$State),"healthy",as.character(prev$State))
+
+write.csv(prev,"Train_To_Model_20170717.csv", row.names = FALSE)
+
+sum(res_test_wrk_2b1$p2<p2_low | res_test_wrk_2b1$p2>p2_top)
+
+#checking test experimentID 44
+
+
+test_data %>% filter(ExperimentID == 44) %>% 
+  ggplot(.,aes(x=az_1r_2,y=azp_1r_2))+
+  geom_point(color="red")+
+  geom_point(aes(x=az_2r_2,y=azp_1r_2),color="orange")+
+  geom_point(aes(x=az_2l_2,y=azp_1r_2),color="blue")+
+  geom_point(aes(x=az_1l_2,y=azp_1r_2),color="green")+
+  labs(title="azp_1r_2 against wheels")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+
+p <- test_data %>% filter(ExperimentID == 44) %>% 
+  ggplot(.,aes(x=az_1r_2,y=az_2r_2))+
+  geom_point(color="red")+
+  geom_point(aes(x=az_1r_2,y=az_1l_2),color="orange")+
+  geom_point(aes(x=az_1r_2,y=az_2l_2),color="blue")+
+  labs(title="az_1r_2 against wheels")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+##########################################################################################################
+p<-test_data %>% filter(ExperimentID == 95) %>% ggplot(.)+
+  geom_point(aes(x=az_1r_2,y=az_2r_2),color="black",alpha=0.5)+
+  facet_grid(as.factor(Speed) ~as.factor(Track)) #######################################################
+
+p + test_data %>% filter(ExperimentID == 44) %>% 
+  geom_point(data=.,aes(x=az_1r_2,y=az_2r_2),color="red",alpha=0.5)+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+
+
+
+
+p<-test_data %>% filter(ExperimentID == 95) %>% ggplot(.)+
+  geom_point(aes(x=az_1r_2,y=az_1l_2),color="black",alpha=0.5)+
+  facet_grid(as.factor(Speed) ~as.factor(Track)) #######################################################
+
+p + test_data %>% filter(ExperimentID == 44) %>% 
+  geom_point(data=.,aes(x=az_1r_2,y=az_1l_2),color="red",alpha=0.5)+
+  facet_grid(as.factor(Speed) ~as.factor(Track))+
+  geom_abline(aes(intercept =0, slope=1))
+
+p<-test_data %>% filter(ExperimentID == 95) %>% ggplot(.)+
+  geom_point(aes(x=az_2r_2,y=az_2l_2),color="black",alpha=0.5)+
+  facet_grid(as.factor(Speed) ~as.factor(Track)) #######################################################
+
+p + test_data %>% filter(ExperimentID == 44) %>% 
+  geom_point(data=.,aes(x=az_2r_2,y=az_2l_2),color="red",alpha=0.5)+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+
+
+
+test_data %>% 
+  filter(ExperimentID == 44) %>% 
+  gather(param,reading, - Speed, -Payload, -State, -Track, -ExperimentID) %>% 
+  filter(param == "az_1r_2" | param == "az_2r_2" | param == "az_1l_2" | param == "az_2l_2") %>%
+  ggplot(.,aes(x=reading,fill=param))+geom_density(alpha=0.3)
+
+test_data %>% 
+  filter(ExperimentID == 44) %>% 
+  gather(param,reading, - Speed, -Payload, -State, -Track, -ExperimentID) %>% 
+  filter(param == "az_1r_2" | param == "az_2r_2" |  param == "az_1l_2" | param == "az_2l_2") %>%
+  ggplot(.,aes(x=reading,fill=param))+geom_histogram(alpha=0.3)+facet_wrap(~param)
+
+```
+
+```{r time series plots, fig.height=10, fig.width=12}
+
+train_data <- train_data %>% group_by(ExperimentID) %>% mutate(lp = cumsum(Track))
+
+train_data$lp <- train_data$lp/train_data$Track
+
+
+test_data <- test_data %>% group_by(ExperimentID) %>% mutate(lp = cumsum(Track))
+
+test_data$lp <- test_data$lp/test_data$Track
+
+train_data %>% filter(Track == 1) %>%
+  ggplot(.,aes(x=lp,y=az_1r_2))+
+  geom_point(color="blue",alpha=0.5,size=3)+
+  geom_point(aes(x=lp,y=az_1l_2),color="green",alpha=0.5,size=3)+
+  facet_wrap(~Speed)+
+  labs(title="front axis - track 1 - train data")
+
+train_data %>% filter(Track == 1) %>%
+  ggplot(.,aes(x=lp,y=az_2r_2))+
+  geom_point(color="blue",alpha=0.5,size=3)+
+  geom_point(aes(x=lp,y=az_2l_2),color="green",alpha=0.5,size=3)+
+  facet_wrap(~Speed)+
+  labs(title=" axis 2 - track 1 - train data")
+
+
+train_data %>% filter(Track == 1) %>%
+  ggplot(.,aes(x=lp,y=az_1r_2))+
+  geom_point(color="blue",alpha=0.5,size=2)+
+  geom_point(aes(x=lp,y=az_2r_2),color="green",alpha=0.5,size=2)+
+  facet_wrap(~Speed)+
+  labs(title=" front bogie -right side wheels - track 1 - train data")
+
+
+
+
+
+p <- train_data %>% filter(Track == 2 & Speed == 0.94) %>%
+  ggplot(.,aes(x=lp,y=az_1r_2))+
+  geom_point(color="blue",alpha=0.5,size=2)+
+  labs(title=" front bogie -right side wheels - track 2 - train - speed 0.87 and 0.94 (red) ")
+
+p + train_data %>% filter(Track == 2 & 0.87) %>%
+  geom_point(data=.,aes(x=lp,y=az_1r_2),color="red",alpha=0.5,size=2,shape=4)
+
+
+p <- train_data %>% filter(Track == 2 & Speed == 0.87) %>%
+  ggplot(.,aes(x=lp,y=az_1r_2))+
+  geom_point(color="blue",alpha=0.5,size=2)+
+  geom_point(aes(x=lp,y=az_2r_2),color="green",alpha=0.5,size=2)+
+  facet_wrap(~Speed)+
+  labs(title=" front bogie -right side wheels - track 2 - train&test data")
+
+p + test_data %>% filter(Track == 2 & 0.87) %>%
+  geom_point(data=.,aes(x=lp,y=az_1r_2),color="red",alpha=0.5,size=2)+
+  geom_point(aes(x=lp,y=az_2r_2),color="orange",alpha=0.5,size=2)+
+  facet_wrap(~Speed)
+
+```
+
+## Experiments
+
+in this part I look at separate test experiments vs. coresponding train data  
+
+
+### Experiment 95
+
+High probability healthy. speed as in train data.  
+
+```{r experiment 95, fig.height=10, fig.width=12}
+p <- train_data %>% filter(Track == 2 & Speed == 0.87) %>%
+  ggplot(.,aes(x=lp,y=az_1r_2))+
+  geom_point(color="blue",alpha=0.5,size=2)+
+  facet_wrap(~Speed)+
+  labs(title=" front bogie -right side wheels - track 2 - train+test95 data - unmatched")
+
+p + test_data %>% filter(Track == 2 & Speed == 0.87 & ExperimentID == 95) %>%
+  geom_point(data=.,aes(x=lp,y=az_1r_2),color="red",alpha=0.5,size=2)+
+  facet_wrap(~Speed)
+
+
+
+p <- train_data %>% filter(Track == 2 & Speed == 0.87) %>%
+  ggplot(.,aes(x=lp,y=az_2l_2))+
+  geom_point(color="blue",alpha=0.5,size=2)+
+  facet_wrap(~Speed)+
+  labs(title=" front bogie -right side wheels - track 2 - train+test95 data - matched")
+
+p + test_data %>% filter(Track == 2 & ExperimentID == 95) %>%
+  geom_point(data=.,aes(x=lp+88,y=az_2l_2),color="red",alpha=0.5,size=2)+
+  facet_wrap(~Speed)
+
+
+```
+
+CONCLUSION: test samples do not start at the same point on track as train sample. need to establish "zero" for all test samples (where possible) - or use match quality as a alternative model for primary suspension.
+
+
+
+### Experiment 50
+
+Experiment 50 was identified as a low probability failure on front bogie primary suspension.
+
+I'm mathcing using az_2l_2 and checking if az_1l_2 also matches
+
+```{r experiment 50, fig.height=10, fig.width=12}
+p <- train_data %>% filter(Track == 2 & Speed == 0.87) %>%
+  ggplot(.,aes(x=lp,y=az_2l_2))+
+  geom_point(color="blue",alpha=0.5,size=2)+
+  facet_wrap(~Speed)+
+  labs(title=" front bogie -second left wheel - track 2 - train+test50 data - matched")
+
+p + test_data %>% filter(Track == 2 & ExperimentID == 50) %>%
+  geom_point(data=.,aes(x=lp+150,y=az_2l_2),color="red",alpha=0.5,size=4)+
+  facet_wrap(~Speed)
+
+p <- train_data %>% filter(Track == 2 & Speed == 0.87) %>%
+  ggplot(.,aes(x=lp,y=az_1l_2))+
+  geom_point(color="blue",alpha=0.5,size=2)+
+  facet_wrap(~Speed)+
+  labs(title=" front bogie -first left wheel - track 2 - train+test50 data")
+
+p + test_data %>% filter(Track == 2 & ExperimentID == 50) %>%
+  geom_point(data=.,aes(x=lp+150,y=az_1l_2),color="red",alpha=0.5,size=4)+
+  facet_wrap(~Speed)
+
+
+```
+
+CONCLUSION: Match on one wheel can by checked with other wheels
+
+### Experiment 44
+
+test experiment 44 was identified as potential front bogie failure (one of 4 primary suspension element pairs)  
+  
+the intenthere is to check if I can match wheel oepration to train data
+
+
+
+```{r experiment44, fig.height=10, fig.width=12}
+# 44 all four front wheel freq = 2
+
+shift = 75
+
+p <- train_data %>% filter(Track == 2 & Speed == 0.87) %>%
+  ggplot(.,aes(x=lp,y=az_1l_2))+
+  geom_point(color="blue",alpha=0.5,size=2)+
+  labs(title=" front bogie -right side wheels - track 2 - train+test44 data")
+
+p + test_data %>% filter(Track == 2 & ExperimentID == 44) %>%
+  geom_point(data=.,aes(x=lp+shift,y=az_1l_2),color="red",alpha=0.5,size=3)
+
+p <- train_data %>% filter(Track == 2 & Speed == 0.87) %>%
+  ggplot(.,aes(x=lp,y=az_1r_2))+
+  geom_point(color="blue",alpha=0.5,size=2)+
+  labs(title=" front bogie -right side wheels - track 2 - train+test44 data")
+
+p + test_data %>% filter(Track == 2 & ExperimentID == 44) %>%
+  geom_point(data=.,aes(x=lp+shift,y=az_1r_2),color="red",alpha=0.5,size=3)
+
+p <- train_data %>% filter(Track == 2 & Speed == 0.87) %>%
+  ggplot(.,aes(x=lp,y=az_2r_2))+
+  geom_point(color="blue",alpha=0.5,size=2)+
+  labs(title=" front bogie -right side wheels - track 2 - train+test44 data")
+
+p + test_data %>% filter(Track == 2 & ExperimentID == 44) %>%
+  geom_point(data=.,aes(x=lp+shift,y=az_2r_2),color="red",alpha=0.5,size=3)
+
+
+p <- train_data %>% filter(Track == 2 & Speed == 0.87) %>%
+  ggplot(.,aes(x=lp,y=az_2l_2))+
+  geom_point(color="blue",alpha=0.5,size=2)+
+  labs(title=" front bogie -right side wheels - track 2 - train+test44 data")
+
+p + test_data %>% filter(Track == 2 & ExperimentID == 44) %>%
+  geom_point(data=.,aes(x=lp+shift,y=az_2l_2),color="red",alpha=0.5,size=3)
+
+
+```
+
+CONCLUSION: can't find match - can it be due to speed?
+
+### Experiment 6
+
+Experiment 6 is probably Healthy for front bogie primary suspension.  
+plus its very close to experiment 44, same speed (0.71) and simialr payload (1.14 vs. 1.15)  
+
+```{r experiment 6, fig.height=10, fig.width=12}
+
+# 6 all four front wheel freq = 2
+
+shift = 60
+
+p <- train_data %>% filter(Track == 2 & Speed == 0.87 | Speed == 0.94) %>%
+  ggplot(.,aes(x=lp,y=az_1l_2,color=Speed))+
+  geom_point(alpha=0.5,size=2)+
+  labs(title=" front bogie -right side wheels - track 2 - train+test6 data")
+
+p + test_data %>% filter(Track == 2 & ExperimentID == 6) %>%
+  geom_point(data=.,aes(x=lp+shift,y=az_1l_2),color="red",alpha=0.5,size=3)
+
+
+
+p <- train_data %>% filter(Track == 2 & Speed == 0.87) %>%
+  ggplot(.,aes(x=lp,y=az_1r_2))+
+  geom_point(color="blue",alpha=0.5,size=2)+
+  labs(title=" front bogie -right side wheels - track 2 - train+test6 data")
+
+p + test_data %>% filter(Track == 2 & ExperimentID == 6) %>%
+  geom_point(data=.,aes(x=lp+shift,y=az_1r_2),color="red",alpha=0.5,size=3)
+
+
+
+p <- train_data %>% filter(Track == 2 & Speed == 0.87) %>%
+  ggplot(.,aes(x=lp,y=az_2r_2))+
+  geom_point(color="blue",alpha=0.5,size=2)+
+  labs(title=" front bogie -right side wheels - track 2 - train+test6 data")
+
+p + test_data %>% filter(Track == 2 & ExperimentID == 6) %>%
+  geom_point(data=.,aes(x=lp+shift,y=az_2r_2),color="red",alpha=0.5,size=3)
+
+
+
+
+p <- train_data %>% filter(Track == 2 & Speed == 0.87) %>%
+  ggplot(.,aes(x=lp,y=az_2l_2))+
+  geom_point(color="blue",alpha=0.5,size=2)+
+  labs(title=" front bogie -right side wheels - track 2 - train+test6 data")
+
+p + test_data %>% filter(Track == 2 & ExperimentID == 6) %>%
+  geom_point(data=.,aes(x=lp+shift,y=az_2l_2),color="red",alpha=0.5,size=3)
+
+
+```
+ 
+CONCLUSION -can't match this - not sure if it should be marked as unhealthy or if need to normalize by speed and payload. Most likly - normalize by speed for each time point separatly... - and then it will probalby match
+  
+## Train data - time vs. wheels
+
+```{r train speed vs. wheels vs time, fig.height=10, fig.width=12}
+
+train_data %>% 
+  ggplot(.) +
+  geom_point(aes(x=lp,y=az_1r_2,color=as.factor(Speed)))+
+  facet_grid(Track~.)+
+  labs(title="all train readings -in sequence - az_1r_2")
+
+train_data %>% filter(Track==2) %>%
+  ggplot(.) +
+  geom_point(aes(x=lp,y=az_1r_2,color=as.factor(Speed)))+
+  labs(title="Track 1 train readings -in sequence - az_1r_2")
+
+train_data %>% filter(Track==2) %>%
+  ggplot(.) +
+  geom_point(aes(x=lp,y=az_1r_2,color=as.factor(Speed)))+
+  coord_cartesian(xlim=c(150,175),ylim=c(0,1))+
+  labs(title="Track 1 train readings -in sequence - az_1r_2 -close up")
+
+```
+
+CONCLUSION - for track 2 - where will lower velocities go? can we make a rule based on this?
+
+
+
+## CONCLUSION
+
+1. NEW - test data is shifted relative to train data
+
+2. Need to normalize data with respect to speed - separartly for each point on each track
+
+3. then build models...
+
+
+
+

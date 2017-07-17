@@ -1,0 +1,428 @@
+---
+title: "cross_bogie_sensitivity"
+author: "Antek"
+date: "13 July 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyr)
+library(dplyr)
+
+require(dplyr)
+require(ggplot2)
+#source()
+```
+
+## Intro
+
+This is an attempt at provinding a noise clearing algorithm.
+it is primarly focused on noise from other bogie corners than the one above the modeled element.
+I'm not assuming that this is possible...
+
+```{r data in}
+
+train_data <- readRDS("./input/train_data.RDS")
+test_data <- readRDS("./input/test_data.RDS")
+
+train <- train_data %>% gather(acc, reading, -State, -ExperimentID, -Track, -Speed, -Payload)
+
+
+```
+
+## exploratory
+
+You can also embed plots, for example:
+
+```{r exploratory, echo=FALSE, fig.height= 10, fig.width=12}
+
+
+train_data %>% 
+  ggplot(.,aes(x=az_1r_1,y=azp_1r_1))+
+  geom_point(color="red")+
+  geom_point(aes(x=az_2r_1,y=azp_1r_1),color="orange")+
+  geom_point(aes(x=az_2l_1,y=azp_1r_1),color="blue")+
+  geom_point(aes(x=az_1l_1,y=azp_1r_1),color="green")+
+  labs(title="azp_1r_1 against wheels")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+
+
+train_data %>% 
+  ggplot(.,aes(x=az_1r_2,y=azp_1r_2))+
+  geom_point(color="red")+
+  geom_point(aes(x=az_2r_2,y=azp_1r_2),color="orange")+
+  geom_point(aes(x=az_2l_2,y=azp_1r_2),color="blue")+
+  geom_point(aes(x=az_1l_2,y=azp_1r_2),color="green")+
+  labs(title="azp_1r_2 against wheels")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+
+train_data %>% 
+  ggplot(.,aes(x=az_1r_3,y=azp_1r_3))+
+  geom_point(color="red")+
+  geom_point(aes(x=az_2r_3,y=azp_1r_3),color="orange")+
+  geom_point(aes(x=az_2l_3,y=azp_1r_3),color="blue")+
+  geom_point(aes(x=az_1l_3,y=azp_1r_3),color="green")+
+  labs(title="azp_1r_3 against wheels")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+
+train_data %>% 
+  ggplot(.,aes(x=az_1r_4,y=azp_1r_4))+
+  geom_point(color="red")+
+  geom_point(aes(x=az_2r_4,y=azp_1r_4),color="orange")+
+  geom_point(aes(x=az_2l_4,y=azp_1r_4),color="blue")+
+  geom_point(aes(x=az_1l_4,y=azp_1r_4),color="green")+
+  labs(title="azp_1r_4 against wheels")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+
+train_data %>% 
+  ggplot(.,aes(x=az_1r_5,y=azp_1r_5))+
+  geom_point(color="red")+
+  geom_point(aes(x=az_2r_5,y=azp_1r_5),color="orange")+
+  geom_point(aes(x=az_2l_5,y=azp_1r_5),color="blue")+
+  geom_point(aes(x=az_1l_5,y=azp_1r_5),color="green")+
+  labs(title="azp_1r_5 against wheels")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+
+#azp_2r
+train_data %>% 
+  ggplot(.,aes(x=az_1r_1,y=azp_2r_1))+
+  geom_point(color="red")+
+  geom_point(aes(x=az_2r_1,y=azp_2r_1),color="orange")+
+  geom_point(aes(x=az_2l_1,y=azp_2r_1),color="blue")+
+  geom_point(aes(x=az_1l_1,y=azp_2r_1),color="green")+
+  labs(title="azp_2r_1 against wheels")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+
+
+train_data %>% 
+  ggplot(.,aes(x=az_1r_2,y=azp_2r_2))+
+  geom_point(color="red")+
+  geom_point(aes(x=az_2r_2,y=azp_2r_2),color="orange")+
+  geom_point(aes(x=az_2l_2,y=azp_2r_2),color="blue")+
+  geom_point(aes(x=az_1l_2,y=azp_2r_2),color="green")+
+  labs(title="azp_2r_2 against wheels")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+
+train_data %>% 
+  ggplot(.,aes(x=az_1r_3,y=azp_2r_3))+
+  geom_point(color="red")+
+  geom_point(aes(x=az_2r_3,y=azp_2r_3),color="orange")+
+  geom_point(aes(x=az_2l_3,y=azp_2r_3),color="blue")+
+  geom_point(aes(x=az_1l_3,y=azp_2r_3),color="green")+
+  labs(title="azp_2r_3 against wheels")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+
+train_data %>% 
+  ggplot(.,aes(x=az_1r_4,y=azp_2r_4))+
+  geom_point(color="red")+
+  geom_point(aes(x=az_2r_4,y=azp_2r_4),color="orange")+
+  geom_point(aes(x=az_2l_4,y=azp_2r_4),color="blue")+
+  geom_point(aes(x=az_1l_4,y=azp_2r_4),color="green")+
+  labs(title="azp_2r_4 against wheels")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+
+train_data %>% 
+  ggplot(.,aes(x=az_1r_5,y=azp_2r_5))+
+  geom_point(color="red")+
+  geom_point(aes(x=az_2r_5,y=azp_2r_5),color="orange")+
+  geom_point(aes(x=az_2l_5,y=azp_2r_5),color="blue")+
+  geom_point(aes(x=az_1l_5,y=azp_2r_5),color="green")+
+  labs(title="azp_2r_5 against wheels")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+
+```
+
+###wheel correlations
+
+```{r wheels, echo = FALSE, fig.height= 10, fig.width=12}
+#correlations between wheels
+
+train_data %>% 
+  ggplot(.,aes(x=az_1r_5,y=az_2r_5))+
+  geom_point(color="red")+
+  geom_point(aes(x=az_1r_2,y=az_2r_2),color="orange")+
+  geom_point(aes(x=az_1r_3,y=az_2r_3),color="green")+
+  geom_point(aes(x=az_1r_4,y=az_2r_4),color="blue")+
+  geom_point(aes(x=az_1r_1,y=az_2r_1),color="black")+
+  labs(title="right axis wheels - raw readings")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+  
+train_data %>% 
+  ggplot(.)+
+  geom_point(aes(x=az_1r_2,y=az_2r_2),color="orange")+
+  geom_point(aes(x=az_1r_3,y=az_2r_3),color="green")+
+  geom_point(aes(x=az_1r_4,y=az_2r_4),color="blue")+
+  labs(title="right axis wheels - raw readings - freq 2,3,4")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+
+
+train_data %>% 
+  ggplot(.,aes(x=az_1r_5,y=az_1l_5))+
+  geom_point(color="red")+
+  geom_point(aes(x=az_1r_2,y=az_1l_2),color="orange")+
+  geom_point(aes(x=az_1r_3,y=az_1l_3),color="green")+
+  geom_point(aes(x=az_1r_4,y=az_1l_4),color="blue")+
+  geom_point(aes(x=az_1r_1,y=az_1l_1),color="black")+
+  labs(title="front axis wheels - raw readings")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+
+test_data %>% 
+  ggplot(.,aes(x=az_1r_5,y=az_2r_5))+
+  geom_point(color="red")+
+  geom_point(aes(x=az_1r_2,y=az_2r_2),color="orange")+
+  geom_point(aes(x=az_1r_3,y=az_2r_3),color="green")+
+  geom_point(aes(x=az_1r_4,y=az_2r_4),color="blue")+
+  geom_point(aes(x=az_1r_1,y=az_2r_1),color="black")+
+  labs(title="right axis wheels - raw readings - test set")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+  
+test_data %>% 
+  ggplot(.,aes(x=az_1r_5,y=az_1l_5))+
+  geom_point(color="red")+
+  geom_point(aes(x=az_1r_2,y=az_1l_2),color="orange")+
+  geom_point(aes(x=az_1r_3,y=az_1l_3),color="green")+
+  geom_point(aes(x=az_1r_4,y=az_1l_4),color="blue")+
+  geom_point(aes(x=az_1r_1,y=az_1l_1),color="black")+
+  labs(title="front axis wheels - raw readings - test set")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+
+
+```
+
+### Bogie corelations
+
+
+```{r bogie correlations, echo = FALSE, fig.height= 10, fig.width=12}
+
+#correlations between bogie corners
+train_data %>% 
+  ggplot(.,aes(x=azp_1r_5,y=azp_2r_5))+
+  geom_point(color="red")+
+  geom_point(aes(x=azp_1r_2,y=azp_2r_2),color="orange")+
+  geom_point(aes(x=azp_1r_3,y=azp_2r_3),color="green")+
+  geom_point(aes(x=azp_1r_4,y=azp_2r_4),color="blue")+
+  geom_point(aes(x=azp_1r_1,y=azp_2r_1),color="black")+
+  geom_abline(aes(intercept =0 ,slope=1))+
+  labs(title="right side bogie - raw readings")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+  
+train_data %>% 
+  ggplot(.,aes(x=azp_1r_5,y=azp_1l_5))+
+  geom_point(color="red")+
+  geom_point(aes(x=azp_1r_2,y=azp_1l_2),color="orange")+
+  geom_point(aes(x=azp_1r_3,y=azp_1l_3),color="green")+
+  geom_point(aes(x=azp_1r_4,y=azp_1l_4),color="blue")+
+  geom_point(aes(x=azp_1r_1,y=azp_1l_1),color="black")+
+  labs(title="front of bogie - raw readings")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+
+test_data %>% 
+  ggplot(.,aes(x=azp_1r_5,y=azp_2r_5))+
+  geom_point(color="red")+
+  geom_point(aes(x=azp_1r_2,y=azp_2r_2),color="orange")+
+  geom_point(aes(x=azp_1r_3,y=azp_2r_3),color="green")+
+  geom_point(aes(x=azp_1r_4,y=azp_2r_4),color="blue")+
+  geom_point(aes(x=azp_1r_1,y=azp_2r_1),color="black")+
+  geom_abline(aes(intercept =0 ,slope=1))+
+  labs(title="right side bogie - raw readings - test data")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+
+test_data %>% 
+  ggplot(.,aes(x=azp_1r_5,y=azp_1l_5))+
+  geom_point(color="red")+
+  geom_point(aes(x=azp_1r_2,y=azp_1l_2),color="orange")+
+  geom_point(aes(x=azp_1r_3,y=azp_1l_3),color="green")+
+  geom_point(aes(x=azp_1r_4,y=azp_1l_4),color="blue")+
+  geom_point(aes(x=azp_1r_1,y=azp_1l_1),color="black")+
+  geom_abline(aes(intercept =0 ,slope=1))+
+  labs(title="front of bogie - raw readings - test data")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+
+
+```
+
+### SUms and differences
+
+```{r sums and diff, echo = FALSE, fig.height= 15, fig.width=12}
+
+
+train_data %>% 
+  ggplot(.,aes(x=az_2r_5-az_1r_5,y=azp_2r_5-azp_1r_5))+
+  geom_point(color="red")+
+  geom_point(aes(x=az_2r_2-az_1r_2,y=azp_2r_2-azp_1r_2),color="orange")+
+  geom_point(aes(x=az_2r_3-az_1r_3,y=azp_2r_3-azp_1r_3),color="green")+
+  geom_point(aes(x=az_2r_4-az_1r_4,y=azp_2r_4-azp_1r_4),color="blue")+
+  geom_point(aes(x=az_2r_1-az_1r_1,y=azp_2r_1-azp_1r_1),color="black")+
+  geom_abline(aes(intercept =0 ,slope=1))+
+  labs(title="diff wheels vs. diff bogie -right side")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+
+train_data %>% 
+  ggplot(.,aes(x=az_2r_5+az_1r_5,y=azp_2r_5+azp_1r_5))+
+  geom_point(color="red")+
+  geom_point(aes(x=az_2r_2+az_1r_2,y=azp_2r_2+azp_1r_2),color="orange")+
+  geom_point(aes(x=az_2r_3+az_1r_3,y=azp_2r_3+azp_1r_3),color="green")+
+  geom_point(aes(x=az_2r_4+az_1r_4,y=azp_2r_4+azp_1r_4),color="blue")+
+  geom_point(aes(x=az_2r_1+az_1r_1,y=azp_2r_1+azp_1r_1),color="black")+
+  geom_abline(aes(intercept =0 ,slope=1))+
+  labs(title="sum wheels vs.  sum bogie - right side")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+
+
+train_data %>% 
+  ggplot(.,aes(x=az_2r_5-az_1r_5,y=azp_2r_5-azp_1r_5))+
+  geom_point(color="red")+
+  geom_point(aes(x=az_1l_2-az_1r_2,y=azp_1l_2-azp_1r_2),color="orange")+
+  geom_point(aes(x=az_1l_3-az_1r_3,y=azp_1l_3-azp_1r_3),color="green")+
+  geom_point(aes(x=az_1l_4-az_1r_4,y=azp_1l_4-azp_1r_4),color="blue")+
+  geom_point(aes(x=az_1l_1-az_1r_1,y=azp_1l_1-azp_1r_1),color="black")+
+  geom_abline(aes(intercept =0 ,slope=1))+
+  labs(title="diff wheels vs. diff bogie -front axis")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+
+train_data %>% 
+  ggplot(.,aes(x=az_1l_5+az_1r_5,y=azp_1l_5+azp_1r_5))+
+  geom_point(color="red")+
+  geom_point(aes(x=az_1l_2+az_1r_2,y=azp_1l_2+azp_1r_2),color="orange")+
+  geom_point(aes(x=az_1l_3+az_1r_3,y=azp_1l_3+azp_1r_3),color="green")+
+  geom_point(aes(x=az_1l_4+az_1r_4,y=azp_1l_4+azp_1r_4),color="blue")+
+  geom_point(aes(x=az_1l_1+az_1r_1,y=azp_1l_1+azp_1r_1),color="black")+
+  geom_abline(aes(intercept =0 ,slope=1))+
+  labs(title="sum wheels vs.  sum bogie - front axis")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+
+
+
+
+#test set
+
+
+test_data %>% 
+  ggplot(.,aes(x=az_2r_5-az_1r_5,y=azp_2r_5-azp_1r_5))+
+  geom_point(color="red")+
+  geom_point(aes(x=az_2r_2-az_1r_2,y=azp_2r_2-azp_1r_2),color="orange")+
+  geom_point(aes(x=az_2r_3-az_1r_3,y=azp_2r_3-azp_1r_3),color="green")+
+  geom_point(aes(x=az_2r_4-az_1r_4,y=azp_2r_4-azp_1r_4),color="blue")+
+  geom_point(aes(x=az_2r_1-az_1r_1,y=azp_2r_1-azp_1r_1),color="black")+
+  geom_abline(aes(intercept =0 ,slope=1))+
+  labs(title="diff wheels vs. diff bogie -right side - test set")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+
+test_data %>% 
+  ggplot(.,aes(x=az_2r_5+az_1r_5,y=azp_2r_5+azp_1r_5))+
+  geom_point(color="red")+
+  geom_point(aes(x=az_2r_2+az_1r_2,y=azp_2r_2+azp_1r_2),color="orange")+
+  geom_point(aes(x=az_2r_3+az_1r_3,y=azp_2r_3+azp_1r_3),color="green")+
+  geom_point(aes(x=az_2r_4+az_1r_4,y=azp_2r_4+azp_1r_4),color="blue")+
+  geom_point(aes(x=az_2r_1+az_1r_1,y=azp_2r_1+azp_1r_1),color="black")+
+  geom_abline(aes(intercept =0 ,slope=1))+
+  labs(title="sum wheels vs.  sum bogie - right side - test set")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+
+
+test_data %>% 
+  ggplot(.,aes(x=az_2r_5-az_1r_5,y=azp_2r_5-azp_1r_5))+
+  geom_point(color="red")+
+  geom_point(aes(x=az_1l_2-az_1r_2,y=azp_1l_2-azp_1r_2),color="orange")+
+  geom_point(aes(x=az_1l_3-az_1r_3,y=azp_1l_3-azp_1r_3),color="green")+
+  geom_point(aes(x=az_1l_4-az_1r_4,y=azp_1l_4-azp_1r_4),color="blue")+
+  geom_point(aes(x=az_1l_1-az_1r_1,y=azp_1l_1-azp_1r_1),color="black")+
+  geom_abline(aes(intercept =0 ,slope=1))+
+  labs(title="diff wheels vs. diff bogie -front axis - test set")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+
+test_data %>% 
+  ggplot(.,aes(x=az_1l_5+az_1r_5,y=azp_1l_5+azp_1r_5))+
+  geom_point(color="red")+
+  geom_point(aes(x=az_1l_2+az_1r_2,y=azp_1l_2+azp_1r_2),color="orange")+
+  geom_point(aes(x=az_1l_3+az_1r_3,y=azp_1l_3+azp_1r_3),color="green")+
+  geom_point(aes(x=az_1l_4+az_1r_4,y=azp_1l_4+azp_1r_4),color="blue")+
+  geom_point(aes(x=az_1l_1+az_1r_1,y=azp_1l_1+azp_1r_1),color="black")+
+  geom_abline(aes(intercept =0 ,slope=1))+
+  labs(title="sum wheels vs.  sum bogie - front axis - test set")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+
+```
+
+## Varia
+
+```{r varia plots, echo = FALSE}
+
+
+train_data %>% 
+  ggplot(.,aes(x=pmax(az_1l_5,az_1r_5),y=azp_1r_5))+
+  geom_point(color="red")+
+  geom_point(aes(x=pmax(az_1l_4,az_1r_4),y=azp_1r_4),color="orange")+
+  geom_point(aes(x=pmax(az_1l_3,az_1r_3),y=azp_1r_3),color="green")+
+  geom_point(aes(x=pmax(az_1l_2,az_1r_2),y=azp_1r_2),color="blue")+
+  geom_point(aes(x=pmax(az_1l_1,az_1r_1),y=azp_1r_1),color="black")+
+  geom_abline(aes(intercept =0 ,slope=1))+
+  labs(title="max wheels vs.  right front bogie - front axis")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+
+train_data %>% 
+  ggplot(.,aes(x=az_1l_5 + az_1r_5, y=azp_1r_5))+
+  geom_point(color="red")+
+  geom_point(aes(x=az_1l_4 + az_1r_4, y=azp_1r_4),color="orange")+
+  geom_point(aes(x=az_1l_3 + az_1r_3, y=azp_1r_3),color="green")+
+  geom_point(aes(x=az_1l_2 + az_1r_2, y=azp_1r_2),color="blue")+
+  geom_point(aes(x=az_1l_1 + az_1r_1, y=azp_1r_1),color="black")+
+  geom_abline(aes(intercept =0 ,slope=1))+
+  labs(title="sum wheels vs.  right front bogie - front axis")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+
+train_data %>% 
+  ggplot(.,aes(x=az_1l_5 - az_1r_5, y=azp_1r_5))+
+  geom_point(color="red")+
+  geom_point(aes(x=az_1l_4 - az_1r_4, y=azp_1r_4),color="orange")+
+  geom_point(aes(x=az_1l_3 - az_1r_3, y=azp_1r_3),color="green")+
+  geom_point(aes(x=az_1l_2 - az_1r_2, y=azp_1r_2),color="blue")+
+  geom_point(aes(x=az_1l_1 - az_1r_1, y=azp_1r_1),color="black")+
+  geom_abline(aes(intercept =0 ,slope=1))+
+  labs(title="diff wheels vs.  right front bogie - front axis")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+
+train_data %>% 
+  ggplot(.,aes(x=az_1l_5 + az_1r_5 +az_2l_5 + az_2r_5, y= azp_1r_5 + azp_1l_5 +azp_2r_5+azp_2l_5))+
+  geom_point(color="red")+
+  geom_point(aes(x=az_1l_4 + az_1r_4 + az_1l_4 + az_1r_4, y=azp_1r_4 + azp_1l_4 +azp_2r_4+azp_2l_4),color="orange")+
+  geom_point(aes(x=az_1l_3 + az_1r_3 + az_1l_3 + az_1r_3, y=azp_1r_3 + azp_1l_3 +azp_2r_3+azp_2l_3),color="green")+
+  geom_point(aes(x=az_1l_2 + az_1r_2 + az_1l_2 + az_1r_2, y=azp_1r_2 + azp_1l_2 +azp_2r_2+azp_2l_2),color="blue")+
+  geom_point(aes(x=az_1l_1 + az_1r_1 + az_1l_1 + az_1r_1, y=azp_1r_1 + azp_1l_1 +azp_2r_1+azp_2l_1),color="black")+
+  geom_abline(aes(intercept =0 ,slope=1))+
+  labs(title="sum wheels vs.  sum bogie - both axis - train set")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+
+test_data %>% 
+  ggplot(.,aes(x=az_1l_5 + az_1r_5 +az_2l_5 + az_2r_5, y= azp_1r_5 + azp_1l_5 +azp_2r_5+azp_2l_5))+
+  geom_point(color="red")+
+  geom_point(aes(x=az_1l_4 + az_1r_4 + az_1l_4 + az_1r_4, y=azp_1r_4 + azp_1l_4 +azp_2r_4+azp_2l_4),color="orange")+
+  geom_point(aes(x=az_1l_3 + az_1r_3 + az_1l_3 + az_1r_3, y=azp_1r_3 + azp_1l_3 +azp_2r_3+azp_2l_3),color="green")+
+  geom_point(aes(x=az_1l_2 + az_1r_2 + az_1l_2 + az_1r_2, y=azp_1r_2 + azp_1l_2 +azp_2r_2+azp_2l_2),color="blue")+
+  geom_point(aes(x=az_1l_1 + az_1r_1 + az_1l_1 + az_1r_1, y=azp_1r_1 + azp_1l_1 +azp_2r_1+azp_2l_1),color="black")+
+  geom_abline(aes(intercept =0 ,slope=1))+
+  labs(title="sum wheels vs.  sum bogie - both axis - test set")+
+  facet_grid(as.factor(Speed) ~as.factor(Track))
+
+train_data %>% filter(Track == 1 & Speed == 1.18 & ExperimentID >10 & ExperimentID<20) %>%
+  ggplot(.,aes(x = az_1r_1, fill = as.factor(ExperimentID))) +
+  geom_histogram(alpha=0.5,binwidth=0.001)+facet_wrap(~as.factor(Payload))
+
+train_data %>% filter(Track == 1 & Speed == 1.18 & ExperimentID >10 & ExperimentID<20) %>%
+ group_by(ExperimentID) %>% summarize(sum(ExperimentID>0))
+
+ggplot(train_data,aes(x=log(az_1r_1),fill=as.factor(Speed)))+
+  geom_histogram(binwidth=0.005,alpha=0.5)
+
+ggplot(test_data,aes(x=log(az_1r_1),fill=as.factor(Speed)))+
+  geom_histogram(binwidth=0.005,alpha=0.5)
+
+ggplot(train_data,aes(x=log(az_1r_1),fill=as.factor(Payload)))+
+  geom_histogram(binwidth=0.005,alpha=0.5)
+
+ggplot(test_data,aes(x=log(az_1r_1),fill=as.factor(Payload)))+
+  geom_histogram(binwidth=0.005,alpha=0.5)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
