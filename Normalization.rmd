@@ -1,0 +1,423 @@
+---
+title: "Normalization"
+author: "Antek"
+date: "20 July 2017"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+require(tidyr)
+library(plyr)
+library(dplyr)
+
+require(dplyr)
+require(ggplot2)
+
+```
+
+## Intro
+
+The goal here is to prepare normalization - which accounts for Payload and Speed in Accelerometers readings.
+
+the idea is to check per track point records and try and do normalization for each track point from the train set.
+
+```{r data prep, echo = FALSE}
+
+train_data <- readRDS("./input/train_data.RDS")
+test_data <- readRDS("./input/test_data.RDS")
+
+train_data <- train_data %>% group_by(ExperimentID) %>% mutate(lp = cumsum(Track))
+
+train_data$lp <- train_data$lp/train_data$Track
+
+summarize(group_by(train_data,Track),max_lp=max(lp))
+
+```
+
+## some plots {.tabset}
+
+### intro
+
+lets see - time point by time point on az readings
+
+### TRACK 2 - Right side wheels
+```{r plots track2 az, echo=FALSE}
+tr=2
+for(i in 1:108){
+
+p <- train_data %>% filter(lp==i & Track == tr) %>%
+  ggplot(.,aes(x=Payload,y=az_1r_1))+
+  geom_point(color="green",shape=1)+
+  geom_point(aes(x=Payload,y=az_2r_1),color="blue",shape=2)+
+  geom_point(aes(x=Payload,y=az_3r_1),color="orange",shape=3)+
+  geom_point(aes(x=Payload,y=az_4r_1),color="red",shape=4)+
+  facet_grid(.~Speed)+
+  labs(title=paste("right side wheels, Track ",tr,", freq 1,point: ",i,sep=""))
+show(p)
+
+p <- train_data %>% filter(lp==i & Track == tr) %>%
+  ggplot(.,aes(x=Payload,y=az_1r_2))+
+  geom_point(color="green",shape=1)+
+  geom_point(aes(x=Payload,y=az_2r_2),color="blue",shape=2)+
+  geom_point(aes(x=Payload,y=az_3r_2),color="orange",shape=3)+
+  geom_point(aes(x=Payload,y=az_4r_2),color="red",shape=4)+
+  facet_grid(.~Speed)+
+  labs(title=paste("right side wheels, Track ",tr,", freq 2,point: ",i,sep=""))
+show(p)
+
+p <- train_data %>% filter(lp==i & Track == tr) %>%
+  ggplot(.,aes(x=Payload,y=az_1r_3))+
+  geom_point(color="green",shape=1)+
+  geom_point(aes(x=Payload,y=az_2r_3),color="blue",shape=2)+
+  geom_point(aes(x=Payload,y=az_3r_3),color="orange",shape=3)+
+  geom_point(aes(x=Payload,y=az_4r_3),color="red",shape=4)+
+  facet_grid(.~Speed)+
+  labs(title=paste("right side wheels, Track ",tr,", freq 3,point: ",i,sep=""))
+show(p)
+
+p <- train_data %>% filter(lp==i & Track == tr) %>%
+  ggplot(.,aes(x=Payload,y=az_1r_4))+
+  geom_point(color="green",shape=1)+
+  geom_point(aes(x=Payload,y=az_2r_4),color="blue",shape=2)+
+  geom_point(aes(x=Payload,y=az_3r_4),color="orange",shape=3)+
+  geom_point(aes(x=Payload,y=az_4r_4),color="red",shape=4)+
+  facet_grid(.~Speed)+
+  labs(title=paste("right side wheels, Track ",tr,", freq 4,point: ",i,sep=""))
+show(p)
+
+p <- train_data %>% filter(lp==i & Track == tr) %>%
+  ggplot(.,aes(x=Payload,y=az_1r_5))+
+  geom_point(color="green",shape=1)+
+  geom_point(aes(x=Payload,y=az_2r_5),color="blue",shape=2)+
+  geom_point(aes(x=Payload,y=az_3r_5),color="orange",shape=3)+
+  geom_point(aes(x=Payload,y=az_4r_5),color="red",shape=4)+
+  facet_grid(.~Speed)+
+  labs(title=paste("right side wheels, Track ",tr,", freq 5, point: ",i,sep=""))
+
+show(p)
+}
+
+
+```
+
+
+### TRACK 1 - Right side wheels
+
+```{r plots track1 az, echo=FALSE}
+tr=1
+for(i in 1:108){
+
+p <- train_data %>% filter(lp==i & Track == tr) %>%
+  ggplot(.,aes(x=Payload,y=az_1r_1))+
+  geom_point(color="green",shape=1)+
+  geom_point(aes(x=Payload,y=az_2r_1),color="blue",shape=2)+
+  geom_point(aes(x=Payload,y=az_3r_1),color="orange",shape=3)+
+  geom_point(aes(x=Payload,y=az_4r_1),color="red",shape=4)+
+  facet_grid(.~Speed)+
+  labs(title=paste("right side wheels, Track ",tr,", freq 1,point: ",i,sep=""))
+show(p)
+
+p <- train_data %>% filter(lp==i & Track == tr) %>%
+  ggplot(.,aes(x=Payload,y=az_1r_2))+
+  geom_point(color="green",shape=1)+
+  geom_point(aes(x=Payload,y=az_2r_2),color="blue",shape=2)+
+  geom_point(aes(x=Payload,y=az_3r_2),color="orange",shape=3)+
+  geom_point(aes(x=Payload,y=az_4r_2),color="red",shape=4)+
+  facet_grid(.~Speed)+
+  labs(title=paste("right side wheels, Track ",tr,", freq 2,point: ",i,sep=""))
+show(p)
+
+p <- train_data %>% filter(lp==i & Track == tr) %>%
+  ggplot(.,aes(x=Payload,y=az_1r_3))+
+  geom_point(color="green",shape=1)+
+  geom_point(aes(x=Payload,y=az_2r_3),color="blue",shape=2)+
+  geom_point(aes(x=Payload,y=az_3r_3),color="orange",shape=3)+
+  geom_point(aes(x=Payload,y=az_4r_3),color="red",shape=4)+
+  facet_grid(.~Speed)+
+  labs(title=paste("right side wheels, Track ",tr,", freq 3,point: ",i,sep=""))
+show(p)
+
+p <- train_data %>% filter(lp==i & Track == tr) %>%
+  ggplot(.,aes(x=Payload,y=az_1r_4))+
+  geom_point(color="green",shape=1)+
+  geom_point(aes(x=Payload,y=az_2r_4),color="blue",shape=2)+
+  geom_point(aes(x=Payload,y=az_3r_4),color="orange",shape=3)+
+  geom_point(aes(x=Payload,y=az_4r_4),color="red",shape=4)+
+  facet_grid(.~Speed)+
+  labs(title=paste("right side wheels, Track ",tr,", freq 4,point: ",i,sep=""))
+show(p)
+
+p <- train_data %>% filter(lp==i & Track == tr) %>%
+  ggplot(.,aes(x=Payload,y=az_1r_5))+
+  geom_point(color="green",shape=1)+
+  geom_point(aes(x=Payload,y=az_2r_5),color="blue",shape=2)+
+  geom_point(aes(x=Payload,y=az_3r_5),color="orange",shape=3)+
+  geom_point(aes(x=Payload,y=az_4r_5),color="red",shape=4)+
+  facet_grid(.~Speed)+
+  labs(title=paste("right side wheels, Track ",tr,", freq 5, point: ",i,sep=""))
+
+show(p)
+}
+
+
+```
+
+### TRACK 2 - Right  side bogie
+
+```{r plots track2 azp, echo=FALSE}
+
+for(i in 1:108){
+
+p <- train_data %>% filter(lp==i & Track == 2) %>%
+  ggplot(.,aes(x=Payload,y=azp_1r_1))+
+  geom_point(color="green",shape=1)+
+  geom_point(aes(x=Payload,y=azp_2r_1),color="blue",shape=2)+
+  geom_point(aes(x=Payload,y=azp_3r_1),color="orange",shape=3)+
+  geom_point(aes(x=Payload,y=azp_4r_1),color="red",shape=4)+
+  facet_grid(.~Speed)+
+  labs(title=paste("right side bogie, Track 2, freq 1,point: ",i,sep=""))
+show(p)
+
+p <- train_data %>% filter(lp==i & Track == 2) %>%
+  ggplot(.,aes(x=Payload,y=azp_1r_2))+
+  geom_point(color="green",shape=1)+
+  geom_point(aes(x=Payload,y=azp_2r_2),color="blue",shape=2)+
+  geom_point(aes(x=Payload,y=azp_3r_2),color="orange",shape=3)+
+  geom_point(aes(x=Payload,y=azp_4r_2),color="red",shape=4)+
+  facet_grid(.~Speed)+
+  labs(title=paste("right side bogie, Track 2, freq 2,point: ",i,sep=""))
+show(p)
+
+p <- train_data %>% filter(lp==i & Track == 2) %>%
+  ggplot(.,aes(x=Payload,y=azp_1r_3))+
+  geom_point(color="green",shape=1)+
+  geom_point(aes(x=Payload,y=azp_2r_3),color="blue",shape=2)+
+  geom_point(aes(x=Payload,y=azp_3r_3),color="orange",shape=3)+
+  geom_point(aes(x=Payload,y=azp_4r_3),color="red",shape=4)+
+  facet_grid(.~Speed)+
+  labs(title=paste("right side bogie, Track 2, freq 3,point: ",i,sep=""))
+show(p)
+
+p <- train_data %>% filter(lp==i & Track == 2) %>%
+  ggplot(.,aes(x=Payload,y=azp_1r_4))+
+  geom_point(color="green",shape=1)+
+  geom_point(aes(x=Payload,y=azp_2r_4),color="blue",shape=2)+
+  geom_point(aes(x=Payload,y=azp_3r_4),color="orange",shape=3)+
+  geom_point(aes(x=Payload,y=azp_4r_4),color="red",shape=4)+
+  facet_grid(.~Speed)+
+  labs(title=paste("right side bogie, Track 2, freq 4,point: ",i,sep=""))
+show(p)
+
+p <- train_data %>% filter(lp==i & Track == 2) %>%
+  ggplot(.,aes(x=Payload,y=azp_1r_5))+
+  geom_point(color="green",shape=1)+
+  geom_point(aes(x=Payload,y=azp_2r_5),color="blue",shape=2)+
+  geom_point(aes(x=Payload,y=azp_3r_5),color="orange",shape=3)+
+  geom_point(aes(x=Payload,y=azp_4r_5),color="red",shape=4)+
+  facet_grid(.~Speed)+
+  labs(title=paste("right side bogie, Track 2, freq 5, point: ",i,sep=""))
+
+show(p)
+}
+
+
+```
+
+### TRACK 1 - Right side  bogie
+
+```{r plots track 1 az, echo=FALSE}
+
+for(i in 1:108){
+
+p <- train_data %>% filter(lp==i & Track == 1) %>%
+  ggplot(.,aes(x=Payload,y=azp_1r_1))+
+  geom_point(color="green",shape=1)+
+  geom_point(aes(x=Payload,y=azp_2r_1),color="blue",shape=2)+
+  geom_point(aes(x=Payload,y=azp_3r_1),color="orange",shape=3)+
+  geom_point(aes(x=Payload,y=azp_4r_1),color="red",shape=4)+
+  facet_grid(.~Speed)+
+  labs(title=paste("right side bogie, Track 1, freq 1,point: ",i,sep=""))
+show(p)
+
+p <- train_data %>% filter(lp==i & Track == 1) %>%
+  ggplot(.,aes(x=Payload,y=azp_1r_2))+
+  geom_point(color="green",shape=1)+
+  geom_point(aes(x=Payload,y=azp_2r_2),color="blue",shape=2)+
+  geom_point(aes(x=Payload,y=azp_3r_2),color="orange",shape=3)+
+  geom_point(aes(x=Payload,y=azp_4r_2),color="red",shape=4)+
+  facet_grid(.~Speed)+
+  labs(title=paste("right side bogie, Track 1, freq 2,point: ",i,sep=""))
+show(p)
+
+p <- train_data %>% filter(lp==i & Track == 1) %>%
+  ggplot(.,aes(x=Payload,y=azp_1r_3))+
+  geom_point(color="green",shape=1)+
+  geom_point(aes(x=Payload,y=azp_2r_3),color="blue",shape=2)+
+  geom_point(aes(x=Payload,y=azp_3r_3),color="orange",shape=3)+
+  geom_point(aes(x=Payload,y=azp_4r_3),color="red",shape=4)+
+  facet_grid(.~Speed)+
+  labs(title=paste("right side bogie, Track 1, freq 3,point: ",i,sep=""))
+show(p)
+
+p <- train_data %>% filter(lp==i & Track == 1) %>%
+  ggplot(.,aes(x=Payload,y=azp_1r_4))+
+  geom_point(color="green",shape=1)+
+  geom_point(aes(x=Payload,y=azp_2r_4),color="blue",shape=2)+
+  geom_point(aes(x=Payload,y=azp_3r_4),color="orange",shape=3)+
+  geom_point(aes(x=Payload,y=azp_4r_4),color="red",shape=4)+
+  facet_grid(.~Speed)+
+  labs(title=paste("right side bogie, Track 1, freq 4,point: ",i,sep=""))
+show(p)
+
+p <- train_data %>% filter(lp==i & Track == 1) %>%
+  ggplot(.,aes(x=Payload,y=azp_1r_5))+
+  geom_point(color="green",shape=1)+
+  geom_point(aes(x=Payload,y=azp_2r_5),color="blue",shape=2)+
+  geom_point(aes(x=Payload,y=azp_3r_5),color="orange",shape=3)+
+  geom_point(aes(x=Payload,y=azp_4r_5),color="red",shape=4)+
+  facet_grid(.~Speed)+
+  labs(title=paste("right side bogie, Track 1, freq 5, point: ",i,sep=""))
+
+show(p)
+}
+
+
+```
+
+###Platform readings - track 1  
+```{r plots track 1 azs, echo=FALSE}
+
+for(i in 1:108){
+
+p <- train_data %>% filter(lp==i & Track == 1) %>%
+  ggplot(.,aes(x=Payload,y=azs_1_1))+
+  geom_point(color="green",shape=1)+
+  geom_point(aes(x=Payload,y=azs_2_1),color="blue",shape=2)+
+  facet_grid(.~Speed)+
+  labs(title=paste("Platform, Track 1, freq 1,point: ",i,sep=""))
+show(p)
+
+p <- train_data %>% filter(lp==i & Track == 1) %>%
+  ggplot(.,aes(x=Payload,y=azs_1_2))+
+  geom_point(color="green",shape=1)+
+  geom_point(aes(x=Payload,y=azs_2_2),color="blue",shape=2)+
+  facet_grid(.~Speed)+
+  labs(title=paste("Platform, Track 1, freq 2,point: ",i,sep=""))
+show(p)
+
+p <- train_data %>% filter(lp==i & Track == 1) %>%
+  ggplot(.,aes(x=Payload,y=azs_1_3))+
+  geom_point(color="green",shape=1)+
+  geom_point(aes(x=Payload,y=azs_2_3),color="blue",shape=2)+
+  facet_grid(.~Speed)+
+  labs(title=paste("Platform, Track 1, freq 3,point: ",i,sep=""))
+show(p)
+
+p <- train_data %>% filter(lp==i & Track == 1) %>%
+  ggplot(.,aes(x=Payload,y=azs_1_4))+
+  geom_point(color="green",shape=1)+
+  geom_point(aes(x=Payload,y=azs_2_4),color="blue",shape=2)+
+  facet_grid(.~Speed)+
+  labs(title=paste("Platform, Track 1, freq 3,point: ",i,sep=""))
+show(p)
+
+p <- train_data %>% filter(lp==i & Track == 1) %>%
+  ggplot(.,aes(x=Payload,y=azs_1_5))+
+  geom_point(color="green",shape=1)+
+  geom_point(aes(x=Payload,y=azs_2_5),color="blue",shape=2)+
+  facet_grid(.~Speed)+
+  labs(title=paste("Platform, Track 1, freq 3,point: ",i,sep=""))
+show(p)
+
+}
+
+
+```
+ 
+###Platform readings - track 2  
+```{r plots track 2 azs, echo=FALSE}
+i=1
+for(i in 1:108){
+
+p <- train_data %>% filter(lp==i & Track == 2) %>%
+  ggplot(.,aes(x=Payload,y=azs_1_1))+
+  geom_point(color="green",shape=1)+
+  geom_point(aes(x=Payload,y=azs_2_1),color="blue",shape=2)+
+  facet_grid(.~Speed)+
+  labs(title=paste("Platform, Track 2, freq 1,point: ",i,sep=""))
+show(p)
+
+p <- train_data %>% filter(lp==i & Track == 2) %>%
+  ggplot(.,aes(x=Payload,y=azs_1_2))+
+  geom_point(color="green",shape=1)+
+  geom_point(aes(x=Payload,y=azs_2_2),color="blue",shape=2)+
+  facet_grid(.~Speed)+
+  labs(title=paste("Platform, Track 2, freq 2,point: ",i,sep=""))
+show(p)
+
+p <- train_data %>% filter(lp==i & Track == 2) %>%
+  ggplot(.,aes(x=Payload,y=azs_1_3))+
+  geom_point(color="green",shape=1)+
+  geom_point(aes(x=Payload,y=azs_2_3),color="blue",shape=2)+
+  facet_grid(.~Speed)+
+  labs(title=paste("Platform, Track 2, freq 3,point: ",i,sep=""))
+show(p)
+
+p <- train_data %>% filter(lp==i & Track == 2) %>%
+  ggplot(.,aes(x=Payload,y=azs_1_4))+
+  geom_point(color="green",shape=1)+
+  geom_point(aes(x=Payload,y=azs_2_4),color="blue",shape=2)+
+  facet_grid(.~Speed)+
+  labs(title=paste("Platform, Track 2, freq 3,point: ",i,sep=""))
+show(p)
+
+p <- train_data %>% filter(lp==i & Track == 2) %>%
+  ggplot(.,aes(x=Payload,y=azs_1_5))+
+  geom_point(color="green",shape=1)+
+  geom_point(aes(x=Payload,y=azs_2_5),color="blue",shape=2)+
+  facet_grid(.~Speed)+
+  labs(title=paste("Platform, Track 2, freq 3,point: ",i,sep=""))
+show(p)
+
+}
+
+
+```
+
+## Test data {.tabset}
+
+###Same plots as for train data 
+ will look at test set with train set overlaid - once we have matched test readings to train readings...
+
+
+
+## CONCLUSIONS
+
+### track 2 - Right side bogie
+
+1. each acc works differently - tilting of the bogie?
+  
+2. each point works differently:    
+  1. some points have same reading for both speeds  
+  2. some points have higher readings for higher speed and the same order  (not a rule)
+  3. some points have differenc variations in readings between speed  
+  <b>4. some points have very small variation on both side - and no correlation with speed </b>
+  5. in general - no or small correlation to payload
+  6. freq == 1 - low readings - lots and lots of variation
+  
+### track 2 - right wheels
+
+1. all 4 wheels operate similarly  
+2. freq1 - mess - high variation - low reading values  
+3. higher speed - higer reading - but not always - different between frequencies  
+4. similar story for track 1 (higher speeds) - some corelation with Speed - but different at every point  
+5. no clear corelation with Payload  
+6. usually range/variation within 0.1
+  
+
+  
