@@ -17,6 +17,7 @@ library(dplyr)
 
 require(dplyr)
 require(ggplot2)
+require(broom)
 
 ```
 
@@ -34,6 +35,7 @@ test_data <- readRDS("./input/test_data.RDS")
 train_data <- train_data %>% group_by(ExperimentID) %>% mutate(lp = cumsum(Track))
 
 train_data$lp <- train_data$lp/train_data$Track
+train <- train_data %>% gather(acc, reading, -State, -ExperimentID, -Track, -Speed, -Payload,-lp)
 
 summarize(group_by(train_data,Track),max_lp=max(lp))
 
@@ -46,9 +48,15 @@ summarize(group_by(train_data,Track),max_lp=max(lp))
 lets see - time point by time point on az readings
 
 ### TRACK 2 - Right side wheels
+  
+1 = green  
+2 = blue  
+3 = orange  
+4 = red  
+
 ```{r plots track2 az, echo=FALSE}
 tr=2
-for(i in 1:108){
+for(i in 1:20){
 
 p <- train_data %>% filter(lp==i & Track == tr) %>%
   ggplot(.,aes(x=Payload,y=az_1r_1))+
@@ -110,7 +118,7 @@ show(p)
 
 ```{r plots track1 az, echo=FALSE}
 tr=1
-for(i in 1:108){
+for(i in 1:20){
 
 p <- train_data %>% filter(lp==i & Track == tr) %>%
   ggplot(.,aes(x=Payload,y=az_1r_1))+
@@ -168,10 +176,14 @@ show(p)
 ```
 
 ### TRACK 2 - Right  side bogie
-
+  
+1 = green  
+2 = blue  
+3 = orange  
+4 = red  
 ```{r plots track2 azp, echo=FALSE}
 
-for(i in 1:108){
+for(i in 1:20){
 
 p <- train_data %>% filter(lp==i & Track == 2) %>%
   ggplot(.,aes(x=Payload,y=azp_1r_1))+
@@ -232,7 +244,7 @@ show(p)
 
 ```{r plots track 1 az, echo=FALSE}
 
-for(i in 1:108){
+for(i in 1:20){
 
 p <- train_data %>% filter(lp==i & Track == 1) %>%
   ggplot(.,aes(x=Payload,y=azp_1r_1))+
@@ -292,7 +304,7 @@ show(p)
 ###Platform readings - track 1  
 ```{r plots track 1 azs, echo=FALSE}
 
-for(i in 1:108){
+for(i in 1:20){
 
 p <- train_data %>% filter(lp==i & Track == 1) %>%
   ggplot(.,aes(x=Payload,y=azs_1_1))+
@@ -340,9 +352,13 @@ show(p)
 ```
  
 ###Platform readings - track 2  
+
+fwd = green
+aft = blue
+
 ```{r plots track 2 azs, echo=FALSE}
 i=1
-for(i in 1:108){
+for(i in 1:20){
 
 p <- train_data %>% filter(lp==i & Track == 2) %>%
   ggplot(.,aes(x=Payload,y=azs_1_1))+
@@ -373,7 +389,7 @@ p <- train_data %>% filter(lp==i & Track == 2) %>%
   geom_point(color="green",shape=1)+
   geom_point(aes(x=Payload,y=azs_2_4),color="blue",shape=2)+
   facet_grid(.~Speed)+
-  labs(title=paste("Platform, Track 2, freq 3,point: ",i,sep=""))
+  labs(title=paste("Platform, Track 2, freq 4,point: ",i,sep=""))
 show(p)
 
 p <- train_data %>% filter(lp==i & Track == 2) %>%
@@ -381,7 +397,7 @@ p <- train_data %>% filter(lp==i & Track == 2) %>%
   geom_point(color="green",shape=1)+
   geom_point(aes(x=Payload,y=azs_2_5),color="blue",shape=2)+
   facet_grid(.~Speed)+
-  labs(title=paste("Platform, Track 2, freq 3,point: ",i,sep=""))
+  labs(title=paste("Platform, Track 2, freq 5,point: ",i,sep=""))
 show(p)
 
 }
@@ -394,7 +410,34 @@ show(p)
 ###Same plots as for train data 
  will look at test set with train set overlaid - once we have matched test readings to train readings...
 
+## Platform Regression
 
+the intent here is to do a regression per:
+1. track
+2. Speed
+3. frequency
+where azs_1_i = C1 + C2 * Payload +e
+
+e= residual
+
+```{r regression}
+
+# model_1_1 - front acc freq 1
+# model_2_1 - rear acc freq 1
+
+
+test1 <- train_data %>% 
+  group_by(lp,Track,Speed) %>%
+  summarise(azs_1_1_mean = mean(azs_1_1))
+
+test2 <- train %>% 
+  filter(acc == "azs_1_1" | acc == "azs_1_2" | acc == "azs_2_1" | acc == "azs_2_2") %>%
+  group_by(Track, Speed, lp, acc) %>%
+  do(fit11 = lm(reading ~ Payload,data = .))
+
+
+
+```
 
 ## CONCLUSIONS
 
