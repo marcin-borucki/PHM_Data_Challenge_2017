@@ -103,9 +103,10 @@ lag_determ <- function(train_d = train_data,
                        test_d = test_data,
                        test_expID = NULL,
                        prefix = "az_",
-                       cut_off = 0.4) {
+                       sufix = "1",
+                       cut_off = 0.1) {
     track_ID <- test_d %>% filter(ExperimentID == test_expID) %>%
-        summarise(ExperimentID = first(ExperimentID))
+        summarise(Track = first(Track))
     
     train_track_IDs <-
         train_d %>% filter(Track == as.numeric(track_ID)) %>%
@@ -115,6 +116,7 @@ lag_determ <- function(train_d = train_data,
     tr_var <-
         test_d %>%
         select(starts_with(prefix)) %>%
+        select(ends_with(sufix)) %>%
         names() %>%
         data_frame()  %>%  mutate(k = 1) %>%
         inner_join(train_track_IDs %>%
@@ -133,8 +135,8 @@ lag_determ <- function(train_d = train_data,
                       test_expID = test_expID,
                       var = df$vars
                   )
-              },
-              .parallel = TRUE
+              }
+              # .parallel = TRUE
               # .progress = progress_text(char = ".")
               )
               oo <-
@@ -203,12 +205,13 @@ cl = createCluster(
     lib = list("plyr", "dplyr")
 )
 
-system.time(t <- ddply(data_frame(ExID = 1:200),
+system.time(t <- ddply(data_frame(ExID = 3:5),
                        .(ExID),
                        function(df)  {
-                           lag_determ(test_expID = df$ExID)
+                           lag_determ(test_expID = df$ExID, cut_off = 0.0)
                        },
-                       .parallel = TRUE
+                       # .parallel = TRUE
+                       .progress = progress_text(char = ".")
                        )
 )
                        
