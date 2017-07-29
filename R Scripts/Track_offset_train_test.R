@@ -12,6 +12,8 @@
 require(ggplot2)
 require(plyr)
 require(dplyr)
+require(zoo)
+
 
 #' Cross corelation from stack overflow leveraged to terermine offset
 #' https://stats.stackexchange.com/questions/31666/how-can-i-align-synchronize-two-signals
@@ -28,30 +30,26 @@ cor.cross <- function(x0, y0) {
     x <- as.vector(x0)
     y <- as.vector(y0)
     n <- length(x[[1]])
-    y_n <- length(y[[1]])
-    cor_offset <- adply(ll <- 1:(y_n - n), 1, function(off_set) {
-        cor(x[1:n, 1], y[(1 + off_set):(n + off_set), 1], use = "complete.obs")
-    })
+    cor_offset <- rollapply(
+        y,
+        n,
+        align = "left",
+        FUN = function(z)
+            cor(
+                z,
+                x,
+                use = "complete.obs"
+            )
+    )
+    cor_offset <- bind_cols(data_frame(1:length(cor_offset)),data_frame(cor_offset[,1]))
     
     names(cor_offset) <- c("offset", "cor_val")
-    
-    cor_offset[, 1] <- as.numeric((cor_offset[, 1]))
     cor_offset
-}
 
-t <-
-    cor.cross(
-        test_data %>% filter(ExperimentID == 1) %>% select(matches("az_1r_1")),
-        train_data %>% filter(ExperimentID == 1) %>% select(matches("az_1r_1"))
-    )
+    }
 
 
-data.cor <- sapply(time.range, function(i)
-    cor.cross(e, v, i))
-i <- time.range[which.max(data.cor)]
-print(paste("Expansion lags volume by", i / v.frequency, "seconds."))
-
-
+    
 #' Slecting max corelated lag for the two time series - Finding the missmatch
 #'
 #' @param train_d
@@ -76,14 +74,6 @@ max_acf_lag <-
                 train_d %>% filter(ExperimentID == train_expID) %>% select(matches(var))
                 
             )
-        
-        # b <-
-        #     do.call(cbind, lapply(list(
-        #         lag = a$lag, acf = a$acf
-        #     ), data.frame, stringsAsFactors = FALSE))
-        #
-        # names(b) <- c("lag", "acf")
-        #
         a %>% filter(cor_val == max(cor_val))
         
     }
@@ -103,7 +93,7 @@ lag_determ <- function(train_d = train_data,
                        test_d = test_data,
                        test_expID = NULL,
                        prefix = "az_",
-                       sufix = "1",
+                       sufix = "2",
                        cut_off = 0.1) {
     track_ID <- test_d %>% filter(ExperimentID == test_expID) %>%
         summarise(Track = first(Track))
@@ -135,18 +125,22 @@ lag_determ <- function(train_d = train_data,
                       test_expID = test_expID,
                       var = df$vars
                   )
-              }
-              # .parallel = TRUE
+              },
+              .parallel = TRUE
+              # .parports = list(.export = c(
+              #     "lag_determ",
+              #     "max_acf_lag",
+              #     "cor.cross",
+              #     "train_data",
+              #     "test_data" ),
+              #    .packages = c("plyr", "dplyr", "zoo")
+                 # )
               # .progress = progress_text(char = ".")
               )
               oo <-
-                  stats_per_testExp %>% filter(cor_val > cut_off) %>% select(offset)
-              
-              pp <- rbind(sort(table(oo), decreasing = TRUE)[1] , test_expID)
-              pp <- t(pp)
-              pp <- cbind(rownames(pp), pp)
-              names(pp) <- c("Offset", "count", "ExperimentID")
-              pp
+                  stats_per_testExp %>% mutate(Test_ExpID = test_expID)
+                  #filter(cor_val > cut_off) %>% select(offset)
+      oo        
 }
 
 clusterExport <- local({
@@ -194,7 +188,7 @@ createCluster = function(noCores,
 }
 
 cl = createCluster(
-    4,
+    3,
     export = list(
         "lag_determ",
         "max_acf_lag",
@@ -202,19 +196,102 @@ cl = createCluster(
         "train_data",
         "test_data"
     ),
-    lib = list("plyr", "dplyr")
+    lib = list("plyr", "dplyr", "zoo")
 )
 
-system.time(t <- ddply(data_frame(ExID = 3:5),
-                       .(ExID),
-                       function(df)  {
-                           lag_determ(test_expID = df$ExID, cut_off = 0.0)
-                       },
-                       # .parallel = TRUE
-                       .progress = progress_text(char = ".")
-                       )
-)
-                       
+
+test_offset_correlations_1 <- ddply(data_frame(ExID = 1:200),
+                                    .(ExID),
+                                    function(df)  {
+                                        lag_determ(test_expID = df$ExID,
+                                                   cut_off = 0.0,
+                                                   sufix = "1")
+                                    },
+                                    # .parallel = TRUE
+                                    .progress = progress_text(char = "."))
+test_offset_correlations_2 <- ddply(data_frame(ExID = 1:200),
+                                    .(ExID),
+                                    function(df)  {
+                                        lag_determ(test_expID = df$ExID,
+                                                   cut_off = 0.0,
+                                                   sufix = "2")
+                                    },
+                                    # .parallel = TRUE
+                                    .progress = progress_text(char = "."))
+test_offset_correlations_3 <- ddply(data_frame(ExID = 1:200),
+                                    .(ExID),
+                                    function(df)  {
+                                        lag_determ(test_expID = df$ExID,
+                                                   cut_off = 0.0,
+                                                   sufix = "3")
+                                    },
+                                    # .parallel = TRUE
+                                    .progress = progress_text(char = "."))
+
+test_offset_correlations_4 <- ddply(data_frame(ExID = 1:200),
+                                    .(ExID),
+                                    function(df)  {
+                                        lag_determ(test_expID = df$ExID,
+                                                   cut_off = 0.0,
+                                                   sufix = "4")
+                                    },
+                                    # .parallel = TRUE
+                                    .progress = progress_text(char = "."))
+test_offset_correlations_5 <- ddply(data_frame(ExID = 1:200),
+                                    .(ExID),
+                                    function(df)  {
+                                        lag_determ(test_expID = df$ExID,
+                                                   cut_off = 0.0,
+                                                   sufix = "5")
+                                    },
+                                    # .parallel = TRUE
+                                    .progress = progress_text(char = "."))
+test_offset_correlations_az <-
+    bind_rows(
+        test_offset_correlations_1,
+        test_offset_correlations_2,
+        test_offset_correlations_3,
+        test_offset_correlations_4,
+        test_offset_correlations_5
+    )
+
+
 stopCluster(cl)
-   
-                    
+
+system.time(
+test_offset_correlations_azp <- ddply(inner_join(data_frame(ExID = 1:200, k=1),
+                                                 data_frame(Band = 1:5, k=1)) %>% 
+                                          select(-k),
+                                    .(ExID, Band),
+                                    function(df)  {
+                                        lag_determ(test_expID = as.character((df$ExID)),
+                                                   cut_off = 0.0,
+                                                    prefix = "azp_",
+                                                   sufix = as.character((df$Band)))
+                                    },
+                                     # .parallel = TRUE
+                                    .progress = progress_text(char = ".")
+                                    )
+ )
+
+system.time(
+    test_offset_correlations_azs <- ddply(inner_join(data_frame(ExID = 1:200, k=1),
+                                                 data_frame(Band = 1:5, k=1)) %>% 
+                                          select(-k),
+                                      .(ExID, Band),
+                                      function(df)  {
+                                          lag_determ(test_expID = as.character(df$ExID),
+                                                     cut_off = 0.0,
+                                                     prefix = "azs_",
+                                                     sufix = as.character(df$Band))
+                                      },
+                                      # .parallel = TRUE
+                                      .progress = progress_text(char = "."))
+)
+
+
+
+write.csv(test_offset_correlations_azs, file = "./input/test_offset_correlations_azs.csv")
+
+saveRDS(test_offset_correlations_azs, file = "./input/test_offset_correlations_azs.RDS")
+
