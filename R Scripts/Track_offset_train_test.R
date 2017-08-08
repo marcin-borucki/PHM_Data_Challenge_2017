@@ -259,34 +259,34 @@ test_offset_correlations_az <-
 stopCluster(cl)
 
 system.time(
-test_offset_correlations_azp <- ddply(inner_join(data_frame(ExID = 1:200, k=1),
-                                                 data_frame(Band = 1:5, k=1)) %>% 
-                                          select(-k),
-                                    .(ExID, Band),
-                                    function(df)  {
-                                        lag_determ(test_expID = as.character((df$ExID)),
-                                                   cut_off = 0.0,
-                                                    prefix = "azp_",
-                                                   sufix = as.character((df$Band)))
-                                    },
-                                     # .parallel = TRUE
-                                    .progress = progress_text(char = ".")
-                                    )
- )
+    test_offset_correlations_azp <- ddply(inner_join(data_frame(ExID = 1:200, k=1),
+                                                     data_frame(Band = 1:5, k=1)) %>% 
+                                              select(-k),
+                                          .(ExID, Band),
+                                          function(df)  {
+                                              lag_determ(test_expID = as.character((df$ExID)),
+                                                         cut_off = 0.0,
+                                                         prefix = "azp_",
+                                                         sufix = as.character((df$Band)))
+                                          },
+                                          # .parallel = TRUE
+                                          .progress = progress_text(char = ".")
+    )
+)
 
 system.time(
     test_offset_correlations_azs <- ddply(inner_join(data_frame(ExID = 1:200, k=1),
-                                                 data_frame(Band = 1:5, k=1)) %>% 
-                                          select(-k),
-                                      .(ExID, Band),
-                                      function(df)  {
-                                          lag_determ(test_expID = as.character(df$ExID),
-                                                     cut_off = 0.0,
-                                                     prefix = "azs_",
-                                                     sufix = as.character(df$Band))
-                                      },
-                                      # .parallel = TRUE
-                                      .progress = progress_text(char = "."))
+                                                     data_frame(Band = 1:5, k=1)) %>% 
+                                              select(-k),
+                                          .(ExID, Band),
+                                          function(df)  {
+                                              lag_determ(test_expID = as.character(df$ExID),
+                                                         cut_off = 0.0,
+                                                         prefix = "azs_",
+                                                         sufix = as.character(df$Band))
+                                          },
+                                          # .parallel = TRUE
+                                          .progress = progress_text(char = "."))
 )
 
 
@@ -294,4 +294,18 @@ system.time(
 write.csv(test_offset_correlations_azs, file = "./input/test_offset_correlations_azs.csv")
 
 saveRDS(test_offset_correlations_azs, file = "./input/test_offset_correlations_azs.RDS")
+
+head(test_offset_correlations_az)
+table(test_offset_correlations_az$offset, test_offset_correlations_az$Test_ExpID)
+
+test_offsets_az <- test_offset_correlations_az %>% group_by( Test_ExpID,offset) %>%
+    dplyr::summarise(count = n()) %>% ungroup() %>% group_by( Test_ExpID) %>%
+    filter(count == max(count))
+
+test_offsets_azp <- test_offset_correlations_azp %>% group_by( Test_ExpID,offset) %>%
+    dplyr::summarise(count = n()) %>% ungroup() %>% group_by( Test_ExpID) %>%
+    filter(count == max(count))
+
+test_offsets_az
+test_offsets_azp  <-         test_offsets_azp[with(test_offsets_azp, order(test_offsets_azp$Test_ExpID)),]
 

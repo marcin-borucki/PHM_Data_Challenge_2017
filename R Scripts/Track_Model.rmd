@@ -1,0 +1,193 @@
+---
+title: "Track_Model"
+author: "AT"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+require(tidyr)
+library(plyr)
+library(dplyr)
+require(tidyr)
+require(dplyr)
+require(ggplot2)
+```
+
+## Data In
+
+Readin in data and preparing data frames
+
+```{r cars}
+
+# test_det <- read.csv("./input/testing.csv",sep = ",",header = TRUE)
+getwd()
+ train_data <- readRDS("../input/train_data.RDS")
+ test_data <- readRDS("../input/test_data.RDS")
+
+train_data <- train_data %>% group_by(ExperimentID) %>% mutate(lp = cumsum(Track))
+
+train_data$lp <- train_data$lp/train_data$Track
+
+train <- train_data %>% gather(acc, reading, -State, -ExperimentID, -Track, -Speed, -Payload,-lp )
+
+test_data <- test_data %>% 
+  group_by(ExperimentID) %>% mutate(lp = cumsum(Track))
+
+test_data$lp <- test_data$lp/test_data$Track
+
+
+# normalize <-readRDS("./input/test_offset_correlations.RDS")
+# 
+# norm <- summarize(group_by(normalize,ExID, vars),
+#                   max_off=max(offset),mean_off=mean(offset),
+#                   min_off=min(offset),
+#                   med_off=median(offset))
+
+# # list1 <- norm %>% 
+#   filter(max_off != min_off) %>% 
+#   group_by(ExID) %>% 
+#   summarize(count = sum(ExID > 0),
+#             off = median(med_off))
+
+# list2 <- norm %>%
+#   group_by(ExID) %>%
+#   summarize(off=median(med_off))
+
+list2 <- test_offsets[,-2]
+names(list2) <- c("ExID", "off")
+    
+test_data <- merge(test_data,list2,by.x="ExperimentID",by.y = "ExID")
+
+#rm(train_off)
+# test_off <- merge(test,list1,by.x="ExperimentID",by.y="ExID")
+
+# list1 <- merge(list1,test_det,by.x = "ExID", by.y = "ExperimentID")
+
+test <- test_data %>% gather(acc, reading, -State, -ExperimentID, -Track, -Speed, -Payload,-lp, -off)
+
+test$lp_off <- test$lp + test$off - 1
+
+
+
+```
+
+```{r}
+param = "az_3r_2"
+
+id = 1
+p <- train %>%
+  filter(acc == param &
+           lp > (list2$off[id] - 1)  &
+           lp < (list2$off[id] + 50) &
+           Track == 1 ) %>%
+  ggplot(.)+
+  geom_point(aes(x=lp,y=reading,color=Payload))
+
+p + test %>% filter(acc == param & ExperimentID == list2$ExID[id]) %>%
+  geom_point(data=.,aes(x=lp_off,y=reading),color="red",shape=4,size=4)+
+  labs(title=param)
+
+```
+
+## Track Model All
+
+First Track Model - for all parameters  
+
+```{r TrackModel1}
+
+train$Payload2 <- train$Payload * train$Payload
+train$Payload2 <- train$Payload * train$Payload
+
+train$Speed2 <- train$Speed * train$Speed
+test$Speed2 <- test$Speed * test$Speed
+
+train$Speed_f <- as.factor(train$Speed)
+
+test$Speed_f <- as.factor(test$Speed)
+
+fit_all_light <- train %>% 
+  group_by(Track, lp, acc) %>%
+  do(fit11 = stripGlmLR(lm(reading ~ Payload + Payload2 + Speed , data = .)))
+
+saveRDS(fit_all,file="fit_all.RDS")
+#need to add offsets 
+# rm(test_w_fits)
+# test_w_fits <- merge(test,fit_all, 
+#               by.x=c("lp_off","Track","acc"), 
+#               by.y=c("lp","Track","acc"), 
+#               all.x = TRUE)
+# 
+# 
+# train_w_fits <- merge(train,fit_all, 
+#               by.x=c("lp","Track","acc"), 
+#               by.y=c("lp","Track","acc"), 
+#               all.x = TRUE)
+
+ predict(fit_all$fit11[[1]], test[1:5,])    
+
+test_w_pred <- test[1,] %>% do(data.frame(param = .$acc,
+                                             value = .$reading,
+                                             num =  .$lp,
+                                             Tr = .$Track,
+                                             Speed = .$Speed,
+                                             Payload = .$Payload,
+                                             Payload2 = .$Payload2,
+                                             pred <- predict(fit_all %>% 
+                                                                 filter(Track == .$Track &
+                                                                        lp == .$lp &
+                                                                        acc == .$acc) %>% 
+                                                                 select("fit11"),
+                                                             newdata = .)
+                                             ))
+
+
+test_fit <- ddply(
+    test,
+    .(ExperimentID, lp_off, acc),
+    .fun = function(df) {
+    exptd_reading <- predict(fit_all_light[fit_all_light$Track == df$Track &
+    fit_all_light$lp == df$lp_off &
+    fit_all_light$acc == df$acc, ]$fit11[[1]],
+    newdata = df)
+    },
+    .progress = progress_text(style = 3)
+    )
+    
+# names(test_fit)[4] <- "exptd_reading"
+saveRDS(test_fit, "../input/test_fit.RDS")
+
+getModelSize(ttp)
+
+train_fit <- ddply(
+    train,
+    .(Track, lp, acc),
+    .fun = function(df) {
+        exptd_reading <- predict(fit_all_light[fit_all_light$Track == max(df$Track) &
+        fit_all_light$lp == max(df$lp) &
+        fit_all_light$acc == max(df$acc),]$fit11[[1]],
+        newdata = df)
+    },
+    # .parallel = TRUE,
+.progress = progress_text(style = 3)
+)
+
+gc()
+rm(fit_all)
+ttp  <- fit_all[fit_all$Track == 1 &
+        fit_all$lp == 1 &
+        fit_all$acc == param,]$fit11[[1]]
+
+ttpp <- stripGlmLR(ttp)
+ttp <-  fit_all %>%   filter(Track == 1 &
+lp == 1 &
+acc == param) %>%
+select(fit11[[1]])
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

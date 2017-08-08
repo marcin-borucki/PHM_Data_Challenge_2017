@@ -37,8 +37,8 @@ dist_test_offsets <- test_offsets[,2:3] %>% distinct()
 
 train_data <- train_data %>% group_by(ExperimentID) %>% mutate(timeID = row_number()) 
 
-
-
+# This coefficients dont seem to be moving us forward...
+do
 Train_ampl_coef_offset <- ddply(
     dist_test_offsets,
     .(Track, offset),
@@ -52,3 +52,6 @@ Train_ampl_coef_offset <- ddply(
     },
     .progress = progress_text(style = 3)
 )
+
+
+save

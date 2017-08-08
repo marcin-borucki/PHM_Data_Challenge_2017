@@ -50,7 +50,7 @@ test_data_f_low <-  test_data %>%  tidyr::gather(filter_var, value, matches("az_
 res3_zp_test <- run_fits(model_df = models, data_df = test_data_f_low)
 
 res3_zp_test_clasify <- left_join(res3_zp_test,zp_train_set_models) %>%
-
+    
     mutate(c2_above_m = ifelse(c2 > (max_c2 + sd_c2), 1, 0),
            c2_below_m = ifelse(c2 < (min_c2 - sd_c2/3), 1, 0),
            residual_min =  c2 - min_c2, 
@@ -88,7 +88,7 @@ res3_zp_test_clasify$residual_max <-
     res3_zp_test_clasify %>% select(starts_with("residual_max_")) %>% rowSums()
 
 res3_zp_test_clasify <-
-res3_zp_test_clasify  %>% select(-starts_with("c2_above_m_")) %>%
+    res3_zp_test_clasify  %>% select(-starts_with("c2_above_m_")) %>%
     select(-starts_with("c2_below_m_")) %>% 
     select(-starts_with("residual_min_")) %>% 
     select(-starts_with("residual_max_")) %>% mutate(failure_zp = ifelse(c2_above_m >2, TRUE, ifelse(c2_below_m > 4, TRUE, FALSE))) %>% ungroup()
@@ -109,8 +109,8 @@ res3_zp_test_clasify_selection <- res3_zp_test_clasify %>%
 
 # Formating output -------------------------------------------------------------
 primary_sus_clasification <-
-res3_zp_test_clasify_selection %>% select(ExperimentID, c2_above_m,
-                                          c2_below_m, modeled_element ) %>%
+    res3_zp_test_clasify_selection %>% select(ExperimentID, c2_above_m,
+                                              c2_below_m, modeled_element ) %>%
     mutate(State = ifelse(c2_above_m < c2_below_m,
                           sub("^.", "c" , modeled_element),
                           sub("^.", "d" , modeled_element))) %>%
@@ -124,7 +124,7 @@ res3_zp_test_clasify_selection %>% select(ExperimentID, c2_above_m,
 table(primary_sus_clasification$State)
 write.csv(primary_sus_clasification,
           "./output/primary_sus_clasification_20170711_MB.csv",
-            row.names = FALSE , quote = FALSE)
+          row.names = FALSE , quote = FALSE)
 
 # checking for oveall count ----------------------------------------------------
 res3_zp_test_clasify %>% 
@@ -160,3 +160,5 @@ show(p)
 mutate(res3_zp_test %>% filter(ExperimentID == 3),
        origin = "res3_zp_test")  %>%
     filter(modeled_element %in% c("azp_1l", "azp_1r") )
+
+
