@@ -41,12 +41,16 @@ test_data <- test_data %>%
 test_data$lp <- test_data$lp/test_data$Track
 
 
-# normalize <-readRDS("./input/test_offset_correlations.RDS")
-# 
-# norm <- summarize(group_by(normalize,ExID, vars),
-#                   max_off=max(offset),mean_off=mean(offset),
-#                   min_off=min(offset),
-#                   med_off=median(offset))
+ normalize <-readRDS("../input/test_offset_correlations.RDS")
+getwd()
+fit_all <- readRDS("../input/fit_all.RDS")
+test_fit <- readRDS("../input/test_fit.RDS")
+ 
+ # 
+norm <- summarize(group_by(normalize,ExID, vars),
+                  max_off=max(offset),mean_off=mean(offset),
+                  min_off=min(offset),
+                  med_off=median(offset))
 
 # # list1 <- norm %>% 
 #   filter(max_off != min_off) %>% 
@@ -54,11 +58,11 @@ test_data$lp <- test_data$lp/test_data$Track
 #   summarize(count = sum(ExID > 0),
 #             off = median(med_off))
 
-# list2 <- norm %>%
-#   group_by(ExID) %>%
-#   summarize(off=median(med_off))
+list2 <- norm %>%
+  group_by(ExID) %>%
+  summarize(off=median(med_off))
 
-list2 <- test_offsets[,-2]
+# list2 <- test_offsets[,-2]
 names(list2) <- c("ExID", "off")
     
 test_data <- merge(test_data,list2,by.x="ExperimentID",by.y = "ExID")
@@ -150,7 +154,7 @@ test_fit <- ddply(
     test,
     .(ExperimentID, lp_off, acc),
     .fun = function(df) {
-    exptd_reading <- predict(fit_all_light[fit_all_light$Track == df$Track &
+    exptd_reading <- predict(fit_all_light[fit_all_light$ExperimentID == df$ExperimentID &
     fit_all_light$lp == df$lp_off &
     fit_all_light$acc == df$acc, ]$fit11[[1]],
     newdata = df)
@@ -191,3 +195,352 @@ select(fit11[[1]])
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r Track & model vis prep}
+
+
+az_pairs <-    cbind(
+test_fit %>% slice(grep("^az_", acc, invert = FALSE)) %>% select(acc) %>% distinct(),
+test_fit %>% slice(grep("^azp_", acc, invert = FALSE)) %>% select(acc) %>% distinct()
+)
+names(az_pairs) <- c("p_l", "p_h")
+
+gains_test_fit <- ddply(.data = az_pairs , .(p_l) , .fun = function(df){
+    # paste(max(df$p_l) , df$p_h)
+            gain_calc(par_l = paste(df$p_l) , par_h = paste(df$p_h))
+    }
+            )
+
+gains_test <- ddply(.data = az_pairs , .(p_l) , .fun = function(df){
+    # paste(max(df$p_l) , df$p_h)
+            gain_calc(df = test, par_l = paste(df$p_l) , par_h = paste(df$p_h),
+                      val_var = "reading")
+    }
+            )
+
+names(gains_test)
+names(gains_test_fit)
+
+gains_test_all <- left_join(gains_test_fit, 
+                            gains_test %>% select(one_of(names(gains_test_fit)[-1])),
+                                                      by = c("ExperimentID" = "ExperimentID",
+                                                             "lp_off" = "lp_off",
+                                                             "gain_func" = "gain_func"))
+names(gains_test_all)
+# 
+# gain.x - expexted fit 
+# gain.y - real data
+gains_test_all <- gains_test_all %>% mutate(residuals_gain = gain.y - gain.x )
+
+gains_test_sum <- gains_test_all %>%
+    select(1:2, one_of("gain_func", "residuals_gain")) %>%
+    group_by(ExperimentID, p_l, gain_func) %>%
+    summarize(sum_res_gain = sum(residuals_gain),
+              res_gain_sd = sd(residuals_gain),
+            q25 = quantile(residuals_gain, probs=0.25),
+            q50 = quantile(residuals_gain, probs=0.5),
+            q75 = quantile(residuals_gain, probs=0.75)
+            
+              
+) %>% ungroup() %>% mutate(part = substr(p_l,1,5))
+# names(gains_test_sum)[6:8] <- c("q25","q50","q75")
+```
+
+```{r Track & model vis gain}
+EID = 4
+
+p <- gains_test_all  %>% filter(ExperimentID == EID) %>%
+    ggplot(., aes(x = lp_off,
+                  y = gain.y  
+                   
+                  
+    )) +
+    geom_line(aes(color =  gain_func) ) 
+
+show(p)
+
+EID = 3
+pp <- gains_test_all  %>% filter(ExperimentID == EID) %>%
+    ggplot(., aes(x = lp_off,
+                  y = gain.y 
+                  
+                  
+    )) +
+    geom_line(aes(color =  gain_func) ) 
+show(pp)
+
+EID = 5
+
+ppp <- gains_test_all  %>% filter(ExperimentID == EID) %>%
+    ggplot(., aes(x = lp_off,
+                  y = gain.y  
+                   
+                  
+    )) +
+    geom_line(aes(color =  gain_func) ) 
+
+show(ppp)
+
+
+EID = 9
+
+pppp <- gains_test_all  %>% filter(ExperimentID == EID) %>%
+    ggplot(., aes(x = lp_off,
+                  y = gain.y  
+                   
+                  
+    )) +
+    geom_line(aes(color =  gain_func) ) 
+
+show(pppp)
+
+EID = 10
+
+ppppp <- gains_test_all  %>% filter(ExperimentID == EID) %>%
+    ggplot(., aes(x = lp_off,
+                  y = gain.y  
+                   
+                  
+    )) +
+    geom_line(aes(color =  gain_func) ) 
+
+show(ppppp)
+```
+
+
+```{r Track & model vis gain model }
+EID = 4
+
+p <- gains_test_all  %>% filter(ExperimentID == EID) %>%
+    ggplot(., aes(x = lp_off,
+                  y =  gain.x 
+                   
+                  
+    )) +
+    geom_line(aes(color =  gain_func) ) 
+
+show(p)
+
+EID = 3
+pp <- gains_test_all  %>% filter(ExperimentID == EID) %>%
+    ggplot(., aes(x = lp_off,
+                  y =  gain.x
+                  
+                  
+    )) +
+    geom_line(aes(color =  gain_func) ) 
+show(pp)
+
+EID = 5
+
+ppp <- gains_test_all  %>% filter(ExperimentID == EID) %>%
+    ggplot(., aes(x = lp_off,
+                  y =  gain.x 
+                   
+                  
+    )) +
+    geom_line(aes(color =  gain_func) ) 
+
+show(ppp)
+
+
+EID = 9
+
+pppp <- gains_test_all  %>% filter(ExperimentID == EID) %>%
+    ggplot(., aes(x = lp_off,
+                  y =  gain.x 
+                   
+                  
+    )) +
+    geom_line(aes(color =  gain_func) ) 
+
+show(pppp)
+
+EID = 10
+
+ppppp <- gains_test_all  %>% filter(ExperimentID == EID) %>%
+    ggplot(., aes(x = lp_off,
+                  y =  gain.x 
+                   
+                  
+    )) +
+    geom_line(aes(color =  gain_func) ) 
+
+show(ppppp)
+```
+
+```{r Track & model vis }
+EID = 4
+
+p <- gains_test_all  %>% filter(ExperimentID == EID) %>%
+    ggplot(., aes(x = lp_off,
+                  y = gain.y - gain.x 
+                   
+                  
+    )) +
+    geom_line(aes(color =  gain_func) ) 
+
+show(p)
+
+EID = 3
+pp <- gains_test_all  %>% filter(ExperimentID == EID) %>%
+    ggplot(., aes(x = lp_off,
+                  y = gain.y - gain.x
+                  
+                  
+    )) +
+    geom_line(aes(color =  gain_func) ) 
+show(pp)
+
+EID = 5
+
+ppp <- gains_test_all  %>% filter(ExperimentID == EID) %>%
+    ggplot(., aes(x = lp_off,
+                  y = gain.y - gain.x 
+                   
+                  
+    )) +
+    geom_line(aes(color =  gain_func) ) 
+
+show(ppp)
+
+
+EID = 9
+
+pppp <- gains_test_all  %>% filter(ExperimentID == EID) %>%
+    ggplot(., aes(x = lp_off,
+                  y = gain.y - gain.x 
+                   
+                  
+    )) +
+    geom_line(aes(color =  gain_func) ) 
+
+show(pppp)
+
+EID = 10
+
+ppppp <- gains_test_all  %>% filter(ExperimentID == EID) %>%
+    ggplot(., aes(x = lp_off,
+                  y = gain.y - gain.x 
+                   
+                  
+    )) +
+    geom_line(aes(color =  gain_func) ) 
+
+show(ppppp)
+```
+```{r Model summary vizualization}
+names(gains_test_sum )
+ps <- gains_test_sum   %>% filter(ExperimentID == 4) %>%
+    ggplot(., aes(x = p_l,
+                  y = sum_res_gain
+                  
+                  
+    )) +
+    geom_point(aes(color =  ExperimentID) ) 
+show(ps)
+
+ps <- gains_test_sum   %>% filter(ExperimentID == 3) %>%
+    ggplot(., aes(x = p_l,
+                  y = sum_res_gain
+                  
+                  
+    )) +
+    geom_point(aes(color =  ExperimentID) ) 
+show(ps)
+
+ps <- gains_test_sum   %>% filter(ExperimentID == 5) %>%
+    ggplot(., aes(x = p_l,
+                  y = sum_res_gain
+                  
+                  
+    )) +
+    geom_point(aes(color =  ExperimentID) ) 
+show(ps)
+
+ps <- gains_test_sum   %>% filter(ExperimentID == 9) %>%
+    ggplot(., aes(x = p_l,
+                  y = sum_res_gain
+                  
+                  
+    )) +
+    geom_point(aes(color =  ExperimentID) ) 
+show(ps)
+
+ps <- gains_test_sum   %>% filter(ExperimentID == 10) %>%
+    ggplot(., aes(x = p_l,
+                  y = sum_res_gain
+                  
+                  
+    )) +
+    geom_point(aes(color =  ExperimentID) ) 
+show(ps)
+
+
+```
+
+```{r}
+EID = 101
+
+pa <- gains_test_all  %>% filter(ExperimentID == EID , grepl('az_2l*', p_l)) %>%
+    
+    ggplot(., aes(x = lp_off,
+                  y = gain.y - gain.x 
+                   
+                  
+    )) +
+    geom_line(aes(color =  gain_func) ) 
+
+show(pa)
+
+
+gains_test_sum  %>%  filter(ExperimentID <= 200, q75 > 0.5 ) %>% select(ExperimentID) %>% distinct()
+
+ps <- gains_test_sum  %>%  filter(ExperimentID <= 200, q75 > 0.5 ) %>%
+    ggplot(., aes(x = part,
+                  y = q75
+                  
+                  
+    )) +
+    geom_point(aes(color =  as.factor(ExperimentID))) 
+show(ps)
+
+
+ps <- gains_test_sum  %>%  filter(ExperimentID <= 200, q75 > 0.5 ) %>%
+    ggplot(., aes(x = part,
+                  y = q50
+                  
+                  
+    )) +
+    geom_point(aes(color =  as.factor(ExperimentID))) 
+show(ps)
+
+
+
+ps <- gains_test_sum  %>%  filter(ExperimentID <= 200, q50 > 0.15 ) %>% distinct()
+    ggplot(., aes(x = part,
+                  y = q50
+                  
+                  
+    )) +
+    geom_point(aes(color =  as.factor(ExperimentID))) 
+show(ps)
+
+psm <- gains_test_sum   %>% filter(ExperimentID <= 10, q25 < -0.4 ) %>%
+    ggplot(., aes(x = part,
+                  y = q25
+                  
+                  
+    )) +
+    geom_point(aes(color =  as.factor(ExperimentID)) ) 
+show(psm)
+
+```
+
+```{r Building classifier...}
+#Naive classifier for dumpners
+
+gains_test_dump_p <- gains_test_sum  %>%  filter( q75 > 0.5 ) %>% select(ExperimentID) %>% distinct() %>% group_by()
+
+```
+
