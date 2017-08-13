@@ -356,7 +356,7 @@ pppp <- gains_test_all  %>% filter(ExperimentID == EID) %>%
 
 show(pppp)
 
-EID = 10
+EID = 107
 
 ppppp <- gains_test_all  %>% filter(ExperimentID == EID) %>%
     ggplot(., aes(x = lp_off,
@@ -417,7 +417,7 @@ pppp <- gains_test_all  %>% filter(ExperimentID == EID) %>%
 
 show(pppp)
 
-EID = 10
+EID = 107
 
 ppppp <- gains_test_all  %>% filter(ExperimentID == EID) %>%
     ggplot(., aes(x = lp_off,
@@ -467,7 +467,7 @@ ps <- gains_test_sum   %>% filter(ExperimentID == 9) %>%
     geom_point(aes(color =  ExperimentID) ) 
 show(ps)
 
-ps <- gains_test_sum   %>% filter(ExperimentID == 10) %>%
+ps <- gains_test_sum   %>% filter(ExperimentID == 107) %>%
     ggplot(., aes(x = p_l,
                   y = sum_res_gain
                   
@@ -537,10 +537,68 @@ show(psm)
 
 ```
 
-```{r Building classifier...}
+```{r Secondary suspension}
 #Naive classifier for dumpners
 
-gains_test_dump_p <- gains_test_sum  %>%  filter( q75 > 0.5 ) %>% select(ExperimentID) %>% distinct() %>% group_by()
+# 
+# source(file = "./All_anomalies.R")
+
+azs_par <- test_fit %>% slice(grep("^azs_", acc, invert = FALSE)) %>% select(acc) %>% distinct()
+
+sec_res <- ddply(.data = azs_par , .(acc) , .fun = function(df){
+    sensor_res(par = df$acc)})
+
+```
+
+```{r Secondary susp plots}
+
+# sec_res.long <- melt(sec_res, id = "ExperimentID", measure = c("disp", "hp", "wt"))
+# ggplot(sec_res.long , aes(sec_res, value, colour = variable)) + geom_line()
+
+# known secondary spring failure
+EID = 168
+acc_v = "azs_1_1"
+    
+p <- sec_res  %>% filter(ExperimentID == EID)  %>% 
+    slice(grep("^azs_1", acc, invert = FALSE)) %>%
+    ggplot(., aes(x = lp_off)) +
+    # geom_line(aes(y =  val_var_v.x, color =  paste("fit_var",acc)))  +
+    # geom_line(aes(y =  val_var_v.y, color =  paste("real_val",acc)))  +
+    geom_line(aes(y =  res_t_tf, color =  paste("res_val",acc)))
+
+show(p)
+
+EID = 1 # rather ok 
+acc_v = "azs_1_1"
+    
+p <- sec_res  %>% filter(ExperimentID == EID)  %>% 
+    slice(grep("^azs_", acc, invert = FALSE)) %>%
+    ggplot(., aes(x = lp_off)) +
+     # geom_line(aes(y =  val_var_v.x, color =  paste("fit_var",acc)))  +
+     # geom_line(aes(y =  val_var_v.y, color =  paste("real_val",acc)))  +
+    geom_line(aes(y =  res_t_tf, color =  paste("res_val",acc)))
+
+show(p)
+
+
+```
+
+```{r over all review of second susp metrics}
+
+
+ps <- sec_res_summ  %>% #  filter(q75 > 0.05 ) %>%
+    ggplot(., aes(x = part,
+                  y = q75
+                  
+                  
+    )) +
+    geom_boxplot()
+    # geom_point(aes(color =  as.factor(ExperimentID))) 
+show(ps)
+
+outlier_values <- boxplot(part ~ q75, data = sec_res_summ)$out  # outlier values.
+boxplot(sec_res_summ$q75, main="Pressure Height", boxwex=0.1)
+mtext(paste("Outliers: ", paste(outlier_values, collapse=", ")), cex=0.6)
 
 ```
 

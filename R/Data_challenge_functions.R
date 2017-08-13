@@ -265,3 +265,112 @@ plot_lines <- function(rev_dat, plot_tilte = NULL){
         labs(title = paste(plot_tilte)) 
     show(p)
 }
+
+#' gain_calc
+#' Funsction to calculate gain for primary suspension
+#' @param df 
+#' @param par_l 
+#' @param par_h 
+#' @param par_var 
+#' @param val_var 
+#' @param match_by 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+gain_calc <- function(df = test_fit,
+         par_l = "az_1r_1",
+         par_h = "azp_1r_1",
+         par_var = "acc",
+         val_var = "exptd_reading",
+         match_by = c("ExperimentID", "lp_off")){
+    
+    names(df)[names(df) == par_var] = "par_val_v"
+    names(df)[names(df) == val_var] = "val_var_v"
+    output <- 
+        left_join(df %>% filter(par_val_v == par_l) ,
+                  df %>% filter(par_val_v == par_h) , by = match_by) %>%
+        mutate(gain = val_var_v.y/val_var_v.x)  %>%
+        mutate(gain_func = paste(par_val_v.y, par_val_v.x, sep="/"))
+}
+
+#' sensor_res
+#' Function to claculate residuals by sensor readings
+#' 
+#' @param df_tf fitted expected readings dataframe
+#' @param df_t test readings dataframe
+#' @param par parameter to be fitted
+#' @param match_by matched by variables
+#' @param par_var_tf 
+#' @param par_var_t 
+#' @param val_var_tf 
+#' @param val_var_t 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+sensor_res <- function(df_tf = test_fit,
+                       df_t = test,
+                      par = "azs_1_1",
+                      par_var_tf = "acc",
+                      par_var_t = "acc",
+                      val_var_tf = "exptd_reading",
+                      val_var_t = "reading",
+                      match_by = c("ExperimentID", "lp_off")){
+    
+    names(df_tf)[names(df_tf) == par_var_tf] = "par_val_v"
+    names(df_t)[names(df_t) == par_var_t] = "par_val_v"
+    
+    names(df_tf)[names(df_tf) == val_var_tf] = "val_var_v"
+    names(df_t)[names(df_t) == val_var_t] = "val_var_v"
+    
+    output <- 
+        left_join(df_tf %>% filter(par_val_v == par) ,
+                  df_t %>% filter(par_val_v == par) , by = match_by) %>%
+        mutate(res_t_tf = val_var_v.y - val_var_v.x)  
+}
+
+
+
+#' outlierKD
+#' from:https://www.r-bloggers.com/identify-describe-plot-and-remove-the-outliers-from-the-dataset/
+#' @param dt 
+#' @param var 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+outlierKD <- function(dt, var) {
+    var_name <- eval(substitute(var),eval(dt))
+    na1 <- sum(is.na(var_name))
+    m1 <- mean(var_name, na.rm = T)
+    par(mfrow=c(2, 2), oma=c(0,0,3,0))
+    boxplot(var_name, main="With outliers")
+    hist(var_name, main="With outliers", xlab=NA, ylab=NA)
+    outlier <- boxplot.stats(var_name)$out
+    mo <- mean(outlier)
+    var_name <- ifelse(var_name %in% outlier, NA, var_name)
+    boxplot(var_name, main="Without outliers")
+    hist(var_name, main="Without outliers", xlab=NA, ylab=NA)
+    title("Outlier Check", outer=TRUE)
+    na2 <- sum(is.na(var_name))
+    cat("Outliers identified:", na2 - na1, "n")
+    cat("Propotion (%) of outliers:", round((na2 - na1) / sum(!is.na(var_name))*100, 1), "n")
+    cat("Mean of the outliers:", round(mo, 2), "n")
+    m2 <- mean(var_name, na.rm = T)
+    cat("Mean without removing outliers:", round(m1, 2), "n")
+    cat("Mean if we remove outliers:", round(m2, 2), "n")
+    response <- readline(prompt="Do you want to remove outliers and to replace with NA? [yes/no]: ")
+    if(response == "y" | response == "yes"){
+        dt[as.character(substitute(var))] <- invisible(var_name)
+        assign(as.character(as.list(match.call())$dt), dt, envir = .GlobalEnv)
+        cat("Outliers successfully removed", "n")
+        return(invisible(dt))
+    } else{
+        cat("Nothing changed", "n")
+        return(invisible(var_name))
+    }
+}
