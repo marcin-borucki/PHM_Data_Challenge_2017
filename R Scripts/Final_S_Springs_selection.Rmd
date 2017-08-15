@@ -1,0 +1,404 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r diagnostic plots primary, echo=FALSE}
+# EID = 55
+EID = 105
+# 22
+# look next: 2, 3, 117 , 198
+# look next: 10, 82, 84, 88, 125, 134, 
+# 142, 151 153 192
+{
+
+# Useless for primary_anomalies    
+ppppp <- gains_test_all  %>% filter(ExperimentID == EID) %>%
+    ggplot(., aes(x = lp_off,
+                  y = gain.y - gain.x
+    )) +
+    geom_line(aes(color =  p_l) ) +
+        coord_cartesian(ylim = c(-2, 2)) +
+    ggtitle("Primary gain residules")
+
+show(ppppp)
+
+
+p <- gains_test_all  %>% filter(ExperimentID == EID) %>%
+    ggplot(., aes(x = lp_off,
+                  y = gain.y)) +
+    geom_line(aes(color =  gain_func) ) +
+    coord_cartesian(ylim = c(-0.5, 4)) +
+    ggtitle("Primary gain as observed")
+show(p)
+
+# Useless for primary_anomalies    
+# 
+# p <- gains_test_all  %>% filter(ExperimentID == EID) %>%
+#     ggplot(., aes(x = lp_off,
+#                   y = gain.x)) +
+#     geom_line(aes(color =  gain_func) ) +
+#     coord_cartesian(ylim = c(-1, 4)) +
+#     ggtitle("Primary gain as expected")
+# show(p)
+
+# # Useless for primary_anomalies    
+# 
+# ps <- gains_test_sum  %>%  filter(ExperimentID ==  EID) %>% 
+#     ggplot(., aes(x = str_sub(p_l, -1,-1),
+#                   y = res_gain_mean)) +
+#     geom_point(aes(color =  as.factor(part))) +  
+#     ggtitle(paste0("Primary spring res_gain_mean per frec band  ", EID))
+# show(ps)
+
+ps <- gains_test_sum  %>%  filter(ExperimentID ==  EID) %>% 
+    ggplot(., aes(x = str_sub(p_l, -1,-1),
+                  y = gain_mean_exp
+    )) +
+    geom_point(aes(color =  as.factor(part))) +  
+    ggtitle(paste0("Primary spring gain_mean_exp per frec band  ", EID))
+
+show(ps)
+
+
+ps <- gains_test_sum  %>%  filter(ExperimentID ==  EID) %>% 
+    ggplot(., aes(x = str_sub(p_l, -1,-1),
+                  y = gain_mean
+    )) +
+    geom_point(aes(color =  as.factor(part))) +  
+    ggtitle(paste0("Primary spring gain_mean per frec band  ", EID))
+
+show(ps)
+
+ps <- gains_test_sum  %>%  filter(ExperimentID ==  EID) %>% 
+    ggplot(., aes(x = str_sub(p_l, -1,-1),
+                  y = gain_mean - gain_mean_exp
+                  
+    )) +
+    geom_point(aes(color =  as.factor(part))) +  
+    ggtitle(paste0("Primary spring gain_mean residules per frec band  RESIDUAL ", EID))
+
+show(ps)
+# 
+# ps <- gains_test_sum  %>%  filter(ExperimentID ==  EID) %>% 
+#     ggplot(., aes(x = str_sub(p_l, -1,-1),
+#                   y = q25
+#     )) +
+#     geom_point(aes(color =  as.factor(part))) +  
+#     ggtitle(paste0("Primary spring gain q25 per frec band residuals ", EID))
+# ps <- gains_test_sum  %>%  filter(ExperimentID ==  EID) %>% 
+#     ggplot(., aes(x = str_sub(p_l, -1,-1),
+#                   y = q50
+#     )) +
+#     geom_point(aes(color =  as.factor(part))) +  
+#     ggtitle(paste0("Primary spring gain Median per frec band residuals ", EID))
+# 
+# show(ps)
+# ps <- gains_test_sum  %>%  filter(ExperimentID ==  EID) %>% 
+#     ggplot(., aes(x = str_sub(p_l, -1,-1),
+#                   y = q75
+#     )) +
+#     geom_point(aes(color =  as.factor(part))) +  
+#     ggtitle(paste0("Primary spring gain q75 per frec band residuals ", EID))
+# 
+# show(ps)
+# ps <- gains_test_sum  %>%  filter(ExperimentID ==  EID) %>% 
+#     ggplot(., aes(x = str_sub(p_l, -1,-1),
+#                   y = q25
+#     )) +
+#     geom_point(aes(color =  as.factor(part))) +  
+#     ggtitle(paste0("Primary spring gain q25 per frec band residuals ", EID))
+# 
+# show(ps)
+
+# head(gains_test_sum)
+ps <- gains_test_sum  %>%  filter(ExperimentID ==  EID) %>% 
+    ggplot(., aes(x = str_sub(p_l, -1,-1),
+                  y = gq50
+    )) +
+    geom_point(aes(color =  as.factor(part))) +  
+    ggtitle(paste0("Primary spring gain Median per frec band ", EID))
+show(ps)
+
+ps <- gains_test_sum  %>%  filter(ExperimentID ==  EID) %>% 
+    ggplot(., aes(x = str_sub(p_l, -1,-1),
+                  y = gq75
+    )) +
+    geom_point(aes(color =  as.factor(part))) +  
+    ggtitle(paste0("Primary spring gain q75 per frec band ", EID))
+show(ps)
+
+ps <- gains_test_sum  %>%  filter(ExperimentID ==  EID) %>% 
+    ggplot(., aes(x = str_sub(p_l, -1,-1),
+                  y = gq25
+    )) +
+    geom_point(aes(color =  as.factor(part))) +  
+    ggtitle(paste0("Primary spring gain q25 per frec band ", EID))
+show(ps)
+
+p <- sec_res  %>% filter(ExperimentID == EID)  %>% 
+    ggplot(., aes(x = lp_off)) +
+    geom_line(aes(y =  res_t_tf, color =  paste("res_val",acc))) +   
+    ggtitle("Secondary reading residule")
+show(p)
+
+p <- gains_test_all_sec  %>% filter(ExperimentID == EID)  %>% 
+    filter(str_sub(p_l,-1,-1) < 3 )%>%
+    ggplot(., aes(x = lp_off)) +
+    geom_line(aes(y =  gain.x, color =  paste("gain_val", p_l))) +   
+    ggtitle("Secondary exp gain val")
+show(p)
+
+p <- gains_test_all_sec  %>% filter(ExperimentID == EID)  %>% 
+    ggplot(., aes(x = lp_off)) +
+    geom_line(aes(y =  gain.y, color =  paste("gain_val", p_l))) +   
+    ggtitle("Secondary gain val")
+show(p)
+
+p <- gains_test_all_sec  %>% filter(ExperimentID == EID)  %>% 
+    filter(str_sub(p_l,-1,-1) < 3 )%>%
+    ggplot(., aes(x = lp_off)) +
+    geom_line(aes(y =  residuals_gain**2, color =  paste("gain_val",p_l))) +   
+     coord_cartesian(ylim = c(-0.0, 2)) +
+    ggtitle("Secondary gain residule val squared")
+show(p)
+
+# head(gains_test_all_sec)
+p <- gains_test_all_sec  %>% filter(ExperimentID == EID)  %>%
+    filter(str_sub(p_l,-1,-1) < 3 )%>%
+    ggplot(., aes(x = lp_off)) +
+    geom_line(aes(y =  residuals_gain, color =  paste("gain_val",p_l))) +
+     coord_cartesian(ylim = c(-2, 2)) +
+    ggtitle("Secondary gain residule val")
+
+show(p)
+
+
+}
+
+```
+
+
+
+```{r diagnostic plots primary, echo=FALSE}
+# EID = 55
+EID = 105
+# 22
+# look next: 2, 3, 117 , 198
+# look next: 10, 82, 84, 88, 125, 134, 
+# 142, 151 153 192
+{
+
+# 
+# p <- gains_test_all  %>% filter(ExperimentID == EID) %>%
+#     ggplot(., aes(x = lp_off,
+#                   y = gain.y)) +
+#     geom_line(aes(color =  gain_func) ) +
+#     coord_cartesian(ylim = c(-0.5, 4)) +
+#     ggtitle("Primary gain as observed")
+# show(p)
+# 
+# 
+# 
+# ps <- gains_test_sum  %>%  filter(ExperimentID ==  EID) %>% 
+#     ggplot(., aes(x = str_sub(p_l, -1,-1),
+#                   y = gain_mean    )) +
+#     geom_point(aes(color =  as.factor(part))) +  
+#     ggtitle(paste0("Primary spring gain_mean per frec band  ", EID))
+# 
+# show(ps)
+
+ps <- gains_test_sum  %>%  filter(ExperimentID ==  EID) %>% 
+    ggplot(., aes(x = str_sub(p_l, -1,-1),
+                  y = gain_mean - gain_mean_exp )) +
+    geom_point(aes(color =  as.factor(part))) +  
+    ggtitle(paste0("Primary spring gain_mean residules per frec band  RESIDUAL ", EID))
+
+show(ps)
+#
+
+ps <- gains_test_sum  %>%  filter(ExperimentID ==  EID) %>% 
+    ggplot(., aes(x = str_sub(p_l, -1,-1),
+                  y = IQR_gp)) +
+    geom_point(aes(color =  as.factor(part))) +  
+    ggtitle(paste0("Primary spring IRQ_gp gain  per frec band ", EID))
+show(ps)
+
+
+# ps <- gains_test_sum  %>%  filter(ExperimentID ==  EID) %>% 
+#     ggplot(., aes(x = str_sub(p_l, -1,-1),
+#                   y = gq50)) +
+#     geom_point(aes(color =  as.factor(part))) +  
+#     ggtitle(paste0("Primary spring gain Median per frec band ", EID))
+# show(ps)
+
+
+ps <- gains_test_sum  %>%  filter(ExperimentID ==  EID) %>% 
+    ggplot(., aes(x = str_sub(p_l, -1,-1),
+                  y = gq50 - eq50)) +
+    geom_point(aes(color =  as.factor(part))) +  
+    ggtitle(paste0("Primary spring gain (Median - exp Mediam)  per frec band ", EID))
+show(ps)
+# 
+# ps <- gains_test_sum  %>%  filter(ExperimentID ==  EID) %>% 
+#     ggplot(., aes(x = str_sub(p_l, -1,-1),
+#                   y = gq75)) +
+#     geom_point(aes(color =  as.factor(part))) +  
+#     ggtitle(paste0("Primary spring gain q75 per frec band ", EID))
+# show(ps)
+# 
+# ps <- gains_test_sum  %>%  filter(ExperimentID ==  EID) %>% 
+#     ggplot(., aes(x = str_sub(p_l, -1,-1),
+#                   y = gq25)) +
+#     geom_point(aes(color =  as.factor(part))) +  
+#     ggtitle(paste0("Primary spring gain q25 per frec band ", EID))
+# show(ps)
+# 
+# 
+# ps <- gains_test_sum  %>%  filter(ExperimentID ==  EID) %>% 
+#     ggplot(., aes(x = str_sub(p_l, -1,-1),
+#                   y = q50)) +
+#     geom_point(aes(color =  as.factor(part))) +  
+#     ggtitle(paste0("Primary spring gain Median per frec band RESIDUAL ", EID))
+# show(ps)
+# 
+# 
+# ps <- gains_test_sum  %>%  filter(ExperimentID ==  EID) %>% 
+#     ggplot(., aes(x = str_sub(p_l, -1,-1),
+#                   y = q75)) +
+#     geom_point(aes(color =  as.factor(part))) +  
+#     ggtitle(paste0("Primary spring gain q75 per frec band RESIDUAL ", EID))
+# show(ps)
+# 
+# ps <- gains_test_sum  %>%  filter(ExperimentID ==  EID) %>% 
+#     ggplot(., aes(x = str_sub(p_l, -1,-1),
+#                   y = q25)) +
+#     geom_point(aes(color =  as.factor(part))) +  
+#     ggtitle(paste0("Primary spring gain q25 per frec band RESIDUAL ", EID))
+# show(ps)
+
+p <- sec_res  %>% filter(ExperimentID == EID)  %>% 
+    ggplot(., aes(x = lp_off)) +
+    geom_line(aes(y =  res_t_tf, color =  paste("res_val",acc))) +   
+    ggtitle("Secondary reading residule")
+show(p)
+
+# p <- gains_test_all_sec  %>% filter(ExperimentID == EID)  %>% 
+#     ggplot(., aes(x = lp_off)) +
+#     geom_line(aes(y =  gain.y, color =  paste("gain_val", p_l))) +   
+#     ggtitle("Secondary gain val")
+# show(p)
+# 
+p <- gains_test_all_sec  %>% filter(ExperimentID == EID)  %>% 
+    filter(str_sub(p_l,-1,-1) < 3 )%>%
+    ggplot(., aes(x = lp_off)) +
+    geom_line(aes(y =  residuals_gain**2, color =  paste("gain_val",p_l))) +   
+     coord_cartesian(ylim = c(-0.0, 2)) +
+    ggtitle("Secondary gain residule val squared")
+show(p)
+
+# head(gains_test_all_sec)
+p <- gains_test_all_sec  %>% filter(ExperimentID == EID)  %>%
+    filter(str_sub(p_l,-1,-1) < 3 )%>%
+    ggplot(., aes(x = lp_off)) +
+    geom_line(aes(y =  residuals_gain, color =  paste("gain_val",p_l))) +
+     coord_cartesian(ylim = c(-2, 2)) +
+    ggtitle("Secondary gain residule val")
+
+show(p)
+
+
+}
+
+```
+```{r diagnostic plots primary, echo=FALSE}
+# EID = 55
+EID = 180 #>0.25 # gq50 - eq50
+EID = 106
+EID = 18 
+# dumpners secondary?
+# EID = 105
+
+# EID = 105 - interesujące
+# EID = 21
+# EID = 1 #>0.25 # gq50 - eq50
+# 22
+# look next: 2, 3, 117 , 198
+# look next: 10, 82, 84, 88, 125, 134, 
+# 142, 151 153 192
+{
+ p <- gains_test_all  %>% filter(ExperimentID == EID) %>%
+    ggplot(., aes(x = lp_off,
+                  y = gain.y)) +
+    geom_line(aes(color =  gain_func) ) +
+    coord_cartesian(ylim = c(-0.5, 4)) +
+    ggtitle("Primary gain as observed")
+show(p)
+
+p <- sec_res  %>% filter(ExperimentID == EID)  %>% 
+    ggplot(., aes(x = lp_off)) +
+    geom_line(aes(y =  res_t_tf, color =  paste("res_val",acc))) +   
+    ggtitle("Secondary reading residule")
+show(p)
+
+p <- gains_test_all_sec  %>% filter(ExperimentID == EID)  %>% 
+    filter(str_sub(p_l,-1,-1) < 3 )%>%
+    ggplot(., aes(x = lp_off)) +
+    geom_line(aes(y =  residuals_gain**2, color =  paste("gain_val",p_l))) +   
+     coord_cartesian(ylim = c(-0.0, 2)) +
+    ggtitle("Secondary gain residule val squared")
+show(p)
+
+# head(gains_test_all_sec)
+p <- gains_test_all_sec  %>% filter(ExperimentID == EID)  %>%
+    filter(str_sub(p_l,-1,-1) < 3 )%>%
+    ggplot(., aes(x = lp_off)) +
+    geom_line(aes(y =  residuals_gain, color =  paste("gain_val",p_l))) +
+     coord_cartesian(ylim = c(-2, 2)) +
+    ggtitle("Secondary gain residule val")
+show(p)
+# 
+# Priamry 
+# 
+ps <- gains_test_sum  %>%  filter(ExperimentID ==  EID) %>% 
+    ggplot(., aes(x = str_sub(p_l, -1,-1),
+                  y = gq50)) +
+    geom_point(aes(color =  as.factor(part))) +  
+    ggtitle(paste0("Primary spring gain Median  per frec band ", EID))
+show(ps)
+
+
+ps <- gains_test_sum  %>%  filter(ExperimentID ==  EID) %>% 
+    ggplot(.) +
+        # coord_cartesian(ylim = c(-2, 2)) +
+    geom_point(aes(x = as.numeric(str_sub(p_l, -1,-1)),
+                  y = (gain_mean - gain_mean_exp),
+                  color =  as.factor(part))) +
+    # geom_line(aes(x = as.numeric(str_sub(p_l, -1,-1)),
+    #               y = (gain_mean - gain_mean_exp),
+    #               color =  as.factor(part))) +  
+    ggtitle(paste0("Primary spring gain_mean residules (gain_mean - gain_mean_exp) per frec band  RESIDUAL ", EID))
+
+show(ps)
+#
+
+ps <- gains_test_sum  %>%  filter(ExperimentID ==  EID) %>% 
+    ggplot(., aes(x = str_sub(p_l, -1,-1),
+                  y = IQR_gp)) +
+    geom_point(aes(color =  as.factor(part))) +  
+    ggtitle(paste0("Primary spring IRQ_gp gain  per frec band ", EID))
+show(ps)
+
+
+
+ps <- gains_test_sum  %>%  filter(ExperimentID ==  EID) %>% 
+    ggplot(., aes(x = str_sub(p_l, -1,-1),
+                  y = gq50 - eq50)) +
+    geom_point(aes(color =  as.factor(part))) +  
+    ggtitle(paste0("Primary spring gain (Median - exp Mediam)  per frec band ", EID))
+show(ps)
+
+
+}
+
+```

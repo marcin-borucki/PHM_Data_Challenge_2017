@@ -34,7 +34,7 @@ tt <- dumpners_primary_det %>% select(ExperimentID, gain_func) %>%
       ungroup() %>%  spread(row, State)
 
     tt<- left_join(data_frame(ExperimentID = 1:200), tt)
- write.csv(tt, file = "./input/dumpners_primary_det.csv")
+ # write.csv(tt, file = "./input/dumpners_primary_det.csv")
 
  
  # positive gain anomalies
@@ -97,7 +97,7 @@ anom_primary <- gains_test_sum  %>%  filter(q50 > 0.15 ) %>%
                                                 iCount = n())
  
  anomalies_trains<- left_join(data_frame(ExperimentID = 1:200), anomalies_trains)
- write.csv(anomalies_trains, file = "./input/anomalies_trains_20170811.csv")
+ # write.csv(anomalies_trains, file = "./input/anomalies_trains_20170811.csv")
  
  
  # All Anomalies low

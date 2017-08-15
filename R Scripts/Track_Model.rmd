@@ -16,6 +16,7 @@ library(dplyr)
 require(tidyr)
 require(dplyr)
 require(ggplot2)
+require(stringr)
 ```
 
 ## Data In
@@ -102,7 +103,7 @@ p + test %>% filter(acc == param & ExperimentID == list2$ExID[id]) %>%
 
 First Track Model - for all parameters  
 
-```{r TrackModel1}
+```{r TrackModel1, eval=FALSE, include=FALSE}
 
 train$Payload2 <- train$Payload * train$Payload
 train$Payload2 <- train$Payload * train$Payload
@@ -114,11 +115,11 @@ train$Speed_f <- as.factor(train$Speed)
 
 test$Speed_f <- as.factor(test$Speed)
 
-fit_all_light <- train %>% 
-  group_by(Track, lp, acc) %>%
-  do(fit11 = stripGlmLR(lm(reading ~ Payload + Payload2 + Speed , data = .)))
+# fit_all_light <- train %>% 
+#   group_by(Track, lp, acc) %>%
+#   do(fit11 = stripGlmLR(lm(reading ~ Payload + Payload2 + Speed , data = .)))
 
-saveRDS(fit_all,file="fit_all.RDS")
+# saveRDS(fit_all,file="fit_all.RDS")
 #need to add offsets 
 # rm(test_w_fits)
 # test_w_fits <- merge(test,fit_all, 
@@ -132,22 +133,22 @@ saveRDS(fit_all,file="fit_all.RDS")
 #               by.y=c("lp","Track","acc"), 
 #               all.x = TRUE)
 
- predict(fit_all$fit11[[1]], test[1:5,])    
+ # predict(fit_all$fit11[[1]], test[1:5,])    
 
-test_w_pred <- test[1,] %>% do(data.frame(param = .$acc,
-                                             value = .$reading,
-                                             num =  .$lp,
-                                             Tr = .$Track,
-                                             Speed = .$Speed,
-                                             Payload = .$Payload,
-                                             Payload2 = .$Payload2,
-                                             pred <- predict(fit_all %>% 
-                                                                 filter(Track == .$Track &
-                                                                        lp == .$lp &
-                                                                        acc == .$acc) %>% 
-                                                                 select("fit11"),
-                                                             newdata = .)
-                                             ))
+# test_w_pred <- test[1,] %>% do(data.frame(param = .$acc,
+#                                              value = .$reading,
+#                                              num =  .$lp,
+#                                              Tr = .$Track,
+#                                              Speed = .$Speed,
+#                                              Payload = .$Payload,
+#                                              Payload2 = .$Payload2,
+#                                              pred <- predict(fit_all %>% 
+#                                                                  filter(Track == .$Track &
+#                                                                         lp == .$lp &
+#                                                                         acc == .$acc) %>% 
+#                                                                  select("fit11"),
+#                                                              newdata = .)
+#                                              ))
 
 
 test_fit <- ddply(
@@ -163,7 +164,7 @@ test_fit <- ddply(
     )
     
 # names(test_fit)[4] <- "exptd_reading"
-saveRDS(test_fit, "../input/test_fit.RDS")
+# saveRDS(test_fit, "../input/test_fit.RDS")
 
 getModelSize(ttp)
 
@@ -282,7 +283,7 @@ ppp <- gains_test_all  %>% filter(ExperimentID == EID) %>%
 show(ppp)
 
 
-EID = 9
+EID = 170
 
 pppp <- gains_test_all  %>% filter(ExperimentID == EID) %>%
     ggplot(., aes(x = lp_off,
@@ -294,7 +295,7 @@ pppp <- gains_test_all  %>% filter(ExperimentID == EID) %>%
 
 show(pppp)
 
-EID = 10
+EID = 187
 
 ppppp <- gains_test_all  %>% filter(ExperimentID == EID) %>%
     ggplot(., aes(x = lp_off,
@@ -356,7 +357,7 @@ pppp <- gains_test_all  %>% filter(ExperimentID == EID) %>%
 
 show(pppp)
 
-EID = 107
+EID = 187
 
 ppppp <- gains_test_all  %>% filter(ExperimentID == EID) %>%
     ggplot(., aes(x = lp_off,
@@ -417,7 +418,7 @@ pppp <- gains_test_all  %>% filter(ExperimentID == EID) %>%
 
 show(pppp)
 
-EID = 107
+EID = 6
 
 ppppp <- gains_test_all  %>% filter(ExperimentID == EID) %>%
     ggplot(., aes(x = lp_off,
@@ -428,7 +429,11 @@ ppppp <- gains_test_all  %>% filter(ExperimentID == EID) %>%
     geom_line(aes(color =  gain_func) ) 
 
 show(ppppp)
+
 ```
+
+
+
 ```{r Model summary vizualization}
 names(gains_test_sum )
 ps <- gains_test_sum   %>% filter(ExperimentID == 4) %>%
@@ -480,7 +485,7 @@ show(ps)
 ```
 
 ```{r}
-EID = 101
+EID = 180
 
 pa <- gains_test_all  %>% filter(ExperimentID == EID , grepl('az_2l*', p_l)) %>%
     
@@ -579,6 +584,30 @@ p <- sec_res  %>% filter(ExperimentID == EID)  %>%
     geom_line(aes(y =  res_t_tf, color =  paste("res_val",acc)))
 
 show(p)
+names(gains_test_all_sec)
+
+# EID = 168 # failed spring
+
+p <- gains_test_all_sec  %>% filter(ExperimentID == EID)  %>% 
+    slice(grep("^azps_1", p_l, invert = FALSE)) %>%
+    ggplot(., aes(x = lp_off)) +
+      # geom_line(aes(y =  gain.x, color =  paste("fit_var",p_l)))  +
+      # geom_line(aes(y =  gain.y, color =  paste("real_val",p_l)))  +
+    geom_line(aes(y =  residuals_gain, color =  paste("res_val",p_l)))
+show(p)
+
+
+# EID = 1 # rather ok
+# Seondary susp review
+p <- gains_test_all_sec  %>% filter(ExperimentID == EID)  %>% 
+    slice(grep("^azps_1", p_l, invert = FALSE)) %>%
+    ggplot(., aes(x = lp_off)) +
+      # geom_line(aes(y =  gain.x, color =  paste("fit_var",p_l)))  +
+      # geom_line(aes(y =  gain.y, color =  paste("real_val",p_l)))  +
+    geom_line(aes(y =  residuals_gain, color =  paste("res_val",p_l)))
+
+show(p)
+
 
 
 ```
@@ -597,8 +626,26 @@ ps <- sec_res_summ  %>% #  filter(q75 > 0.05 ) %>%
 show(ps)
 
 outlier_values <- boxplot(part ~ q75, data = sec_res_summ)$out  # outlier values.
-boxplot(sec_res_summ$q75, main="Pressure Height", boxwex=0.1)
-mtext(paste("Outliers: ", paste(outlier_values, collapse=", ")), cex=0.6)
+boxplot(sec_res_summ$q75,  boxwex=0.1)
+
+
+#  Secondary susp sides
+
+ps <- gains_test_sum_sec  %>% #  filter(q75 > 0.05 ) %>%
+    ggplot(., aes(x = p_l,
+                  y = q75
+                  
+                  
+    )) +
+    geom_boxplot()
+    # geom_point(aes(color =  as.factor(ExperimentID))) 
+show(ps)
+
+outlier_values <- boxplot(q75 ~ part, data = gains_test_sum_sec)$out  # outlier values.
+boxplot(sec_res_summ$q75, boxwex=0.1)
+
+
 
 ```
+
 

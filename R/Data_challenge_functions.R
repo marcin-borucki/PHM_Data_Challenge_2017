@@ -296,7 +296,7 @@ gain_calc <- function(df = test_fit,
 }
 
 #' sensor_res
-#' Function to claculate residuals by sensor readings
+#'  function to calculare residules of expected ride characteristic and actual.
 #' 
 #' @param df_tf fitted expected readings dataframe
 #' @param df_t test readings dataframe
@@ -333,6 +333,52 @@ sensor_res <- function(df_tf = test_fit,
 }
 
 
+
+#' sensor_combine
+#' Function to claculate sum of left and right bogie to leverage 
+#' for primary susp failures
+#' @param df_tf 
+#' @param df_t 
+#' @param par_1 
+#' @param par_2 
+#' @param par_var_tf 
+#' @param val_var_tf 
+#' @param match_by 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+sensor_combine <- function(df_tf = test,
+                       # df_t = azps_pairs,
+                       par_1 = "azp_1l_1",
+                       par_2 = "azp_2l_1",
+                       par_o = "azps_1l_1",
+                       par_var_tf = "acc",
+                       val_var_tf = "reading",
+                       # val_var_t = "reading",
+                       match_by = c("ExperimentID",
+                                    "Payload",
+                                    "Speed",
+                                    "Track",
+                                    "State",
+                                    "lp",
+                                    "off",
+                                    "lp_off")){
+    
+    names(df_tf)[names(df_tf) == par_var_tf] = "par_val_v"
+
+    names(df_tf)[names(df_tf) == val_var_tf] = "val_var_v"
+
+    output <- 
+        left_join(df_tf %>% filter(par_val_v == par_1),
+                  df_tf %>% filter(par_val_v == par_2), by = match_by) %>%
+        mutate(sum_side_b = val_var_v.y + val_var_v.x,
+               avg_side_bogie = (val_var_v.y + val_var_v.x)/2,
+               par_o = paste0(par_o))  
+}
+names(test)
+sampl <- sensor_combine()
 
 #' outlierKD
 #' from:https://www.r-bloggers.com/identify-describe-plot-and-remove-the-outliers-from-the-dataset/
