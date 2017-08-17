@@ -49,6 +49,13 @@ failed_czs_m <-
     select( -part_pp) %>% group_by(ExperimentID) %>%
     summarise(status = paste(status_p, collapse= "+"))
 
+failed_czs_m_h <- left_join(data_frame(ExperimentID = 1:200), 
+          failed_czs_m )
+
+
+write.csv(failed_czs_m_h, file = "./input/secondary springs20170818.csv",
+          row.names = FALSE, quote = FALSE)
+
 
 failed_czs_a <- left_join(data_frame(ExperimentID = 1:200), 
                                              failed_czs)
