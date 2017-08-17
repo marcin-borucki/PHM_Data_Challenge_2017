@@ -19,6 +19,37 @@ failed_czs <-
     select( -part_pp) %>% group_by(ExperimentID) %>%
     summarise(status = paste(status_p, collapse= "+"))
 
+# Alternatywna (WYDAJE SIĘ DECYDOWANIE LEPSZA OD TEGO CO POWYŻEJ)
+View(failed_czs_m)
+failed_czs_m <-
+    gains_test_sum_sec_m %>% 
+    filter((gain_mean - gain_mean_exp) > 0.18 ) %>%
+    filter((gq50 - eq50) > 0.18  ) %>%
+    # filter((gq50 > 0.9 & substr(p_l, 6, 6) == 1) |
+    #            (gq50 > 0.9 & substr(p_l, 6, 6) == 2)) %>%
+    filter(str_sub(p_l,-1,-1) < 2 )%>%
+    mutate(part_pp = substr(p_l, 1, 6)) %>%
+    # mutate(part_pp = s ubstr(p_l, 1, 7)) %>%
+    group_by(ExperimentID, part_pp) %>%
+    # summarise(count_over = n(), diff_med = sum(gq50-eq50)-min(gq50-eq50)) %>%
+    
+    summarise(count_over = n(), 
+              diff_mean = sum((gain_mean - gain_mean_exp))-min((gain_mean - gain_mean_exp)),
+              diff_med = sum(gq50-eq50)-min(gq50-eq50)
+              )%>%
+    # filter(count_over > 20 )%>% ungroup() %>%
+    filter(count_over > 1 )%>% ungroup() %>%
+    # filter(count_over > 1 &( diff_med < 0.4 | diff_mean < 0.4 ))%>%
+    # ungroup()
+
+    # mutate(part_pp = substr(p_l, 1, 6))%>%
+    # select(-count_over, -p_l) %>% distinct() %>%
+    select(-count_over, -diff_med, -diff_mean) %>% distinct() %>%
+    mutate(status_p = paste0("czs_", str_sub(part_pp,-1,-1)))%>%
+    select( -part_pp) %>% group_by(ExperimentID) %>%
+    summarise(status = paste(status_p, collapse= "+"))
+
+
 failed_czs_a <- left_join(data_frame(ExperimentID = 1:200), 
                                              failed_czs)
 View(failed_czs_1)
@@ -37,6 +68,42 @@ View(failed_czs_1)
 names(gains_test_all)
 #  Secondary dumpner? detection -------------------------------------------------
 # failed_dzs_det <-
+
+View(failed_dzs_mp)
+failed_dzs_m <-
+    gains_test_sum_sec_m %>% 
+    # filter((gain_mean - gain_mean_exp) < -0.1 ) %>%
+     filter((gq50 - eq50) < -0.1 ) %>%
+    # filter(str_sub(p_l,-1,-1) < 2 )%>%
+    mutate(part_pp = substr(p_l, 1, 7)) %>%
+    group_by(ExperimentID, part_pp) %>%
+    # summarise(count_over = n(), diff_med = sum(gq50-eq50)-min(gq50-eq50)) %>%
+    
+    summarise(count_over = n(), 
+              diff_med = sum((gain_mean - gain_mean_exp))-min((gain_mean - gain_mean_exp))) %>%
+    # filter(count_over > 20 )%>% ungroup() %>%
+    filter(count_over > 0)%>% ungroup()
+
+
+failed_dzs_mp <-
+    gains_test_sum %>%
+    filter(
+        # (gain_mean - gain_mean_exp)  > 0.06,
+        #    (gain_mean - gain_mean_exp)  < 0.75,
+           IQR_gp > 0.35
+           # ,
+           # (gq50 - eq50)  > 0.05
+    ) %>%
+    # filter(str_sub(p_l,-1,-1) > 1 )%>%
+    group_by(ExperimentID, part) %>%
+    summarise(count_over = n(), sum_res_mean = sum((gain_mean - gain_mean_exp)) )%>%
+    filter(count_over > 2) %>%
+    ungroup() %>% 
+    mutate(status_p = paste0("dzp_", str_sub(part,-2,-1)))%>%
+    select( -part) %>% group_by(ExperimentID) %>%
+    summarise(status = paste(status_p, collapse= "+"))
+
+
 View(health_res)
 health_res <- read.csv(file = "./output/Most likely healthy restrictive.csv", 
                        stringsAsFactors = FALSE)
@@ -85,12 +152,16 @@ failed_dzs <-
 
 
 #  Primary detection -------------------------------------------------
- View(failed_dzp_det)
+ View(failed_dzp)
 # View(gains_test_sum)
-failed_dzp_det <-
+# failed_dzp_det <-
+failed_dzp <-
     gains_test_sum %>%
-    filter((gain_mean - gain_mean_exp)  > 0.0751,
-           (gq50 - eq50)  > 0.05 ) %>%
+    filter((gain_mean - gain_mean_exp)  > 0.06,
+           (gain_mean - gain_mean_exp)  < 0.75,
+           IQR_gp < 0.3,
+           (gq50 - eq50)  > 0.05
+           ) %>%
     filter(str_sub(p_l,-1,-1) > 1 )%>%
     group_by(ExperimentID, part) %>%
     summarise(count_over = n(), sum_res_mean = sum((gain_mean - gain_mean_exp)) )%>%
@@ -119,7 +190,7 @@ failed_czp <-
     summarise(count_over = n())%>%
     filter(count_over > 1) %>%
     ungroup() %>%
-    mutate(status_p = paste0("dzp_", str_sub(part,-2,-1)))%>%
+    mutate(status_p = paste0("czp_", str_sub(part,-2,-1)))%>%
     select( -part) %>% group_by(ExperimentID) %>%
     summarise(status = paste(status_p, collapse= "+"))
 
@@ -127,18 +198,25 @@ View(failed_dzp_f_1)
 failed_dzp_f_1 <- left_join(failed_dzp, failed_czs,
                           by = c("ExperimentID"))
 
+# 
+#  Mergin various files!!
+# 
 
-failed_dzp_a <- left_join(data_frame(ExperimentID = 1:200), 
-                          failed_dzp)
-View(failed_dzp_cza_a)
+# I Might have lost this config!!!
+
+# failed_dzp_a <- left_join(data_frame(ExperimentID = 1:200), 
+#                           failed_dzp)
 
 failed_dzp_cza_a <- left_join(failed_dzp_a, failed_czs_a,
                             by = c("ExperimentID"))
 
+failed_dzp_cza_m_a <- left_join(failed_dzp_a, failed_czs_m,
+                              by = c("ExperimentID"))
 
 
-failed_dzp_cza_a_all <- left_join(data_frame(ExperimentID = 1:200), 
-                          failed_dzp_cza_a)
+# failed_dzp_cza_a_all <- left_join(data_frame(ExperimentID = 1:200), 
+#                           failed_dzp_cza_a)
+
 
 health_res_all <- left_join(data_frame(ExperimentID = 1:200), 
                                  health_res)
@@ -150,28 +228,59 @@ merge_test <- left_join(failed_dzp_cza_a_all,health_res_all , by = c("Experiment
 
 merge_test_geneal <- left_join(failed_dzp_cza_a_all,health_res_general_all , by = c("ExperimentID"))
 
+
+merge_test_m <- left_join(failed_dzp_cza_m_a,health_res_all , by = c("ExperimentID"))
+
+merge_test_geneal_m <- left_join(failed_dzp_cza_m_a,health_res_general_all , by = c("ExperimentID"))
+
+
 merge_test %>% filter(
     is.na(status.x),
     is.na(status.y), 
     is.na(status_sc))
 
-merge_test_geneal %>% filter(
+View(merge_test_geneal)
+
+merge_test_geneal_m %>% filter(
+    !is.na(status.x) |
+    !is.na(status.y))
+
+merge_test_m %>% filter(
     is.na(status.x),
-    is.na(status.y),
+    is.na(status.y), 
+    is.na(status_sc))
+
+
+merge_test_geneal_m %>% filter(
+    is.na(status.x),
+    is.na(status.y), 
+    is.na(status))
+# write.csv(failed_dzp_cza_a, file = "./input/failed_dzp_cza_a20170815_a.csv")
+
+merge_test_geneal_m$status_rest <- "" 
+write.csv(merge_test_geneal_m, file = "./input/failed_dzp_cza_a20170815_am.csv")
+
+merge_test_geneal_m <-merge_test_geneal_m %>% filter(
+    is.na(status.x),
+    is.na(status.y), 
     is.na(status))
 
 
-write.csv(failed_dzp_cza_a, file = "./input/failed_dzp_cza_a20170815_a.csv")
+merge_test_geneal_m_M <- 
+    merge_test_geneal_m %>% select(1:4) %>% group_by(ExperimentID) %>%
+    gather(stat, val, -ExperimentID) %>% ungroup() %>% select(-stat) %>% 
+    filter(!is.na(val))%>%
+     group_by(ExperimentID) %>%
+    mutate(status = paste(val, collapse= "+")) %>% ungroup()   %>% select(-val) 
 
+    View(merge_test_geneal_m)
 
-EID = 6
-
-ppppp <- gains_test_all  %>% filter(ExperimentID == EID) %>%
-    ggplot(., aes(x = lp_off,
-                  y = gain.y - gain.x 
-                  
-                  
-    )) +
-    geom_line(aes(color =  gain_func) ) 
-
-show(ppppp)
+    merge_test_geneal_m_M
+    
+    merge_test_geneal_m_M_anti <- anti_join(data_frame(ExperimentID = 1:200), 
+                                        merge_test_geneal_m_M)
+    
+    merge_test_geneal_m_M_anti$status <- "dzs_1r"
+    merge_test_geneal_m_M_all <- union(merge_test_geneal_m_M_anti, merge_test_geneal_m_M) %>% arrange(ExperimentID)
+write.csv(merge_test_geneal_m_M_all, file = "./input/failed_dzp_cza_a20170816_all.csv",
+           row.names = FALSE, quote = FALSE)

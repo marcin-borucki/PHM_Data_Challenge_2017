@@ -39,17 +39,21 @@ this part is focused on separate linear models for all spring- dumper pairs.
 ```{r linear models}
 
 # original models
-source("./R Scripts/models_eq1.R")
+## Not to be used (MB)
+# source("./R Scripts/models_eq1.R")
+# 
+# res1<-run_fits(model_df = models, data_df = data_train)
+# 
+# res1$Track<-ifelse(res1$ExperimentID<101,1,2)
 
-res1<-run_fits(model_df = models, data_df = data_train)
 
-res1$Track<-ifelse(res1$ExperimentID<101,1,2)
 # boggie models without platform
-source("./R Scripts/models_eq2.R")
-
-res2<-run_fits(model_df = models, data_df = data_train)
-
-res2$Track<-ifelse(res2$ExperimentID<101,1,2)
+## Not to be used (MB)
+# source("./R Scripts/models_eq2.R")
+# 
+# res2<-run_fits(model_df = models, data_df = data_train)
+# 
+# res2$Track<-ifelse(res2$ExperimentID<101,1,2)
 
 # boggie models just with wheels
 source("./R Scripts/models_eq3.R")
@@ -57,6 +61,14 @@ source("./R Scripts/models_eq3.R")
 res3<-run_fits(model_df = models, data_df = data_train)
 
 res3$Track<-ifelse(res3$ExperimentID<101,1,2)
+
+# boggie models just with wheels + Platform
+source("./R Scripts/models_eq4.R")
+
+res4<-run_fits(model_df = models, data_df = data_train)
+
+res4$Track<-ifelse(res3$ExperimentID<101,1,2)
+
 
 ```
 
@@ -316,21 +328,21 @@ for(modeli in min(res3$model):max(res3$model)){
     ggplot(.,aes(x=Payload,y=c2,color=as.factor(Track)))+
     geom_point()+
     facet_grid(.~freq)+
-    labs(title="res3, train set only, c2")
+    labs(title=paste("res3, train set only, c2", modeli)
   show(p)
 #modeli=1
   p <- res3 %>% filter(model == modeli) %>%
     ggplot(.,aes(x=Payload,y=c2,color=as.factor(Speed)))+
     geom_point()+
     facet_grid(.~freq)+
-    labs(title="res3, train set only, c2")
+    labs(title=paste("res3, train set only, c2", modeli)
   show(p)
   
   p <- res3 %>% filter(model == modeli) %>%
     ggplot(.,aes(x=Payload,y=c2,color=as.factor(Speed)))+
     geom_point()+
     facet_grid(freq~.)+
-    labs(title="res3, train set only, c2")
+    labs(title=paste("res3, train set only, c2", modeli)
   show(p)
 }
 

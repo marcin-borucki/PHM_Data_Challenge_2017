@@ -308,6 +308,30 @@ gains_test_sum_sec <- gains_test_all_sec %>%
               q75 = quantile(residuals_gain, probs=0.75)              
     ) %>% ungroup() %>% mutate(part = substr(p_l,1,7))
 
+# 
+# Modified secondary Susp dor dumpners detection
+# 
+gains_test_sum_sec_m <- gains_test_all_sec %>%
+select(1:2, one_of("gain_func", "residuals_gain", "gain.y", "gain.x")) %>%
+    group_by(ExperimentID, p_l, gain_func) %>%
+    summarize(sum_res_gain = sum(residuals_gain),
+              res_gain_mean = mean(residuals_gain),
+              res_gain_sd = sd(residuals_gain),
+              gain_mean_exp = mean(gain.x),
+              q25 = quantile(residuals_gain, probs=0.25),
+              q50 = quantile(residuals_gain, probs=0.5),
+              q75 = quantile(residuals_gain, probs=0.75),
+              eq25 = quantile(gain.x, probs=0.25),
+              eq50 = quantile(gain.x, probs=0.5),
+              eq75 = quantile(gain.x, probs=0.75),
+              gain_sd = sd(gain.y),
+              gain_mean = mean(gain.y),
+              IQR_gp = IQR(gain.y),
+              gq25 = quantile(gain.y, probs=0.25),
+              gq50 = quantile(gain.y, probs=0.5),
+              gq75 = quantile(gain.y, probs=0.75)              
+    ) %>% ungroup() %>% mutate(part = substr(p_l,1,5))
+
 # head(gains_test_sum_sec)
 parts <- gains_test_sum_sec %>% select(p_l) %>% distinct()
 
