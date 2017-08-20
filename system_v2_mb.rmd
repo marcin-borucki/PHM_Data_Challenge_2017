@@ -600,6 +600,26 @@ test_data$b1p_3_res <- test_data$b1p_3 - test_data$b1p_3_pred
 test_data$b1p_4_res <- test_data$b1p_4 - test_data$b1p_4_pred
 test_data$b1p_5_res <- test_data$b1p_5 - test_data$b1p_5_pred
 
+# Bogie 2
+
+test_data$b2z_1_res <- test_data$b2z_1 - test_data$b2z_1_pred
+test_data$b2z_2_res <- test_data$b2z_2 - test_data$b2z_2_pred
+test_data$b2z_3_res <- test_data$b2z_3 - test_data$b2z_3_pred
+test_data$b2z_4_res <- test_data$b2z_4 - test_data$b2z_4_pred
+test_data$b2z_5_res <- test_data$b2z_5 - test_data$b2z_5_pred
+
+test_data$b2r_1_res <- test_data$b2r_1 - test_data$b2r_1_pred
+test_data$b2r_2_res <- test_data$b2r_2 - test_data$b2r_2_pred
+test_data$b2r_3_res <- test_data$b2r_3 - test_data$b2r_3_pred
+test_data$b2r_4_res <- test_data$b2r_4 - test_data$b2r_4_pred
+test_data$b2r_5_res <- test_data$b2r_5 - test_data$b2r_5_pred
+
+test_data$b2p_1_res <- test_data$b2p_1 - test_data$b2p_1_pred
+test_data$b2p_2_res <- test_data$b2p_2 - test_data$b2p_2_pred
+test_data$b2p_3_res <- test_data$b2p_3 - test_data$b2p_3_pred
+test_data$b2p_4_res <- test_data$b2p_4 - test_data$b2p_4_pred
+test_data$b2p_5_res <- test_data$b2p_5 - test_data$b2p_5_pred
+
 # Platform
 # PZ
 fit_pz_1 <- lm(formula = pz_1 ~ b1z_1 + b2z_1 + b1p_1 + b2p_1 +  Payload + Speed, data = train_data)
@@ -906,6 +926,25 @@ train_data$b1p_2_res <- train_data$b1p_2 - train_data$b1p_2_pred
 train_data$b1p_3_res <- train_data$b1p_3 - train_data$b1p_3_pred
 train_data$b1p_4_res <- train_data$b1p_4 - train_data$b1p_4_pred
 train_data$b1p_5_res <- train_data$b1p_5 - train_data$b1p_5_pred
+
+#b2
+train_data$b2z_1_res <- train_data$b2z_1 - train_data$b2z_1_pred
+train_data$b2z_2_res <- train_data$b2z_2 - train_data$b2z_2_pred
+train_data$b2z_3_res <- train_data$b2z_3 - train_data$b2z_3_pred
+train_data$b2z_4_res <- train_data$b2z_4 - train_data$b2z_4_pred
+train_data$b2z_5_res <- train_data$b2z_5 - train_data$b2z_5_pred
+
+train_data$b2r_1_res <- train_data$b2r_1 - train_data$b2r_1_pred
+train_data$b2r_2_res <- train_data$b2r_2 - train_data$b2r_2_pred
+train_data$b2r_3_res <- train_data$b2r_3 - train_data$b2r_3_pred
+train_data$b2r_4_res <- train_data$b2r_4 - train_data$b2r_4_pred
+train_data$b2r_5_res <- train_data$b2r_5 - train_data$b2r_5_pred
+
+train_data$b2p_1_res <- train_data$b2p_1 - train_data$b2p_1_pred
+train_data$b2p_2_res <- train_data$b2p_2 - train_data$b2p_2_pred
+train_data$b2p_3_res <- train_data$b2p_3 - train_data$b2p_3_pred
+train_data$b2p_4_res <- train_data$b2p_4 - train_data$b2p_4_pred
+train_data$b2p_5_res <- train_data$b2p_5 - train_data$b2p_5_pred
 
 # Platform
 # PZ
@@ -1394,38 +1433,456 @@ test_data_summ %>%
   geom_point(aes(x = pz_1_res_median, y = ExperimentID ,color = "1"),alpha=0.5)+
   geom_point(aes(x = pz_2_res_median, y = ExperimentID ,color = "2"),alpha=0.5)+
   geom_point(aes(x = pz_3_res_median, y = ExperimentID ,color = "3"),alpha=0.5)+
-  geom_point(aes(x = pz_4_res_median, y = ExperimentID ,color = "4"),alpha=0.5)+
-  geom_point(aes(x = pz_5_res_median, y = ExperimentID ,color = "5"),alpha=0.5)+
+  # geom_point(aes(x = pz_4_res_median, y = ExperimentID ,color = "4"),alpha=0.5)+
+  # geom_point(aes(x = pz_5_res_median, y = ExperimentID ,color = "5"),alpha=0.5)+
   geom_vline(xintercept = 0.0) +
     geom_vline(xintercept = -0.03) +
-    geom_vline(xintercept = 0.03)
+    geom_vline(xintercept = 0.02)
 
 train_data_summ %>%
   ggplot(.)+
   geom_point(aes(x = pz_1_res_median, y = ExperimentID ,color = "1"),alpha=0.5)+
   geom_point(aes(x = pz_2_res_median, y = ExperimentID ,color = "2"),alpha=0.5)+
   geom_point(aes(x = pz_3_res_median, y = ExperimentID ,color = "3"),alpha=0.5)+
-  geom_point(aes(x = pz_4_res_median, y = ExperimentID ,color = "4"),alpha=0.5)+
-  geom_point(aes(x = pz_5_res_median, y = ExperimentID ,color = "5"),alpha=0.5)+
+  # geom_point(aes(x = pz_4_res_median, y = ExperimentID ,color = "4"),alpha=0.5)+
+  # geom_point(aes(x = pz_5_res_median, y = ExperimentID ,color = "5"),alpha=0.5)+
   geom_vline(xintercept = 0.0) +
     geom_vline(xintercept = -0.03) +
-    geom_vline(xintercept = 0.03)
+    geom_vline(xintercept = 0.02)
 
 
-# +
-#   facet_wrap(~ExperimentID)
-
-# Exp_sel <- spirings_s %>% filter(State != "healthy"  & grepl("1$",State)) %>% select(-State) 
-test_data %>% #right_join(Exp_sel )  %>%
+test_data_summ %>%
   ggplot(.)+
-  geom_point(aes(x = pp_1_res, y = ExperimentID ,color = "1"),alpha=0.5)+
-  geom_point(aes(x = pp_2_res, y = ExperimentID ,color = "2"),alpha=0.5)+
-  geom_point(aes(x = pp_3_res, y = ExperimentID ,color = "3"),alpha=0.5)+
-  geom_point(aes(x = pp_4_res, y = ExperimentID ,color = "4"),alpha=0.5)+
-  geom_point(aes(x = pp_5_res, y = ExperimentID ,color = "5"),alpha=0.5)+
-  geom_vline(xintercept=0.0)
-# +
-  # facet_wrap(~ExperimentID)
+  geom_point(aes(x = pp_1_res_median, y = ExperimentID ,color = "1"),alpha=0.5)+
+  geom_point(aes(x = pp_2_res_median, y = ExperimentID ,color = "2"),alpha=0.5)+
+  geom_point(aes(x = pp_3_res_median, y = ExperimentID ,color = "3"),alpha=0.5)+
+  # geom_point(aes(x = pp_4_res_median, y = ExperimentID ,color = "4"),alpha=0.5)+
+  # geom_point(aes(x = pp_5_res_median, y = ExperimentID ,color = "5"),alpha=0.5)+
+  geom_vline(xintercept = 0.0) +
+    geom_vline(xintercept = -0.03) +
+    geom_vline(xintercept = 0.02)
+
+train_data_summ %>%
+  ggplot(.)+
+  geom_point(aes(x = pp_1_res_median, y = ExperimentID ,color = "1"),alpha=0.5)+
+  geom_point(aes(x = pp_2_res_median, y = ExperimentID ,color = "2"),alpha=0.5)+
+  geom_point(aes(x = pp_3_res_median, y = ExperimentID ,color = "3"),alpha=0.5)+
+  # geom_point(aes(x = pp_4_res_median, y = ExperimentID ,color = "4"),alpha=0.5)+
+  # geom_point(aes(x = pp_5_res_median, y = ExperimentID ,color = "5"),alpha=0.5)+
+  geom_vline(xintercept = 0.0) +
+    geom_vline(xintercept = -0.03) +
+    geom_vline(xintercept = 0.02)
+
+#
+# bogie
+#
+test_data_summ %>%
+  ggplot(.)+
+  geom_point(aes(x = b1z_1_res_median, y = ExperimentID ,color = "1"),alpha=0.5)+
+  geom_point(aes(x = b1z_2_res_median, y = ExperimentID ,color = "2"),alpha=0.5)+
+  geom_point(aes(x = b1z_3_res_median, y = ExperimentID ,color = "3"),alpha=0.5)+
+  # geom_point(aes(x = b1z_4_res_median, y = ExperimentID ,color = "4"),alpha=0.5)+
+  # geom_point(aes(x = b1z_5_res_median, y = ExperimentID ,color = "5"),alpha=0.5)+
+  geom_vline(xintercept = 0.0) +
+    geom_vline(xintercept = -0.03) +
+    geom_vline(xintercept = 0.02)
+
+train_data_summ %>%
+  ggplot(.)+
+  geom_point(aes(x = b1z_1_res_median, y = ExperimentID ,color = "1"),alpha=0.5)+
+  geom_point(aes(x = b1z_2_res_median, y = ExperimentID ,color = "2"),alpha=0.5)+
+  geom_point(aes(x = b1z_3_res_median, y = ExperimentID ,color = "3"),alpha=0.5)+
+  # geom_point(aes(x = b1z_4_res_median, y = ExperimentID ,color = "4"),alpha=0.5)+
+  # geom_point(aes(x = b1z_5_res_median, y = ExperimentID ,color = "5"),alpha=0.5)+
+  geom_vline(xintercept = 0.0) +
+    geom_vline(xintercept = -0.03) +
+    geom_vline(xintercept = 0.02)
+
+
+test_data_summ %>%
+  ggplot(.)+
+  geom_point(aes(x = b1r_1_res_median, y = ExperimentID ,color = "1"),alpha=0.5)+
+  geom_point(aes(x = b1r_2_res_median, y = ExperimentID ,color = "2"),alpha=0.5)+
+  geom_point(aes(x = b1r_3_res_median, y = ExperimentID ,color = "3"),alpha=0.5)+
+  geom_point(aes(x = b1r_4_res_median, y = ExperimentID ,color = "4"),alpha=0.5)+
+  geom_point(aes(x = b1r_5_res_median, y = ExperimentID ,color = "5"),alpha=0.5)+
+  geom_vline(xintercept = 0.0) +
+    geom_vline(xintercept = -0.03) +
+    geom_vline(xintercept = 0.02)
+
+train_data_summ %>%
+  ggplot(.)+
+  geom_point(aes(x = b1r_1_res_median, y = ExperimentID ,color = "1"),alpha=0.5)+
+  geom_point(aes(x = b1r_2_res_median, y = ExperimentID ,color = "2"),alpha=0.5)+
+  geom_point(aes(x = b1r_3_res_median, y = ExperimentID ,color = "3"),alpha=0.5)+
+  geom_point(aes(x = b1r_4_res_median, y = ExperimentID ,color = "4"),alpha=0.5)+
+  geom_point(aes(x = b1r_5_res_median, y = ExperimentID ,color = "5"),alpha=0.5)+
+  geom_vline(xintercept = 0.0) +
+    geom_vline(xintercept = -0.03) +
+    geom_vline(xintercept = 0.02)
+
+
+
+#
+# Residuals might not be very informative?
+#
+# 
+# test_data_summ %>%
+#   ggplot(.)+
+#   geom_point(aes(x = pz_1_res_sd, y = ExperimentID ,color = "1"),alpha=0.5)+
+#   geom_point(aes(x = pz_2_res_sd, y = ExperimentID ,color = "2"),alpha=0.5)+
+#   geom_point(aes(x = pz_3_res_sd, y = ExperimentID ,color = "3"),alpha=0.5)+
+#   geom_point(aes(x = pz_4_res_sd, y = ExperimentID ,color = "4"),alpha=0.5)+
+#   geom_point(aes(x = pz_5_res_sd, y = ExperimentID ,color = "5"),alpha=0.5)+
+#   geom_vline(xintercept = 0.0) +
+#     geom_vline(xintercept = -0.03) +
+#     geom_vline(xintercept = 0.02)
+# 
+# train_data_summ %>%
+#   ggplot(.)+
+#   geom_point(aes(x = pz_1_res_sd, y = ExperimentID ,color = "1"),alpha=0.5)+
+#   geom_point(aes(x = pz_2_res_sd, y = ExperimentID ,color = "2"),alpha=0.5)+
+#   geom_point(aes(x = pz_3_res_sd, y = ExperimentID ,color = "3"),alpha=0.5)+
+#   geom_point(aes(x = pz_4_res_sd, y = ExperimentID ,color = "4"),alpha=0.5)+
+#   geom_point(aes(x = pz_5_res_sd, y = ExperimentID ,color = "5"),alpha=0.5)+
+#   geom_vline(xintercept = 0.0) +
+#     geom_vline(xintercept = -0.03) +
+#     geom_vline(xintercept = 0.02)
+# 
+# test_data_summ %>%
+#   ggplot(.)+
+#   geom_point(aes(x = pp_1_res_sd, y = ExperimentID ,color = "1"),alpha=0.5)+
+#   geom_point(aes(x = pp_2_res_sd, y = ExperimentID ,color = "2"),alpha=0.5)+
+#   geom_point(aes(x = pp_3_res_sd, y = ExperimentID ,color = "3"),alpha=0.5)+
+#   geom_point(aes(x = pp_4_res_sd, y = ExperimentID ,color = "4"),alpha=0.5)+
+#   geom_point(aes(x = pp_5_res_sd, y = ExperimentID ,color = "5"),alpha=0.5)+
+#   geom_vline(xintercept = 0.0) +
+#     geom_vline(xintercept = -0.03) +
+#     geom_vline(xintercept = 0.02)
+# 
+# train_data_summ %>%
+#   ggplot(.)+
+#   geom_point(aes(x = pp_1_res_sd, y = ExperimentID ,color = "1"),alpha=0.5)+
+#   geom_point(aes(x = pp_2_res_sd, y = ExperimentID ,color = "2"),alpha=0.5)+
+#   geom_point(aes(x = pp_3_res_sd, y = ExperimentID ,color = "3"),alpha=0.5)+
+#   geom_point(aes(x = pp_4_res_sd, y = ExperimentID ,color = "4"),alpha=0.5)+
+#   geom_point(aes(x = pp_5_res_sd, y = ExperimentID ,color = "5"),alpha=0.5)+
+#   geom_vline(xintercept = 0.0) +
+#     geom_vline(xintercept = -0.03) +
+#     geom_vline(xintercept = 0.02)
+
+```
+
+
+
+## Treshold look up with Medians
+
+```{r thesholds with medians bogie}
+
+# some crazy thresholds (for standardized residual values)
+# establishing thresholds based on training median
+th_b1p_1_low = min(train_data_summ$b1p_1_res_median)
+th_b1p_2_low = min(train_data_summ$b1p_2_res_median)
+th_b1p_3_low = min(train_data_summ$b1p_3_res_median)
+th_b1p_4_low = min(train_data_summ$b1p_4_res_median)
+th_b1p_5_low = min(train_data_summ$b1p_5_res_median)
+
+th_b1z_1_low = min(train_data_summ$b1z_1_res_median)
+th_b1z_2_low = min(train_data_summ$b1z_2_res_median)
+th_b1z_3_low = min(train_data_summ$b1z_3_res_median)
+th_b1z_4_low = min(train_data_summ$b1z_4_res_median)
+th_b1z_5_low = min(train_data_summ$b1z_5_res_median)
+
+th_b1r_1_low = min(train_data_summ$b1r_1_res_median)
+th_b1r_2_low = min(train_data_summ$b1r_2_res_median)
+th_b1r_3_low = min(train_data_summ$b1r_3_res_median)
+th_b1r_4_low = min(train_data_summ$b1r_4_res_median)
+th_b1r_5_low = min(train_data_summ$b1r_5_res_median)
+
+
+th_b1p_1_high = max(train_data_summ$b1p_1_res_median)
+th_b1p_2_high = max(train_data_summ$b1p_2_res_median)
+th_b1p_3_high = max(train_data_summ$b1p_3_res_median)
+th_b1p_4_high = max(train_data_summ$b1p_4_res_median)
+th_b1p_5_high = max(train_data_summ$b1p_5_res_median)
+
+th_b1z_1_high = max(train_data_summ$b1z_1_res_median)
+th_b1z_2_high = max(train_data_summ$b1z_2_res_median)
+th_b1z_3_high = max(train_data_summ$b1z_3_res_median)
+th_b1z_4_high = max(train_data_summ$b1z_4_res_median)
+th_b1z_5_high = max(train_data_summ$b1z_5_res_median)
+
+th_b1r_1_high = max(train_data_summ$b1r_1_res_median)
+th_b1r_2_high = max(train_data_summ$b1r_2_res_median)
+th_b1r_3_high = max(train_data_summ$b1r_3_res_median)
+th_b1r_4_high = max(train_data_summ$b1r_4_res_median)
+th_b1r_5_high = max(train_data_summ$b1r_5_res_median)
+
+th_b2p_1_low = min(train_data_summ$b2p_1_res_median)
+th_b2p_2_low = min(train_data_summ$b2p_2_res_median)
+th_b2p_3_low = min(train_data_summ$b2p_3_res_median)
+th_b2p_4_low = min(train_data_summ$b2p_4_res_median)
+th_b2p_5_low = min(train_data_summ$b2p_5_res_median)
+
+th_b2z_1_low = min(train_data_summ$b2z_1_res_median)
+th_b2z_2_low = min(train_data_summ$b2z_2_res_median)
+th_b2z_3_low = min(train_data_summ$b2z_3_res_median)
+th_b2z_4_low = min(train_data_summ$b2z_4_res_median)
+th_b2z_5_low = min(train_data_summ$b2z_5_res_median)
+
+th_b2r_1_low = min(train_data_summ$b2r_1_res_median)
+th_b2r_2_low = min(train_data_summ$b2r_2_res_median)
+th_b2r_3_low = min(train_data_summ$b2r_3_res_median)
+th_b2r_4_low = min(train_data_summ$b2r_4_res_median)
+th_b2r_5_low = min(train_data_summ$b2r_5_res_median)
+
+
+th_b2p_1_high = max(train_data_summ$b2p_1_res_median)
+th_b2p_2_high = max(train_data_summ$b2p_2_res_median)
+th_b2p_3_high = max(train_data_summ$b2p_3_res_median)
+th_b2p_4_high = max(train_data_summ$b2p_4_res_median)
+th_b2p_5_high = max(train_data_summ$b2p_5_res_median)
+
+th_b2z_1_high = max(train_data_summ$b2z_1_res_median)
+th_b2z_2_high = max(train_data_summ$b2z_2_res_median)
+th_b2z_3_high = max(train_data_summ$b2z_3_res_median)
+th_b2z_4_high = max(train_data_summ$b2z_4_res_median)
+th_b2z_5_high = max(train_data_summ$b2z_5_res_median)
+
+th_b2r_1_high = max(train_data_summ$b2r_1_res_median)
+th_b2r_2_high = max(train_data_summ$b2r_2_res_median)
+th_b2r_3_high = max(train_data_summ$b2r_3_res_median)
+th_b2r_4_high = max(train_data_summ$b2r_4_res_median)
+th_b2r_5_high = max(train_data_summ$b2r_5_res_median)
+
+# sd calc
+th_b1p_1_sd = sd(train_data_summ$b1p_1_res_median)
+th_b1p_2_sd = sd(train_data_summ$b1p_2_res_median)
+th_b1p_3_sd = sd(train_data_summ$b1p_3_res_median)
+th_b1p_4_sd = sd(train_data_summ$b1p_4_res_median)
+th_b1p_5_sd = sd(train_data_summ$b1p_5_res_median)
+
+th_b1z_1_sd = sd(train_data_summ$b1z_1_res_median)
+th_b1z_2_sd = sd(train_data_summ$b1z_2_res_median)
+th_b1z_3_sd = sd(train_data_summ$b1z_3_res_median)
+th_b1z_4_sd = sd(train_data_summ$b1z_4_res_median)
+th_b1z_5_sd = sd(train_data_summ$b1z_5_res_median)
+
+th_b1r_1_sd = sd(train_data_summ$b1r_1_res_median)
+th_b1r_2_sd = sd(train_data_summ$b1r_2_res_median)
+th_b1r_3_sd = sd(train_data_summ$b1r_3_res_median)
+th_b1r_4_sd = sd(train_data_summ$b1r_4_res_median)
+th_b1r_5_sd = sd(train_data_summ$b1r_5_res_median)
+
+th_b2p_1_sd = sd(train_data_summ$b2p_1_res_median)
+th_b2p_2_sd = sd(train_data_summ$b2p_2_res_median)
+th_b2p_3_sd = sd(train_data_summ$b2p_3_res_median)
+th_b2p_4_sd = sd(train_data_summ$b2p_4_res_median)
+th_b2p_5_sd = sd(train_data_summ$b2p_5_res_median)
+
+th_b2z_1_sd = sd(train_data_summ$b2z_1_res_median)
+th_b2z_2_sd = sd(train_data_summ$b2z_2_res_median)
+th_b2z_3_sd = sd(train_data_summ$b2z_3_res_median)
+th_b2z_4_sd = sd(train_data_summ$b2z_4_res_median)
+th_b2z_5_sd = sd(train_data_summ$b2z_5_res_median)
+
+th_b2r_1_sd = sd(train_data_summ$b2r_1_res_median)
+th_b2r_2_sd = sd(train_data_summ$b2r_2_res_median)
+th_b2r_3_sd = sd(train_data_summ$b2r_3_res_median)
+th_b2r_4_sd = sd(train_data_summ$b2r_4_res_median)
+th_b2r_5_sd = sd(train_data_summ$b2r_5_res_median)
+
+
+test_data_summ %>% 
+  filter(th_b1z_1_low - th_b1z_1_sd > b1z_1_res_median | b1z_1_res_median > th_b1z_1_high + th_b1z_1_sd |
+         # th_b1z_4_low - th_b1z_4_sd > b1z_4_res_median | b1z_4_res_median > th_b1z_4_high + th_b1z_4_sd |
+         th_b1z_3_low - th_b1z_3_sd > b1z_3_res_median | b1z_3_res_median > th_b1z_3_high + th_b1z_3_sd |
+         th_b1z_2_low - th_b1z_2_sd > b1z_2_res_median | b1z_2_res_median > th_b1z_2_high + th_b1z_2_sd |
+         th_b2z_1_low - th_b2z_1_sd > b2z_1_res_median | b2z_1_res_median > th_b2z_1_high + th_b2z_1_sd |
+         th_b2z_3_low - th_b2z_3_sd > b2z_3_res_median | b2z_3_res_median > th_b2z_3_high + th_b2z_3_sd |
+         th_b2z_2_low - th_b2z_2_sd > b2z_2_res_median | b2z_2_res_median > th_b2z_2_high + th_b2z_2_sd #|
+         # th_b2z_4_low - th_b2z_4_sd > b2z_4_res_median | b2z_4_res_median > th_b2z_4_high + th_b2z_4_sd
+         ) %>%
+  # count()
+select(ExperimentID)
 
 
 ```
+
+
+## Platform
+
+
+```{r thesholds with medians paltform}
+
+# some crazy thresholds (for standardized residual values)
+# establishing thresholds based on training median
+th_pp_1_low = min(train_data_summ$pp_1_res_median)
+th_pp_2_low = min(train_data_summ$pp_2_res_median)
+th_pp_3_low = min(train_data_summ$pp_3_res_median)
+th_pp_4_low = min(train_data_summ$pp_4_res_median)
+th_pp_5_low = min(train_data_summ$pp_5_res_median)
+
+th_pz_1_low = min(train_data_summ$pz_1_res_median)
+th_pz_2_low = min(train_data_summ$pz_2_res_median)
+th_pz_3_low = min(train_data_summ$pz_3_res_median)
+th_pz_4_low = min(train_data_summ$pz_4_res_median)
+th_pz_5_low = min(train_data_summ$pz_5_res_median)
+
+
+th_pp_1_high = max(train_data_summ$pp_1_res_median)
+th_pp_2_high = max(train_data_summ$pp_2_res_median)
+th_pp_3_high = max(train_data_summ$pp_3_res_median)
+th_pp_4_high = max(train_data_summ$pp_4_res_median)
+th_pp_5_high = max(train_data_summ$pp_5_res_median)
+
+th_pz_1_high = max(train_data_summ$pz_1_res_median)
+th_pz_2_high = max(train_data_summ$pz_2_res_median)
+th_pz_3_high = max(train_data_summ$pz_3_res_median)
+th_pz_4_high = max(train_data_summ$pz_4_res_median)
+th_pz_5_high = max(train_data_summ$pz_5_res_median)
+
+# sd calc
+th_pp_1_sd = sd(train_data_summ$pp_1_res_median)
+th_pp_2_sd = sd(train_data_summ$pp_2_res_median)
+th_pp_3_sd = sd(train_data_summ$pp_3_res_median)
+th_pp_4_sd = sd(train_data_summ$pp_4_res_median)
+th_pp_5_sd = sd(train_data_summ$pp_5_res_median)
+
+th_pz_1_sd = sd(train_data_summ$pz_1_res_median)
+th_pz_2_sd = sd(train_data_summ$pz_2_res_median)
+th_pz_3_sd = sd(train_data_summ$pz_3_res_median)
+th_pz_4_sd = sd(train_data_summ$pz_4_res_median)
+th_pz_5_sd = sd(train_data_summ$pz_5_res_median)
+
+
+test_data_summ %>% 
+  filter(
+        # th_pz_1_low - th_pz_1_sd*3 > pz_1_res_median | pz_1_res_median > th_pz_1_high + th_pz_1_sd*3 |
+        # th_pz_4_low - th_pz_4_sd*3 > pz_4_res_median | pz_4_res_median > th_pz_4_high + th_pz_4_sd*3 |
+        # th_pz_3_low - th_pz_3_sd*3 > pz_3_res_median | pz_3_res_median > th_pz_3_high + th_pz_3_sd*3 |
+        # th_pz_2_low - th_pz_2_sd*3 > pz_2_res_median | pz_2_res_median > th_pz_2_high + th_pz_2_sd*3 |
+        th_pp_1_low - th_pp_1_sd*3 > pp_1_res_median | pp_1_res_median > th_pp_1_high + th_pp_1_sd*3 #|
+        # th_pp_3_low - th_pp_3_sd*3 > pp_3_res_median | pp_3_res_median > th_pp_3_high + th_pp_3_sd*3 |
+        # th_pp_2_low - th_pp_2_sd*3 > pp_2_res_median | pp_2_res_median > th_pp_2_high + th_pp_2_sd*3 #|
+        # th_pp_4_low - th_pp_4_sd*3 > pp_4_res_median | pp_4_res_median > th_pp_4_high + th_pp_4_sd*3
+         ) %>%
+  # count()
+select(ExperimentID)
+
+
+```
+
+## thershods percentiles q25 q75
+
+```{r thesholds with medians}
+
+# q25 low and Q75 high
+
+
+th_b1p_1_low = min(train_data_summ$b1p_1_res_q25)
+th_b1p_2_low = min(train_data_summ$b1p_2_res_q25)
+th_b1p_3_low = min(train_data_summ$b1p_3_res_q25)
+th_b1p_4_low = min(train_data_summ$b1p_4_res_q25)
+th_b1p_5_low = min(train_data_summ$b1p_5_res_q25)
+
+th_b1z_1_low = min(train_data_summ$b1z_1_res_q25)
+th_b1z_2_low = min(train_data_summ$b1z_2_res_q25)
+th_b1z_3_low = min(train_data_summ$b1z_3_res_q25)
+th_b1z_4_low = min(train_data_summ$b1z_4_res_q25)
+th_b1z_5_low = min(train_data_summ$b1z_5_res_q25)
+
+th_b1r_1_low = min(train_data_summ$b1r_1_res_q25)
+th_b1r_2_low = min(train_data_summ$b1r_2_res_q25)
+th_b1r_3_low = min(train_data_summ$b1r_3_res_q25)
+th_b1r_4_low = min(train_data_summ$b1r_4_res_q25)
+th_b1r_5_low = min(train_data_summ$b1r_5_res_q25)
+
+
+th_b1p_1_high = max(train_data_summ$b1p_1_res_q75)
+th_b1p_2_high = max(train_data_summ$b1p_2_res_q75)
+th_b1p_3_high = max(train_data_summ$b1p_3_res_q75)
+th_b1p_4_high = max(train_data_summ$b1p_4_res_q75)
+th_b1p_5_high = max(train_data_summ$b1p_5_res_q75)
+
+th_b1z_1_high = max(train_data_summ$b1z_1_res_q75)
+th_b1z_2_high = max(train_data_summ$b1z_2_res_q75)
+th_b1z_3_high = max(train_data_summ$b1z_3_res_q75)
+th_b1z_4_high = max(train_data_summ$b1z_4_res_q75)
+th_b1z_5_high = max(train_data_summ$b1z_5_res_q75)
+
+th_b1r_1_high = max(train_data_summ$b1r_1_res_q75)
+th_b1r_2_high = max(train_data_summ$b1r_2_res_q75)
+th_b1r_3_high = max(train_data_summ$b1r_3_res_q75)
+th_b1r_4_high = max(train_data_summ$b1r_4_res_q75)
+th_b1r_5_high = max(train_data_summ$b1r_5_res_q75)
+
+th_b2p_1_low = min(train_data_summ$b2p_1_res_q25)
+th_b2p_2_low = min(train_data_summ$b2p_2_res_q25)
+th_b2p_3_low = min(train_data_summ$b2p_3_res_q25)
+th_b2p_4_low = min(train_data_summ$b2p_4_res_q25)
+th_b2p_5_low = min(train_data_summ$b2p_5_res_q25)
+
+th_b2z_1_low = min(train_data_summ$b2z_1_res_q25)
+th_b2z_2_low = min(train_data_summ$b2z_2_res_q25)
+th_b2z_3_low = min(train_data_summ$b2z_3_res_q25)
+th_b2z_4_low = min(train_data_summ$b2z_4_res_q25)
+th_b2z_5_low = min(train_data_summ$b2z_5_res_q25)
+
+th_b2r_1_low = min(train_data_summ$b2r_1_res_q25)
+th_b2r_2_low = min(train_data_summ$b2r_2_res_q25)
+th_b2r_3_low = min(train_data_summ$b2r_3_res_q25)
+th_b2r_4_low = min(train_data_summ$b2r_4_res_q25)
+th_b2r_5_low = min(train_data_summ$b2r_5_res_q25)
+
+
+th_b2p_1_high = max(train_data_summ$b2p_1_res_q75)
+th_b2p_2_high = max(train_data_summ$b2p_2_res_q75)
+th_b2p_3_high = max(train_data_summ$b2p_3_res_q75)
+th_b2p_4_high = max(train_data_summ$b2p_4_res_q75)
+th_b2p_5_high = max(train_data_summ$b2p_5_res_q75)
+
+th_b2z_1_high = max(train_data_summ$b2z_1_res_q75)
+th_b2z_2_high = max(train_data_summ$b2z_2_res_q75)
+th_b2z_3_high = max(train_data_summ$b2z_3_res_q75)
+th_b2z_4_high = max(train_data_summ$b2z_4_res_q75)
+th_b2z_5_high = max(train_data_summ$b2z_5_res_q75)
+
+th_b2r_1_high = max(train_data_summ$b2r_1_res_q75)
+th_b2r_2_high = max(train_data_summ$b2r_2_res_q75)
+th_b2r_3_high = max(train_data_summ$b2r_3_res_q75)
+th_b2r_4_high = max(train_data_summ$b2r_4_res_q75)
+th_b2r_5_high = max(train_data_summ$b2r_5_res_q75)
+
+
+test_data_summ %>%
+  ggplot(.)+
+  geom_histogram(aes(x=b1z_4_res_q25))+
+  geom_vline(xintercept = th_b1z_4_low)+
+  geom_vline(xintercept = 1.1*th_b1z_4_low,color="red")+
+  geom_vline(xintercept = th_b1z_4_high)+
+  geom_vline(xintercept = 1.1*th_b1z_4_high,color="red")
+  
+
+
+test_data_summ %>% 
+  filter(1.05*th_b1z_4_low > b1z_4_res_q25 | b1z_4_res_q75 > 1.05*th_b1z_4_high |
+         1.05*th_b1z_3_low > b1z_3_res_q25 | b1z_3_res_q75 > 1.05*th_b1z_3_high |
+         1.05*th_b1z_2_low > b1z_2_res_q25 | b1z_2_res_q75 > 1.05*th_b1z_2_high |
+         1.05*th_b1z_1_low > b1z_1_res_q25 | b1z_1_res_q75 > 1.05*th_b1z_1_high |
+         1.05*th_b2z_3_low > b2z_3_res_q25 | b2z_3_res_q75 > 1.05*th_b2z_3_high |
+         1.05*th_b2z_2_low > b2z_2_res_q25 | b2z_2_res_q75 > 1.05*th_b2z_2_high |
+         1.05*th_b2z_1_low > b2z_1_res_q25 | b2z_1_res_q75 > 1.05*th_b2z_1_high |
+         1.05*th_b2z_4_low > b2z_4_res_q25 | b2z_4_res_q75 > 1.05*th_b2z_4_high) %>%
+  count()
+
+test_data_summ %>% 
+  filter(1.0*th_b1z_4_low > b1z_4_res_q25 | b1z_4_res_q75 > 1.0*th_b1z_4_high |
+         1.0*th_b1z_3_low > b1z_3_res_q25 | b1z_3_res_q75 > 1.0*th_b1z_3_high |
+         1.0*th_b1z_2_low > b1z_2_res_q25 | b1z_2_res_q75 > 1.0*th_b1z_2_high |
+         1.0*th_b2z_3_low > b2z_3_res_q25 | b2z_3_res_q75 > 1.0*th_b2z_3_high |
+         1.0*th_b2z_2_low > b2z_2_res_q25 | b2z_2_res_q75 > 1.0*th_b2z_2_high |
+         1.0*th_b2z_4_low > b2z_4_res_q25 | b2z_4_res_q75 > 1.0*th_b2z_4_high) %>%
+  count()
+```
+
