@@ -450,7 +450,10 @@ train_data %>%
 fit3z <- lm(formula = b1z_3 ~ w1z_3 + w1r_3 + w1p_3, data= train_data)
 summary(fit3z)
 
-train_data %>% lm(formula = b1z_3 ~ w1z_3, data=.) %>% summary()
+train_data %>% lm(formula = b1z_3 ~ w1z_3 , data=.) %>% summary()
+
+
+train_data %>% lm(formula = b1z_3 ~ w1z_3 + Speed, data=.) %>% summary()
 
 train_data %>% lm(formula = b1r_3 ~ w1r_3 + w1z_3 + w1p_3, data=.) %>% summary()
 
@@ -483,11 +486,11 @@ summary(fit4z_test)
 
 # b1z
 
-fit_b1z_1 <- lm(formula = b1z_1 ~ w1z_1 + w1r_1 + w1p_1, data= train_data)
-fit_b1z_2 <- lm(formula = b1z_2 ~ w1z_2 + w1r_2 + w1p_2, data= train_data)
-fit_b1z_3 <- lm(formula = b1z_3 ~ w1z_3 + w1r_3 + w1p_3, data= train_data)
-fit_b1z_4 <- lm(formula = b1z_4 ~ w1z_4 + w1r_4 + w1p_4, data= train_data)
-fit_b1z_5 <- lm(formula = b1z_5 ~ w1z_5 + w1r_5 + w1p_5, data= train_data)
+fit_b1z_1 <- lm(formula = b1z_1 ~ w1z_1 + w1r_1 + w1p_1 + Speed + Payload, data= train_data)
+fit_b1z_2 <- lm(formula = b1z_2 ~ w1z_2 + w1r_2 + w1p_2 + Speed + Payload, data= train_data)
+fit_b1z_3 <- lm(formula = b1z_3 ~ w1z_3 + w1r_3 + w1p_3 + Speed + Payload, data= train_data)
+fit_b1z_4 <- lm(formula = b1z_4 ~ w1z_4 + w1r_4 + w1p_4 + Speed + Payload, data= train_data)
+fit_b1z_5 <- lm(formula = b1z_5 ~ w1z_5 + w1r_5 + w1p_5 + Speed + Payload, data= train_data)
 
 test_data$b1z_1_pred <- predict.lm(fit_b1z_1,newdata = test_data)
 test_data$b1z_2_pred <- predict.lm(fit_b1z_2,newdata = test_data)
@@ -495,14 +498,13 @@ test_data$b1z_3_pred <- predict.lm(fit_b1z_3,newdata = test_data)
 test_data$b1z_4_pred <- predict.lm(fit_b1z_4,newdata = test_data)
 test_data$b1z_5_pred <- predict.lm(fit_b1z_5,newdata = test_data)
 
-
 # b1r
 
-fit_b1r_1 <- lm(formula = b1r_1 ~ w1z_1 + w1r_1 + w1p_1, data= train_data)
-fit_b1r_2 <- lm(formula = b1r_2 ~ w1z_2 + w1r_2 + w1p_2, data= train_data)
-fit_b1r_3 <- lm(formula = b1r_3 ~ w1z_3 + w1r_3 + w1p_3, data= train_data)
-fit_b1r_4 <- lm(formula = b1r_4 ~ w1z_4 + w1r_4 + w1p_4, data= train_data)
-fit_b1r_5 <- lm(formula = b1r_5 ~ w1z_5 + w1r_5 + w1p_5, data= train_data)
+fit_b1r_1 <- lm(formula = b1r_1 ~ w1z_1 + w1r_1 + w1p_1 + Speed + Payload, data= train_data)
+fit_b1r_2 <- lm(formula = b1r_2 ~ w1z_2 + w1r_2 + w1p_2 + Speed + Payload, data= train_data)
+fit_b1r_3 <- lm(formula = b1r_3 ~ w1z_3 + w1r_3 + w1p_3 + Speed + Payload, data= train_data)
+fit_b1r_4 <- lm(formula = b1r_4 ~ w1z_4 + w1r_4 + w1p_4 + Speed + Payload, data= train_data)
+fit_b1r_5 <- lm(formula = b1r_5 ~ w1z_5 + w1r_5 + w1p_5 + Speed + Payload, data= train_data)
 
 test_data$b1r_1_pred <- predict.lm(fit_b1r_1,newdata = test_data)
 test_data$b1r_2_pred <- predict.lm(fit_b1r_2,newdata = test_data)
@@ -512,11 +514,11 @@ test_data$b1r_5_pred <- predict.lm(fit_b1r_5,newdata = test_data)
 
 # b1p
 
-fit_b1p_1 <- lm(formula = b1p_1 ~ w1z_1 + w1r_1 + w1p_1, data= train_data)
-fit_b1p_2 <- lm(formula = b1p_2 ~ w1z_2 + w1r_2 + w1p_2, data= train_data)
-fit_b1p_3 <- lm(formula = b1p_3 ~ w1z_3 + w1r_3 + w1p_3, data= train_data)
-fit_b1p_4 <- lm(formula = b1p_4 ~ w1z_4 + w1r_4 + w1p_4, data= train_data)
-fit_b1p_5 <- lm(formula = b1p_5 ~ w1z_5 + w1r_5 + w1p_5, data= train_data)
+fit_b1p_1 <- lm(formula = b1p_1 ~ w1z_1 + w1r_1 + w1p_1 + Speed + Payload, data= train_data)
+fit_b1p_2 <- lm(formula = b1p_2 ~ w1z_2 + w1r_2 + w1p_2 + Speed + Payload, data= train_data)
+fit_b1p_3 <- lm(formula = b1p_3 ~ w1z_3 + w1r_3 + w1p_3 + Speed + Payload, data= train_data)
+fit_b1p_4 <- lm(formula = b1p_4 ~ w1z_4 + w1r_4 + w1p_4 + Speed + Payload, data= train_data)
+fit_b1p_5 <- lm(formula = b1p_5 ~ w1z_5 + w1r_5 + w1p_5 + Speed + Payload, data= train_data)
 
 test_data$b1p_1_pred <- predict.lm(fit_b1p_1,newdata = test_data)
 test_data$b1p_2_pred <- predict.lm(fit_b1p_2,newdata = test_data)
@@ -526,11 +528,11 @@ test_data$b1p_5_pred <- predict.lm(fit_b1p_5,newdata = test_data)
 
 #b2z
 
-fit_b2z_1 <- lm(formula = b2z_1 ~ w2z_1 + w2r_1 + w2p_1, data= train_data)
-fit_b2z_2 <- lm(formula = b2z_2 ~ w2z_2 + w2r_2 + w2p_2, data= train_data)
-fit_b2z_3 <- lm(formula = b2z_3 ~ w2z_3 + w2r_3 + w2p_3, data= train_data)
-fit_b2z_4 <- lm(formula = b2z_4 ~ w2z_4 + w2r_4 + w2p_4, data= train_data)
-fit_b2z_5 <- lm(formula = b2z_5 ~ w2z_5 + w2r_5 + w2p_5, data= train_data)
+fit_b2z_1 <- lm(formula = b2z_1 ~ w2z_1 + w2r_1 + w2p_1 + Speed + Payload, data= train_data)
+fit_b2z_2 <- lm(formula = b2z_2 ~ w2z_2 + w2r_2 + w2p_2 + Speed + Payload, data= train_data)
+fit_b2z_3 <- lm(formula = b2z_3 ~ w2z_3 + w2r_3 + w2p_3 + Speed + Payload, data= train_data)
+fit_b2z_4 <- lm(formula = b2z_4 ~ w2z_4 + w2r_4 + w2p_4 + Speed + Payload, data= train_data)
+fit_b2z_5 <- lm(formula = b2z_5 ~ w2z_5 + w2r_5 + w2p_5 + Speed + Payload, data= train_data)
 
 test_data$b2z_1_pred <- predict.lm(fit_b2z_1,newdata = test_data)
 test_data$b2z_2_pred <- predict.lm(fit_b2z_2,newdata = test_data)
@@ -540,11 +542,11 @@ test_data$b2z_5_pred <- predict.lm(fit_b2z_5,newdata = test_data)
 
 # b2r
 
-fit_b2r_1 <- lm(formula = b2r_1 ~ w2z_1 + w2r_1 + w2p_1, data= train_data)
-fit_b2r_2 <- lm(formula = b2r_2 ~ w2z_2 + w2r_2 + w2p_2, data= train_data)
-fit_b2r_3 <- lm(formula = b2r_3 ~ w2z_3 + w2r_3 + w2p_3, data= train_data)
-fit_b2r_4 <- lm(formula = b2r_4 ~ w2z_4 + w2r_4 + w2p_4, data= train_data)
-fit_b2r_5 <- lm(formula = b2r_5 ~ w2z_5 + w2r_5 + w2p_5, data= train_data)
+fit_b2r_1 <- lm(formula = b2r_1 ~ w2z_1 + w2r_1 + w2p_1 + Speed + Payload, data= train_data)
+fit_b2r_2 <- lm(formula = b2r_2 ~ w2z_2 + w2r_2 + w2p_2 + Speed + Payload, data= train_data)
+fit_b2r_3 <- lm(formula = b2r_3 ~ w2z_3 + w2r_3 + w2p_3 + Speed + Payload, data= train_data)
+fit_b2r_4 <- lm(formula = b2r_4 ~ w2z_4 + w2r_4 + w2p_4 + Speed + Payload, data= train_data)
+fit_b2r_5 <- lm(formula = b2r_5 ~ w2z_5 + w2r_5 + w2p_5 + Speed + Payload, data= train_data)
 
 test_data$b2r_1_pred <- predict.lm(fit_b2r_1,newdata = test_data)
 test_data$b2r_2_pred <- predict.lm(fit_b2r_2,newdata = test_data)
@@ -554,17 +556,48 @@ test_data$b2r_5_pred <- predict.lm(fit_b2r_5,newdata = test_data)
 
 # b2p
 
-fit_b2p_1 <- lm(formula = b2p_1 ~ w2z_1 + w2r_1 + w2p_1, data= train_data)
-fit_b2p_2 <- lm(formula = b2p_2 ~ w2z_2 + w2r_2 + w2p_2, data= train_data)
-fit_b2p_3 <- lm(formula = b2p_3 ~ w2z_3 + w2r_3 + w2p_3, data= train_data)
-fit_b2p_4 <- lm(formula = b2p_4 ~ w2z_4 + w2r_4 + w2p_4, data= train_data)
-fit_b2p_5 <- lm(formula = b2p_5 ~ w2z_5 + w2r_5 + w2p_5, data= train_data)
+fit_b2p_1 <- lm(formula = b2p_1 ~ w2z_1 + w2r_1 + w2p_1 + Speed + Payload, data= train_data)
+fit_b2p_2 <- lm(formula = b2p_2 ~ w2z_2 + w2r_2 + w2p_2 + Speed + Payload, data= train_data)
+fit_b2p_3 <- lm(formula = b2p_3 ~ w2z_3 + w2r_3 + w2p_3 + Speed + Payload, data= train_data)
+fit_b2p_4 <- lm(formula = b2p_4 ~ w2z_4 + w2r_4 + w2p_4 + Speed + Payload, data= train_data)
+fit_b2p_5 <- lm(formula = b2p_5 ~ w2z_5 + w2r_5 + w2p_5 + Speed + Payload, data= train_data)
 
 test_data$b2p_1_pred <- predict.lm(fit_b2p_1,newdata = test_data)
 test_data$b2p_2_pred <- predict.lm(fit_b2p_2,newdata = test_data)
 test_data$b2p_3_pred <- predict.lm(fit_b2p_3,newdata = test_data)
 test_data$b2p_4_pred <- predict.lm(fit_b2p_4,newdata = test_data)
 test_data$b2p_5_pred <- predict.lm(fit_b2p_5,newdata = test_data)
+
+
+#############################
+# Platform
+# pz
+
+fit_pz_1 <- lm(formula = pz_1 ~ b1z_1 + b1p_1 + b2z_1 +b2p_1 + Payload + Speed, data = train_data)
+fit_pz_2 <- lm(formula = pz_2 ~ b1z_2 + b1p_2 + b2z_2 +b2p_2 + Payload + Speed, data = train_data)
+fit_pz_3 <- lm(formula = pz_3 ~ b1z_3 + b1p_3 + b2z_3 +b2p_3 + Payload + Speed, data = train_data)
+fit_pz_4 <- lm(formula = pz_4 ~ b1z_4 + b1p_4 + b2z_4 +b2p_4 + Payload + Speed, data = train_data)
+fit_pz_5 <- lm(formula = pz_5 ~ b1z_5 + b1p_5 + b2z_5 +b2p_5 + Payload + Speed, data = train_data)
+
+test_data$pz_1_pred <- predict.lm(fit_pz_1,newdata = test_data)
+test_data$pz_2_pred <- predict.lm(fit_pz_2,newdata = test_data)
+test_data$pz_3_pred <- predict.lm(fit_pz_3,newdata = test_data)
+test_data$pz_4_pred <- predict.lm(fit_pz_4,newdata = test_data)
+test_data$pz_5_pred <- predict.lm(fit_pz_5,newdata = test_data)
+
+# pp
+
+fit_pp_1 <- lm(formula = pp_1 ~ b1z_1 + b1p_1 + b2z_1 +b2p_1 + Payload + Speed, data = train_data)
+fit_pp_2 <- lm(formula = pp_2 ~ b1z_2 + b1p_2 + b2z_2 +b2p_2 + Payload + Speed, data = train_data)
+fit_pp_3 <- lm(formula = pp_3 ~ b1z_3 + b1p_3 + b2z_3 +b2p_2 + Payload + Speed, data = train_data)
+fit_pp_4 <- lm(formula = pp_4 ~ b1z_4 + b1p_4 + b2z_4 +b2p_4 + Payload + Speed, data = train_data)
+fit_pp_5 <- lm(formula = pp_5 ~ b1z_5 + b1p_5 + b2z_5 +b2p_5 + Payload + Speed, data = train_data)
+
+test_data$pp_1_pred <- predict.lm(fit_pp_1,newdata = test_data)
+test_data$pp_2_pred <- predict.lm(fit_pp_2,newdata = test_data)
+test_data$pp_3_pred <- predict.lm(fit_pp_3,newdata = test_data)
+test_data$pp_4_pred <- predict.lm(fit_pp_4,newdata = test_data)
+test_data$pp_5_pred <- predict.lm(fit_pp_5,newdata = test_data)
 
 # calculating residuals
 
@@ -586,6 +619,449 @@ test_data$b1p_3_res <- test_data$b1p_3 - test_data$b1p_3_pred
 test_data$b1p_4_res <- test_data$b1p_4 - test_data$b1p_4_pred
 test_data$b1p_5_res <- test_data$b1p_5 - test_data$b1p_5_pred
 
+
+test_data$b2z_1_res <- test_data$b2z_1 - test_data$b2z_1_pred
+test_data$b2z_2_res <- test_data$b2z_2 - test_data$b2z_2_pred
+test_data$b2z_3_res <- test_data$b2z_3 - test_data$b2z_3_pred
+test_data$b2z_4_res <- test_data$b2z_4 - test_data$b2z_4_pred
+test_data$b2z_5_res <- test_data$b2z_5 - test_data$b2z_5_pred
+
+test_data$b2r_1_res <- test_data$b2r_1 - test_data$b2r_1_pred
+test_data$b2r_2_res <- test_data$b2r_2 - test_data$b2r_2_pred
+test_data$b2r_3_res <- test_data$b2r_3 - test_data$b2r_3_pred
+test_data$b2r_4_res <- test_data$b2r_4 - test_data$b2r_4_pred
+test_data$b2r_5_res <- test_data$b2r_5 - test_data$b2r_5_pred
+
+test_data$b2p_1_res <- test_data$b2p_1 - test_data$b2p_1_pred
+test_data$b2p_2_res <- test_data$b2p_2 - test_data$b2p_2_pred
+test_data$b2p_3_res <- test_data$b2p_3 - test_data$b2p_3_pred
+test_data$b2p_4_res <- test_data$b2p_4 - test_data$b2p_4_pred
+test_data$b2p_5_res <- test_data$b2p_5 - test_data$b2p_5_pred
+
+test_data$pz_1_res <- test_data$pz_1 - test_data$pz_1_pred
+test_data$pz_2_res <- test_data$pz_2 - test_data$pz_2_pred
+test_data$pz_3_res <- test_data$pz_3 - test_data$pz_3_pred
+test_data$pz_4_res <- test_data$pz_4 - test_data$pz_4_pred
+test_data$pz_5_res <- test_data$pz_5 - test_data$pz_5_pred
+
+test_data$pp_1_res <- test_data$pp_1 - test_data$pp_1_pred
+test_data$pp_2_res <- test_data$pp_2 - test_data$pp_2_pred
+test_data$pp_3_res <- test_data$pp_3 - test_data$pp_3_pred
+test_data$pp_4_res <- test_data$pp_4 - test_data$pp_4_pred
+test_data$pp_5_res <- test_data$pp_5 - test_data$pp_5_pred
+
+
+# WHEELS SINGLE #############################
+# WHEELS SINGLE
+
+fit_az_1l_1 <- lm(formula = az_1l_1 ~ az_2l_1 + az_3l_1 + az_4l_1 +
+                      az_1r_1 + az_2r_1 + az_3r_1 + az_4r_1 + Payload + Speed, data = train_data)
+fit_az_2l_1 <- lm(formula = az_2l_1 ~ az_1l_1 + az_3l_1 + az_4l_1 +
+                      az_1r_1 + az_2r_1 + az_3r_1 + az_4r_1 + Payload + Speed, data = train_data)
+fit_az_3l_1 <- lm(formula = az_3l_1 ~ az_1l_1 +  az_2l_1 + az_4l_1 +
+                      az_1r_1 + az_2r_1 + az_3r_1 + az_4r_1 + Payload + Speed, data = train_data)
+fit_az_4l_1 <- lm(formula = az_4l_1 ~ az_1l_1 + az_2l_1 + az_3l_1 +
+                      az_1r_1 + az_2r_1 + az_3r_1 + az_4r_1 + Payload + Speed, data = train_data)
+fit_az_1r_1 <- lm(formula = az_1r_1 ~ az_1l_1 + az_2l_1 + az_3l_1 + az_4l_1 +
+                      az_2r_1 + az_3r_1 + az_4r_1 + Payload + Speed, data = train_data)
+fit_az_2r_1 <- lm(formula = az_2r_1 ~ az_1l_1 + az_2l_1 + az_3l_1 + az_4l_1 +
+                      az_1r_1 + az_3r_1 + az_4r_1 + Payload + Speed, data = train_data)
+fit_az_3r_1 <- lm(formula = az_3r_1 ~ az_1l_1 + az_2l_1 + az_3l_1 + az_4l_1 +
+                      az_1r_1 + az_2r_1 + az_4r_1 + Payload + Speed, data = train_data)
+fit_az_4r_1 <- lm(formula = az_4r_1 ~ az_1l_1 + az_2l_1 + az_3l_1 + az_4l_1 +
+                      az_1r_1 + az_2r_1 + az_3r_1 + Payload + Speed, data = train_data)
+
+
+fit_az_1l_2 <- lm(formula = az_1l_2 ~ az_2l_2 + az_3l_2 + az_4l_2 +
+                      az_1r_2 + az_2r_2 + az_3r_2 + az_4r_2 + Payload + Speed, data = train_data)
+fit_az_2l_2 <- lm(formula = az_2l_2 ~ az_1l_2 + az_3l_2 + az_4l_2 +
+                      az_1r_2 + az_2r_2 + az_3r_2 + az_4r_2 + Payload + Speed, data = train_data)
+fit_az_3l_2 <- lm(formula = az_3l_2 ~ az_1l_2 +  az_2l_2 + az_4l_2 +
+                      az_1r_2 + az_2r_2 + az_3r_2 + az_4r_2 + Payload + Speed, data = train_data)
+fit_az_4l_2 <- lm(formula = az_4l_2 ~ az_1l_2 + az_2l_2 + az_3l_2 +
+                      az_1r_2 + az_2r_2 + az_3r_2 + az_4r_2 + Payload + Speed, data = train_data)
+fit_az_1r_2 <- lm(formula = az_1r_2 ~ az_1l_2 + az_2l_2 + az_3l_2 + az_4l_2 +
+                      az_2r_2 + az_3r_2 + az_4r_2 + Payload + Speed, data = train_data)
+fit_az_2r_2 <- lm(formula = az_2r_2 ~ az_1l_2 + az_2l_2 + az_3l_2 + az_4l_2 +
+                      az_1r_2 + az_3r_2 + az_4r_2 + Payload + Speed, data = train_data)
+fit_az_3r_2 <- lm(formula = az_3r_2 ~ az_1l_2 + az_2l_2 + az_3l_2 + az_4l_2 +
+                      az_1r_2 + az_2r_2 + az_4r_2 + Payload + Speed, data = train_data)
+fit_az_4r_2 <- lm(formula = az_4r_2 ~ az_1l_2 + az_2l_2 + az_3l_2 + az_4l_2 +
+                      az_1r_2 + az_2r_2 + az_3r_2 + Payload + Speed, data = train_data)
+
+
+fit_az_1l_3 <- lm(formula = az_1l_3 ~ az_2l_3 + az_3l_3 + az_4l_3 +
+                      az_1r_3 + az_2r_3 + az_3r_3 + az_4r_3 + Payload + Speed, data = train_data)
+fit_az_2l_3 <- lm(formula = az_2l_3 ~ az_1l_3 + az_3l_3 + az_4l_3 +
+                      az_1r_3 + az_2r_3 + az_3r_3 + az_4r_3 + Payload + Speed, data = train_data)
+fit_az_3l_3 <- lm(formula = az_3l_3 ~ az_1l_3 +  az_2l_3 + az_4l_3 +
+                      az_1r_3 + az_2r_3 + az_3r_3 + az_4r_3 + Payload + Speed, data = train_data)
+fit_az_4l_3 <- lm(formula = az_4l_3 ~ az_1l_3 + az_2l_3 + az_3l_3 +
+                      az_1r_3 + az_2r_3 + az_3r_3 + az_4r_3 + Payload + Speed, data = train_data)
+fit_az_1r_3 <- lm(formula = az_1r_3 ~ az_1l_3 + az_2l_3 + az_3l_3 + az_4l_3 +
+                      az_2r_3 + az_3r_3 + az_4r_3 + Payload + Speed, data = train_data)
+fit_az_2r_3 <- lm(formula = az_2r_3 ~ az_1l_3 + az_2l_3 + az_3l_3 + az_4l_3 +
+                      az_1r_3 + az_3r_3 + az_4r_3 + Payload + Speed, data = train_data)
+fit_az_3r_3 <- lm(formula = az_3r_3 ~ az_1l_3 + az_2l_3 + az_3l_3 + az_4l_3 +
+                      az_1r_3 + az_2r_3 + az_4r_3 + Payload + Speed, data = train_data)
+fit_az_4r_3 <- lm(formula = az_4r_3 ~ az_1l_3 + az_2l_3 + az_3l_3 + az_4l_3 +
+                      az_1r_3 + az_2r_3 + az_3r_3 + Payload + Speed, data = train_data)
+
+
+
+fit_az_1l_4 <- lm(formula = az_1l_4 ~ az_2l_4 + az_3l_4 + az_4l_4 +
+                      az_1r_4 + az_2r_4 + az_3r_4 + az_4r_4 + Payload + Speed, data = train_data)
+fit_az_2l_4 <- lm(formula = az_2l_4 ~ az_1l_4 + az_3l_4 + az_4l_4 +
+                      az_1r_4 + az_2r_4 + az_3r_4 + az_4r_4 + Payload + Speed, data = train_data)
+fit_az_3l_4 <- lm(formula = az_3l_4 ~ az_1l_4 +  az_2l_4 + az_4l_4 +
+                      az_1r_4 + az_2r_4 + az_3r_4 + az_4r_4 + Payload + Speed, data = train_data)
+fit_az_4l_4 <- lm(formula = az_4l_4 ~ az_1l_4 + az_2l_4 + az_3l_4 +
+                      az_1r_4 + az_2r_4 + az_3r_4 + az_4r_4 + Payload + Speed, data = train_data)
+fit_az_1r_4 <- lm(formula = az_1r_4 ~ az_1l_4 + az_2l_4 + az_3l_4 + az_4l_4 +
+                      az_2r_4 + az_3r_4 + az_4r_4 + Payload + Speed, data = train_data)
+fit_az_2r_4 <- lm(formula = az_2r_4 ~ az_1l_4 + az_2l_4 + az_3l_4 + az_4l_4 +
+                      az_1r_4 + az_3r_4 + az_4r_4 + Payload + Speed, data = train_data)
+fit_az_3r_4 <- lm(formula = az_3r_4 ~ az_1l_4 + az_2l_4 + az_3l_4 + az_4l_4 +
+                      az_1r_4 + az_2r_4 + az_4r_4 + Payload + Speed, data = train_data)
+fit_az_4r_4 <- lm(formula = az_4r_4 ~ az_1l_4 + az_2l_4 + az_3l_4 + az_4l_4 +
+                      az_1r_4 + az_2r_4 + az_3r_4 + Payload + Speed, data = train_data)
+
+
+fit_az_1l_5  <- lm(formula = az_1l_5  ~ az_2l_5  + az_3l_5  + az_4l_5  +
+                      az_1r_5  + az_2r_5  + az_3r_5  + az_4r_5  + Payload + Speed, data = train_data)
+fit_az_2l_5  <- lm(formula = az_2l_5  ~ az_1l_5  + az_3l_5  + az_4l_5  +
+                      az_1r_5  + az_2r_5  + az_3r_5  + az_4r_5  + Payload + Speed, data = train_data)
+fit_az_3l_5  <- lm(formula = az_3l_5  ~ az_1l_5  +  az_2l_5  + az_4l_5  +
+                      az_1r_5  + az_2r_5  + az_3r_5  + az_4r_5  + Payload + Speed, data = train_data)
+fit_az_4l_5  <- lm(formula = az_4l_5  ~ az_1l_5  + az_2l_5  + az_3l_5  +
+                      az_1r_5  + az_2r_5  + az_3r_5  + az_4r_5  + Payload + Speed, data = train_data)
+fit_az_1r_5  <- lm(formula = az_1r_5  ~ az_1l_5  + az_2l_5  + az_3l_5  + az_4l_5  +
+                      az_2r_5  + az_3r_5  + az_4r_5  + Payload + Speed, data = train_data)
+fit_az_2r_5  <- lm(formula = az_2r_5  ~ az_1l_5  + az_2l_5  + az_3l_5  + az_4l_5  +
+                      az_1r_5  + az_3r_5  + az_4r_5  + Payload + Speed, data = train_data)
+fit_az_3r_5  <- lm(formula = az_3r_5  ~ az_1l_5  + az_2l_5  + az_3l_5  + az_4l_5  +
+                      az_1r_5  + az_2r_5  + az_4r_5  + Payload + Speed, data = train_data)
+fit_az_4r_5  <- lm(formula = az_4r_5  ~ az_1l_5  + az_2l_5  + az_3l_5  + az_4l_5  +
+                      az_1r_5  + az_2r_5  + az_3r_5  + Payload + Speed, data = train_data)
+
+# b1z
+train_data$b1z_1_pred <- predict.lm(fit_b1z_1,newdata = train_data)
+train_data$b1z_2_pred <- predict.lm(fit_b1z_2,newdata = train_data)
+train_data$b1z_3_pred <- predict.lm(fit_b1z_3,newdata = train_data)
+train_data$b1z_4_pred <- predict.lm(fit_b1z_4,newdata = train_data)
+train_data$b1z_5_pred <- predict.lm(fit_b1z_5,newdata = train_data)
+
+
+# b1r
+train_data$b1r_1_pred <- predict.lm(fit_b1r_1,newdata = train_data)
+train_data$b1r_2_pred <- predict.lm(fit_b1r_2,newdata = train_data)
+train_data$b1r_3_pred <- predict.lm(fit_b1r_3,newdata = train_data)
+train_data$b1r_4_pred <- predict.lm(fit_b1r_4,newdata = train_data)
+train_data$b1r_5_pred <- predict.lm(fit_b1r_5,newdata = train_data)
+
+# b1p
+train_data$b1p_1_pred <- predict.lm(fit_b1p_1,newdata = train_data)
+train_data$b1p_2_pred <- predict.lm(fit_b1p_2,newdata = train_data)
+train_data$b1p_3_pred <- predict.lm(fit_b1p_3,newdata = train_data)
+train_data$b1p_4_pred <- predict.lm(fit_b1p_4,newdata = train_data)
+train_data$b1p_5_pred <- predict.lm(fit_b1p_5,newdata = train_data)
+
+#b2z
+train_data$b2z_1_pred <- predict.lm(fit_b2z_1,newdata = train_data)
+train_data$b2z_2_pred <- predict.lm(fit_b2z_2,newdata = train_data)
+train_data$b2z_3_pred <- predict.lm(fit_b2z_3,newdata = train_data)
+train_data$b2z_4_pred <- predict.lm(fit_b2z_4,newdata = train_data)
+train_data$b2z_5_pred <- predict.lm(fit_b2z_5,newdata = train_data)
+
+# b2r
+train_data$b2r_1_pred <- predict.lm(fit_b2r_1,newdata = train_data)
+train_data$b2r_2_pred <- predict.lm(fit_b2r_2,newdata = train_data)
+train_data$b2r_3_pred <- predict.lm(fit_b2r_3,newdata = train_data)
+train_data$b2r_4_pred <- predict.lm(fit_b2r_4,newdata = train_data)
+train_data$b2r_5_pred <- predict.lm(fit_b2r_5,newdata = train_data)
+
+# b2p
+train_data$b2p_1_pred <- predict.lm(fit_b2p_1,newdata = train_data)
+train_data$b2p_2_pred <- predict.lm(fit_b2p_2,newdata = train_data)
+train_data$b2p_3_pred <- predict.lm(fit_b2p_3,newdata = train_data)
+train_data$b2p_4_pred <- predict.lm(fit_b2p_4,newdata = train_data)
+train_data$b2p_5_pred <- predict.lm(fit_b2p_5,newdata = train_data)
+
+# calculating residuals
+
+train_data$b1z_1_res <- train_data$b1z_1 - train_data$b1z_1_pred
+train_data$b1z_2_res <- train_data$b1z_2 - train_data$b1z_2_pred
+train_data$b1z_3_res <- train_data$b1z_3 - train_data$b1z_3_pred
+train_data$b1z_4_res <- train_data$b1z_4 - train_data$b1z_4_pred
+train_data$b1z_5_res <- train_data$b1z_5 - train_data$b1z_5_pred
+
+train_data$b1r_1_res <- train_data$b1r_1 - train_data$b1r_1_pred
+train_data$b1r_2_res <- train_data$b1r_2 - train_data$b1r_2_pred
+train_data$b1r_3_res <- train_data$b1r_3 - train_data$b1r_3_pred
+train_data$b1r_4_res <- train_data$b1r_4 - train_data$b1r_4_pred
+train_data$b1r_5_res <- train_data$b1r_5 - train_data$b1r_5_pred
+
+train_data$b1p_1_res <- train_data$b1p_1 - train_data$b1p_1_pred
+train_data$b1p_2_res <- train_data$b1p_2 - train_data$b1p_2_pred
+train_data$b1p_3_res <- train_data$b1p_3 - train_data$b1p_3_pred
+train_data$b1p_4_res <- train_data$b1p_4 - train_data$b1p_4_pred
+train_data$b1p_5_res <- train_data$b1p_5 - train_data$b1p_5_pred
+
+train_data$b2z_1_res <- train_data$b2z_1 - train_data$b2z_1_pred
+train_data$b2z_2_res <- train_data$b2z_2 - train_data$b2z_2_pred
+train_data$b2z_3_res <- train_data$b2z_3 - train_data$b2z_3_pred
+train_data$b2z_4_res <- train_data$b2z_4 - train_data$b2z_4_pred
+train_data$b2z_5_res <- train_data$b2z_5 - train_data$b2z_5_pred
+
+train_data$b2r_1_res <- train_data$b2r_1 - train_data$b2r_1_pred
+train_data$b2r_2_res <- train_data$b2r_2 - train_data$b2r_2_pred
+train_data$b2r_3_res <- train_data$b2r_3 - train_data$b2r_3_pred
+train_data$b2r_4_res <- train_data$b2r_4 - train_data$b2r_4_pred
+train_data$b2r_5_res <- train_data$b2r_5 - train_data$b2r_5_pred
+
+train_data$b2p_1_res <- train_data$b2p_1 - train_data$b2p_1_pred
+train_data$b2p_2_res <- train_data$b2p_2 - train_data$b2p_2_pred
+train_data$b2p_3_res <- train_data$b2p_3 - train_data$b2p_3_pred
+train_data$b2p_4_res <- train_data$b2p_4 - train_data$b2p_4_pred
+train_data$b2p_5_res <- train_data$b2p_5 - train_data$b2p_5_pred
+
+
+# Platform
+# PZ
+# predictions platform
+train_data$pz_1_pred <- predict.lm(fit_pz_1,newdata = train_data)
+train_data$pz_2_pred <- predict.lm(fit_pz_2,newdata = train_data)
+train_data$pz_3_pred <- predict.lm(fit_pz_3,newdata = train_data)
+train_data$pz_4_pred <- predict.lm(fit_pz_4,newdata = train_data)
+train_data$pz_5_pred <- predict.lm(fit_pz_5,newdata = train_data)
+
+train_data$pp_1_pred <- predict.lm(fit_pp_1,newdata = train_data)
+train_data$pp_2_pred <- predict.lm(fit_pp_2,newdata = train_data)
+train_data$pp_3_pred <- predict.lm(fit_pp_3,newdata = train_data)
+train_data$pp_4_pred <- predict.lm(fit_pp_4,newdata = train_data)
+train_data$pp_5_pred <- predict.lm(fit_pp_5,newdata = train_data)
+
+# calculating residuals platform
+train_data$pz_1_res <- train_data$pz_1 - train_data$pz_1_pred
+train_data$pz_2_res <- train_data$pz_2 - train_data$pz_2_pred
+train_data$pz_3_res <- train_data$pz_3 - train_data$pz_3_pred
+train_data$pz_4_res <- train_data$pz_4 - train_data$pz_4_pred
+train_data$pz_5_res <- train_data$pz_5 - train_data$pz_5_pred
+
+train_data$pp_1_res <- train_data$pp_1 - train_data$pp_1_pred
+train_data$pp_2_res <- train_data$pp_2 - train_data$pp_2_pred
+train_data$pp_3_res <- train_data$pp_3 - train_data$pp_3_pred
+train_data$pp_4_res <- train_data$pp_4 - train_data$pp_4_pred
+train_data$pp_5_res <- train_data$pp_5 - train_data$pp_5_pred
+
+# Predict on wheels
+
+test_data$az_1r_1_pred <- predict.lm(fit_az_1r_1, newdata = test_data)
+test_data$az_2r_1_pred <- predict.lm(fit_az_2r_1, newdata = test_data)
+test_data$az_3r_1_pred <- predict.lm(fit_az_3r_1, newdata = test_data)
+test_data$az_4r_1_pred <- predict.lm(fit_az_4r_1, newdata = test_data)
+
+test_data$az_1l_1_pred <- predict.lm(fit_az_1l_1, newdata = test_data)
+test_data$az_2l_1_pred <- predict.lm(fit_az_2l_1, newdata = test_data)
+test_data$az_3l_1_pred <- predict.lm(fit_az_3l_1, newdata = test_data)
+test_data$az_4l_1_pred <- predict.lm(fit_az_4l_1, newdata = test_data)
+
+test_data$az_1r_2_pred <- predict.lm(fit_az_1r_2, newdata = test_data)
+test_data$az_2r_2_pred <- predict.lm(fit_az_2r_2, newdata = test_data)
+test_data$az_3r_2_pred <- predict.lm(fit_az_3r_2, newdata = test_data)
+test_data$az_4r_2_pred <- predict.lm(fit_az_4r_2, newdata = test_data)
+
+test_data$az_1l_2_pred <- predict.lm(fit_az_1l_2, newdata = test_data)
+test_data$az_2l_2_pred <- predict.lm(fit_az_2l_2, newdata = test_data)
+test_data$az_3l_2_pred <- predict.lm(fit_az_3l_2, newdata = test_data)
+test_data$az_4l_2_pred <- predict.lm(fit_az_4l_2, newdata = test_data)
+
+test_data$az_1r_3_pred <- predict.lm(fit_az_1r_3, newdata = test_data)
+test_data$az_2r_3_pred <- predict.lm(fit_az_2r_3, newdata = test_data)
+test_data$az_3r_3_pred <- predict.lm(fit_az_3r_3, newdata = test_data)
+test_data$az_4r_3_pred <- predict.lm(fit_az_4r_3, newdata = test_data)
+
+test_data$az_1l_3_pred <- predict.lm(fit_az_1l_3, newdata = test_data)
+test_data$az_2l_3_pred <- predict.lm(fit_az_2l_3, newdata = test_data)
+test_data$az_3l_3_pred <- predict.lm(fit_az_3l_3, newdata = test_data)
+test_data$az_4l_3_pred <- predict.lm(fit_az_4l_3, newdata = test_data)
+
+test_data$az_1r_4_pred <- predict.lm(fit_az_1r_4, newdata = test_data)
+test_data$az_2r_4_pred <- predict.lm(fit_az_2r_4, newdata = test_data)
+test_data$az_3r_4_pred <- predict.lm(fit_az_3r_4, newdata = test_data)
+test_data$az_4r_4_pred <- predict.lm(fit_az_4r_4, newdata = test_data)
+
+test_data$az_1l_4_pred <- predict.lm(fit_az_1l_4, newdata = test_data)
+test_data$az_2l_4_pred <- predict.lm(fit_az_2l_4, newdata = test_data)
+test_data$az_3l_4_pred <- predict.lm(fit_az_3l_4, newdata = test_data)
+test_data$az_4l_4_pred <- predict.lm(fit_az_4l_4, newdata = test_data)
+
+test_data$az_1r_5_pred <- predict.lm(fit_az_1r_5, newdata = test_data)
+test_data$az_2r_5_pred <- predict.lm(fit_az_2r_5, newdata = test_data)
+test_data$az_3r_5_pred <- predict.lm(fit_az_3r_5, newdata = test_data)
+test_data$az_4r_5_pred <- predict.lm(fit_az_4r_5, newdata = test_data)
+
+test_data$az_1l_5_pred <- predict.lm(fit_az_1l_5, newdata = test_data)
+test_data$az_2l_5_pred <- predict.lm(fit_az_2l_5, newdata = test_data)
+test_data$az_3l_5_pred <- predict.lm(fit_az_3l_5, newdata = test_data)
+test_data$az_4l_5_pred <- predict.lm(fit_az_4l_5, newdata = test_data)
+
+
+# Wheels residuals`
+test_data$az_1l_1_res <- test_data$az_1l_1 - test_data$az_1l_1_pred
+test_data$az_2l_1_res <- test_data$az_2l_1 - test_data$az_2l_1_pred
+test_data$az_3l_1_res <- test_data$az_3l_1 - test_data$az_3l_1_pred
+test_data$az_4l_1_res <- test_data$az_4l_1 - test_data$az_4l_1_pred
+
+test_data$az_1r_1_res <- test_data$az_1r_1 - test_data$az_1r_1_pred
+test_data$az_2r_1_res <- test_data$az_2r_1 - test_data$az_2r_1_pred
+test_data$az_3r_1_res <- test_data$az_3r_1 - test_data$az_3r_1_pred
+test_data$az_4r_1_res <- test_data$az_4r_1 - test_data$az_4r_1_pred
+
+test_data$az_1l_2_res <- test_data$az_1l_2 - test_data$az_1l_2_pred
+test_data$az_2l_2_res <- test_data$az_2l_2 - test_data$az_2l_2_pred
+test_data$az_3l_2_res <- test_data$az_3l_2 - test_data$az_3l_2_pred
+test_data$az_4l_2_res <- test_data$az_4l_2 - test_data$az_4l_2_pred
+
+test_data$az_1r_2_res <- test_data$az_1r_2 - test_data$az_1r_2_pred
+test_data$az_2r_2_res <- test_data$az_2r_2 - test_data$az_2r_2_pred
+test_data$az_3r_2_res <- test_data$az_3r_2 - test_data$az_3r_2_pred
+test_data$az_4r_2_res <- test_data$az_4r_2 - test_data$az_4r_2_pred
+
+test_data$az_1l_3_res <- test_data$az_1l_3 - test_data$az_1l_3_pred
+test_data$az_2l_3_res <- test_data$az_2l_3 - test_data$az_2l_3_pred
+test_data$az_3l_3_res <- test_data$az_3l_3 - test_data$az_3l_3_pred
+test_data$az_4l_3_res <- test_data$az_4l_3 - test_data$az_4l_3_pred
+
+test_data$az_1r_3_res <- test_data$az_1r_3 - test_data$az_1r_3_pred
+test_data$az_2r_3_res <- test_data$az_2r_3 - test_data$az_2r_3_pred
+test_data$az_3r_3_res <- test_data$az_3r_3 - test_data$az_3r_3_pred
+test_data$az_4r_3_res <- test_data$az_4r_3 - test_data$az_4r_3_pred
+
+test_data$az_1l_4_res <- test_data$az_1l_4 - test_data$az_1l_4_pred
+test_data$az_2l_4_res <- test_data$az_2l_4 - test_data$az_2l_4_pred
+test_data$az_3l_4_res <- test_data$az_3l_4 - test_data$az_3l_4_pred
+test_data$az_4l_4_res <- test_data$az_4l_4 - test_data$az_4l_4_pred
+
+test_data$az_1r_4_res <- test_data$az_1r_4 - test_data$az_1r_4_pred
+test_data$az_2r_4_res <- test_data$az_2r_4 - test_data$az_2r_4_pred
+test_data$az_3r_4_res <- test_data$az_3r_4 - test_data$az_3r_4_pred
+test_data$az_4r_4_res <- test_data$az_4r_4 - test_data$az_4r_4_pred
+
+test_data$az_1l_5_res <- test_data$az_1l_5 - test_data$az_1l_5_pred
+test_data$az_2l_5_res <- test_data$az_2l_5 - test_data$az_2l_5_pred
+test_data$az_3l_5_res <- test_data$az_3l_5 - test_data$az_3l_5_pred
+test_data$az_4l_5_res <- test_data$az_4l_5 - test_data$az_4l_5_pred
+
+test_data$az_1r_5_res <- test_data$az_1r_5 - test_data$az_1r_5_pred
+test_data$az_2r_5_res <- test_data$az_2r_5 - test_data$az_2r_5_pred
+test_data$az_3r_5_res <- test_data$az_3r_5 - test_data$az_3r_5_pred
+test_data$az_4r_5_res <- test_data$az_4r_5 - test_data$az_4r_5_pred
+
+# Predict on wheels
+
+train_data$az_1r_1_pred <- predict.lm(fit_az_1r_1, newdata = train_data)
+train_data$az_2r_1_pred <- predict.lm(fit_az_2r_1, newdata = train_data)
+train_data$az_3r_1_pred <- predict.lm(fit_az_3r_1, newdata = train_data)
+train_data$az_4r_1_pred <- predict.lm(fit_az_4r_1, newdata = train_data)
+
+train_data$az_1l_1_pred <- predict.lm(fit_az_1l_1, newdata = train_data)
+train_data$az_2l_1_pred <- predict.lm(fit_az_2l_1, newdata = train_data)
+train_data$az_3l_1_pred <- predict.lm(fit_az_3l_1, newdata = train_data)
+train_data$az_4l_1_pred <- predict.lm(fit_az_4l_1, newdata = train_data)
+
+train_data$az_1r_2_pred <- predict.lm(fit_az_1r_2, newdata = train_data)
+train_data$az_2r_2_pred <- predict.lm(fit_az_2r_2, newdata = train_data)
+train_data$az_3r_2_pred <- predict.lm(fit_az_3r_2, newdata = train_data)
+train_data$az_4r_2_pred <- predict.lm(fit_az_4r_2, newdata = train_data)
+
+train_data$az_1l_2_pred <- predict.lm(fit_az_1l_2, newdata = train_data)
+train_data$az_2l_2_pred <- predict.lm(fit_az_2l_2, newdata = train_data)
+train_data$az_3l_2_pred <- predict.lm(fit_az_3l_2, newdata = train_data)
+train_data$az_4l_2_pred <- predict.lm(fit_az_4l_2, newdata = train_data)
+
+train_data$az_1r_3_pred <- predict.lm(fit_az_1r_3, newdata = train_data)
+train_data$az_2r_3_pred <- predict.lm(fit_az_2r_3, newdata = train_data)
+train_data$az_3r_3_pred <- predict.lm(fit_az_3r_3, newdata = train_data)
+train_data$az_4r_3_pred <- predict.lm(fit_az_4r_3, newdata = train_data)
+
+train_data$az_1l_3_pred <- predict.lm(fit_az_1l_3, newdata = train_data)
+train_data$az_2l_3_pred <- predict.lm(fit_az_2l_3, newdata = train_data)
+train_data$az_3l_3_pred <- predict.lm(fit_az_3l_3, newdata = train_data)
+train_data$az_4l_3_pred <- predict.lm(fit_az_4l_3, newdata = train_data)
+
+train_data$az_1r_4_pred <- predict.lm(fit_az_1r_4, newdata = train_data)
+train_data$az_2r_4_pred <- predict.lm(fit_az_2r_4, newdata = train_data)
+train_data$az_3r_4_pred <- predict.lm(fit_az_3r_4, newdata = train_data)
+train_data$az_4r_4_pred <- predict.lm(fit_az_4r_4, newdata = train_data)
+
+train_data$az_1l_4_pred <- predict.lm(fit_az_1l_4, newdata = train_data)
+train_data$az_2l_4_pred <- predict.lm(fit_az_2l_4, newdata = train_data)
+train_data$az_3l_4_pred <- predict.lm(fit_az_3l_4, newdata = train_data)
+train_data$az_4l_4_pred <- predict.lm(fit_az_4l_4, newdata = train_data)
+
+train_data$az_1r_5_pred <- predict.lm(fit_az_1r_5, newdata = train_data)
+train_data$az_2r_5_pred <- predict.lm(fit_az_2r_5, newdata = train_data)
+train_data$az_3r_5_pred <- predict.lm(fit_az_3r_5, newdata = train_data)
+train_data$az_4r_5_pred <- predict.lm(fit_az_4r_5, newdata = train_data)
+
+train_data$az_1l_5_pred <- predict.lm(fit_az_1l_5, newdata = train_data)
+train_data$az_2l_5_pred <- predict.lm(fit_az_2l_5, newdata = train_data)
+train_data$az_3l_5_pred <- predict.lm(fit_az_3l_5, newdata = train_data)
+train_data$az_4l_5_pred <- predict.lm(fit_az_4l_5, newdata = train_data)
+
+
+# Wheels residuals`
+train_data$az_1l_1_res <- train_data$az_1l_1 - train_data$az_1l_1_pred
+train_data$az_2l_1_res <- train_data$az_2l_1 - train_data$az_2l_1_pred
+train_data$az_3l_1_res <- train_data$az_3l_1 - train_data$az_3l_1_pred
+train_data$az_4l_1_res <- train_data$az_4l_1 - train_data$az_4l_1_pred
+
+train_data$az_1r_1_res <- train_data$az_1r_1 - train_data$az_1r_1_pred
+train_data$az_2r_1_res <- train_data$az_2r_1 - train_data$az_2r_1_pred
+train_data$az_3r_1_res <- train_data$az_3r_1 - train_data$az_3r_1_pred
+train_data$az_4r_1_res <- train_data$az_4r_1 - train_data$az_4r_1_pred
+
+train_data$az_1l_2_res <- train_data$az_1l_2 - train_data$az_1l_2_pred
+train_data$az_2l_2_res <- train_data$az_2l_2 - train_data$az_2l_2_pred
+train_data$az_3l_2_res <- train_data$az_3l_2 - train_data$az_3l_2_pred
+train_data$az_4l_2_res <- train_data$az_4l_2 - train_data$az_4l_2_pred
+
+train_data$az_1r_2_res <- train_data$az_1r_2 - train_data$az_1r_2_pred
+train_data$az_2r_2_res <- train_data$az_2r_2 - train_data$az_2r_2_pred
+train_data$az_3r_2_res <- train_data$az_3r_2 - train_data$az_3r_2_pred
+train_data$az_4r_2_res <- train_data$az_4r_2 - train_data$az_4r_2_pred
+
+train_data$az_1l_3_res <- train_data$az_1l_3 - train_data$az_1l_3_pred
+train_data$az_2l_3_res <- train_data$az_2l_3 - train_data$az_2l_3_pred
+train_data$az_3l_3_res <- train_data$az_3l_3 - train_data$az_3l_3_pred
+train_data$az_4l_3_res <- train_data$az_4l_3 - train_data$az_4l_3_pred
+
+train_data$az_1r_3_res <- train_data$az_1r_3 - train_data$az_1r_3_pred
+train_data$az_2r_3_res <- train_data$az_2r_3 - train_data$az_2r_3_pred
+train_data$az_3r_3_res <- train_data$az_3r_3 - train_data$az_3r_3_pred
+train_data$az_4r_3_res <- train_data$az_4r_3 - train_data$az_4r_3_pred
+
+train_data$az_1l_4_res <- train_data$az_1l_4 - train_data$az_1l_4_pred
+train_data$az_2l_4_res <- train_data$az_2l_4 - train_data$az_2l_4_pred
+train_data$az_3l_4_res <- train_data$az_3l_4 - train_data$az_3l_4_pred
+train_data$az_4l_4_res <- train_data$az_4l_4 - train_data$az_4l_4_pred
+
+train_data$az_1r_4_res <- train_data$az_1r_4 - train_data$az_1r_4_pred
+train_data$az_2r_4_res <- train_data$az_2r_4 - train_data$az_2r_4_pred
+train_data$az_3r_4_res <- train_data$az_3r_4 - train_data$az_3r_4_pred
+train_data$az_4r_4_res <- train_data$az_4r_4 - train_data$az_4r_4_pred
+
+train_data$az_1l_5_res <- train_data$az_1l_5 - train_data$az_1l_5_pred
+train_data$az_2l_5_res <- train_data$az_2l_5 - train_data$az_2l_5_pred
+train_data$az_3l_5_res <- train_data$az_3l_5 - train_data$az_3l_5_pred
+train_data$az_4l_5_res <- train_data$az_4l_5 - train_data$az_4l_5_pred
+
+train_data$az_1r_5_res <- train_data$az_1r_5 - train_data$az_1r_5_pred
+train_data$az_2r_5_res <- train_data$az_2r_5 - train_data$az_2r_5_pred
+train_data$az_3r_5_res <- train_data$az_3r_5 - train_data$az_3r_5_pred
+train_data$az_4r_5_res <- train_data$az_4r_5 - train_data$az_4r_5_pred
+
 ```
 
 ## residuals plots  
@@ -598,7 +1074,7 @@ train_data %>%
   geom_histogram(aes(x=resid(fit_b1z_3)),alpha=0.5, fill="green", binwidth = 0.01)+
   geom_histogram(aes(x=resid(fit_b1z_4)),alpha=0.5, fill="red", binwidth = 0.01)+
   geom_histogram(aes(x=resid(fit_b1z_5)),alpha=0.5, fill="orange", binwidth = 0.01)+
-  coord_cartesian(xlim=c(-1,1))
+  coord_cartesian(xlim=c(-2,2))
 
 test_data %>%
   ggplot(.)+
@@ -607,7 +1083,7 @@ test_data %>%
   geom_histogram(aes(x=b1z_4_res),alpha=0.5, fill = "red", binwidth = 0.01)+
   geom_histogram(aes(x=b1z_5_res),alpha=0.5, fill = "orange", binwidth = 0.01)+
   facet_wrap(~Speed)+
-  coord_cartesian(xlim=c(-1,1))
+  coord_cartesian(xlim=c(-2,2))
 
 test_data %>%
   ggplot(.)+
@@ -616,7 +1092,7 @@ test_data %>%
   geom_histogram(aes(x=b1r_4_res),alpha=0.5, fill = "red", binwidth = 0.01)+
   geom_histogram(aes(x=b1r_5_res),alpha=0.5, fill = "orange", binwidth = 0.01)+
   facet_wrap(~Speed)+
-  coord_cartesian(xlim=c(-1,1))
+  coord_cartesian(xlim=c(-2,2))
 ```
 
 ## pred vs. actual plots
@@ -674,6 +1150,466 @@ test_data %>% filter(ExperimentID <20) %>%
 
 ```
   
+```{r varia}
+
+test_data %>% filter(ExperimentID==168) %>%
+  ggplot(.)+
+  geom_line(aes(x=lp,y=b1z_1),color="red")+
+  geom_point(aes(x=lp,y=b1z_1),color="red")+
+  geom_line(aes(x=lp,y=b1z_1_pred),color="green")+
+  geom_point(aes(x=lp,y=b1z_1_pred),color="green")
+
+test_data %>% filter(ExperimentID==1) %>%
+  ggplot(.)+
+  geom_line(aes(x=lp,y=b1p_3),color="red")+
+  geom_point(aes(x=lp,y=b1p_3),color="red")+
+  geom_line(aes(x=lp,y=b1p_3_pred),color="green")+
+  geom_point(aes(x=lp,y=b1p_3_pred),color="green")
+
+
+test_data %>% filter(ExperimentID==168) %>%
+  ggplot(.)+
+  geom_line(aes(x=lp,y=b1z_1_res),color="blue")+
+  geom_line(aes(x=lp,y=b1z_2_res),color="green")+
+  geom_line(aes(x=lp,y=b1z_3_res),color="black")+
+  geom_line(aes(x=lp,y=b1z_4_res),color="red")+
+  geom_line(aes(x=lp,y=b1z_5_res),color="grey")
+  
+test_data %>% filter(ExperimentID==168) %>%
+  ggplot(.)+
+  geom_line(aes(x=lp,y=b1z_1_res),color="blue")+
+  geom_line(aes(x=lp,y=b1z_2_res),color="green")+
+  geom_line(aes(x=lp,y=b1z_3_res),color="black")+
+  geom_line(aes(x=lp,y=b1z_4_res),color="red")+
+  geom_line(aes(x=lp,y=b1z_5_res),color="grey")+
+  geom_hline(yintercept = 0.0)
+
+test_data %>% filter(ExperimentID==117) %>%
+  ggplot(.)+
+  geom_line(aes(x=lp,y=b1z_1_res),color="blue")+
+  geom_line(aes(x=lp,y=b1z_2_res),color="green")+
+  geom_line(aes(x=lp,y=b1z_3_res),color="black")+
+  geom_line(aes(x=lp,y=b1z_4_res),color="red")+
+  geom_line(aes(x=lp,y=b1z_5_res),color="grey")+
+  geom_hline(yintercept = 0.0)
+
+p <- test_data %>% filter(ExperimentID==168) %>%
+  ggplot(.)+
+  geom_histogram(aes(x=b1z_1_res),fill="red",alpha=0.5)
+p <- p + test_data %>% filter(ExperimentID==117) %>%
+  geom_histogram(data=.,aes(x=b1z_1_res),fill="blue",alpha=0.5)
+p <- p + test_data %>% filter(ExperimentID==1) %>%
+  geom_histogram(data=.,aes(x=b1z_1_res),fill="green",alpha=0.5)
+p <- p + test_data %>% filter(ExperimentID==3) %>%
+  geom_histogram(data=.,aes(x=b1z_1_res),fill="gray",alpha=0.5)
+
+p
+
+
+test_data %>% filter(ExperimentID == 1 |
+                       ExperimentID == 3 |
+                       ExperimentID == 117 |
+                       ExperimentID == 168 |
+                       ExperimentID == 19 |
+                       ExperimentID == 21 |
+                       ExperimentID == 23 |
+                       ExperimentID == 31 |
+                       ExperimentID == 33) %>%
+  ggplot(.)+
+  geom_histogram(aes(x=b1z_1_res),alpha=0.5,fill="blue")+
+  geom_histogram(aes(x=b1z_2_res),alpha=0.5,fill="green")+
+  geom_histogram(aes(x=b1z_3_res),alpha=0.5,fill="black")+
+  geom_vline(xintercept=0.0)+
+  facet_wrap(~ExperimentID)+
+  coord_cartesian(xlim=c(-1,1))
+
+```
+
+## secondary sus
+
+```{r azs}
+
+azs_test <- test_data %>% 
+  group_by(ExperimentID) %>% 
+  summarise(med1 = quantile(b1z_1_res,0.5),
+            med2 = quantile(b2z_1_res,0.5),
+            mean1 = mean(b1z_1_res,0.5),
+            quart1 = quantile(b1z_1_res,0.75),
+            quart2 = quantile(b2z_1_res,0.75))
+
+azs_suspect <- read.csv("azs_suspect2.csv",header=TRUE,sep=",")
+
+test_data <- merge(test_data,azs_suspect,by="ExperimentID",all.x=TRUE)
+test_data$State_azs <- ifelse(is.na(test_data$State.y),"dunno","bad")
+
+test_data %>%
+  ggplot(.,aes(x=b1z_1_res,y=..density..,fill=State_azs))+
+  geom_histogram(binwidth = 0.05)+
+  facet_wrap(~State_azs)+
+  coord_cartesian(xlim=c(-.5,.5))
+
+
+test_data %>% filter(ExperimentID==168) %>%
+  ggplot(.)+
+  geom_point(aes(x=lp,y=pz_2_res),color="green")+
+  geom_line(aes(x=lp,y=pz_2_res),color="green")+
+  geom_point(aes(x=lp,y=pp_2_res),color="blue")+
+  geom_line(aes(x=lp,y=pp_2_res),color="blue")
+
+```
+  
+## Summary for all IDs
+  
+```{r summaries motions}
+
+test_data_summ <- test_data %>% 
+  select(ExperimentID, contains("_res")) %>% 
+  group_by(ExperimentID) %>%
+    summarise_each(funs(mean, 
+                        median, 
+                        q25 = quantile(.,c(.25)), 
+                        q75 = quantile(.,c(.75)), 
+                        sd, 
+                        IQR)) %>%
+    ungroup()
+
+train_data_summ <- train_data %>% 
+  select(ExperimentID, contains("_res")) %>% 
+  group_by(ExperimentID) %>%
+    summarise_each(funs(mean, 
+                        median, 
+                        q25 = quantile(.,c(.25)), 
+                        q75 = quantile(.,c(.75)), 
+                        sd, 
+                        IQR)) %>%
+    ungroup()
+
+test_data_summ %>%
+  ggplot(.)+
+  geom_histogram(aes(x = b1z_3_res_mean/b1z_3_res_sd),fill="green",alpha=0.5)+
+  geom_histogram(aes(x = b1z_3_res_median/b1z_3_res_sd),fill="red",alpha=0.5)
+
+test_data_summ %>%
+  ggplot(.)+
+  geom_histogram(aes(x = b1z_3_res_mean/b1z_3_res_sd),fill="green",alpha=0.5)+
+  geom_histogram(aes(x = b1p_3_res_mean/b1p_3_res_sd),fill="red",alpha=0.5)+
+  geom_histogram(aes(x = b1r_3_res_mean/b1r_3_res_sd),fill="blue",alpha=0.5)
+
+test_data_summ %>%
+  ggplot(.)+
+  geom_histogram(aes(x = b2z_3_res_mean/b2z_3_res_sd),fill="green",alpha=0.5)+
+  geom_histogram(aes(x = b2p_3_res_mean/b2p_3_res_sd),fill="red",alpha=0.5)+
+  geom_histogram(aes(x = b2r_3_res_mean/b2r_3_res_sd),fill="blue",alpha=0.5)
+
+
+test_data_summ %>%
+  ggplot(.)+
+  geom_histogram(aes(x = b1z_4_res_mean/b1z_4_res_sd),fill="green",alpha=0.5)+
+  geom_histogram(aes(x = b1p_4_res_mean/b1p_4_res_sd),fill="red",alpha=0.5)+
+  geom_histogram(aes(x = b1r_4_res_mean/b1r_4_res_sd),fill="blue",alpha=0.5)
+
+test_data_summ %>%
+  ggplot(.)+
+  geom_histogram(aes(x = b2z_4_res_mean/b2z_4_res_sd),fill="green",alpha=0.5)+
+  geom_histogram(aes(x = b2p_4_res_mean/b2p_4_res_sd),fill="red",alpha=0.5)+
+  geom_histogram(aes(x = b2r_4_res_mean/b2r_4_res_sd),fill="blue",alpha=0.5)
+
+test_data_summ %>%
+  ggplot(.) +
+  geom_point(aes(x=b1z_3_res_mean/b1z_3_res_sd, y= b1z_4_res_mean/b1z_4_res_sd), color= "green",alpha = 0.5)+
+  geom_point(aes(x=b1r_3_res_mean/b1r_3_res_sd, y= b1r_4_res_mean/b1r_4_res_sd), color= "red",alpha = 0.5)+
+  geom_point(aes(x=b1p_3_res_mean/b1p_3_res_sd, y= b1p_4_res_mean/b1p_4_res_sd), color= "blue",alpha = 0.5)
+
+
+test_data_summ %>%
+  ggplot(.) +
+  geom_point(aes(x=b1z_2_res_mean/b1z_2_res_sd, y= b1z_4_res_mean/b1z_4_res_sd), color= "green",alpha = 0.5)+
+  geom_point(aes(x=b1r_2_res_mean/b1r_2_res_sd, y= b1r_4_res_mean/b1r_4_res_sd), color= "red",alpha = 0.5)+
+  geom_point(aes(x=b1p_2_res_mean/b1p_2_res_sd, y= b1p_4_res_mean/b1p_4_res_sd), color= "blue",alpha = 0.5)
+
+test_data_summ %>%
+  ggplot(.) +
+  geom_point(aes(x=b1z_2_res_mean/b1z_2_res_sd, y= b1r_2_res_mean/b1r_2_res_sd), color= "green",alpha = 0.5)+
+  geom_point(aes(x=b1r_2_res_mean/b1r_2_res_sd, y= b1p_2_res_mean/b1p_2_res_sd), color= "red",alpha = 0.5)+
+  geom_point(aes(x=b1p_2_res_mean/b1p_2_res_sd, y= b1z_2_res_mean/b1z_2_res_sd), color= "blue",alpha = 0.5)
+
+test_data_summ %>%
+  ggplot(.) +
+  geom_point(aes(x=b1z_3_res_mean/b1z_3_res_sd, y= b1r_3_res_mean/b1r_3_res_sd), color= "green",alpha = 0.5)+
+  geom_point(aes(x=b1r_3_res_mean/b1r_3_res_sd, y= b1p_3_res_mean/b1p_3_res_sd), color= "red",alpha = 0.5)+
+  geom_point(aes(x=b1p_3_res_mean/b1p_3_res_sd, y= b1z_3_res_mean/b1z_3_res_sd), color= "blue",alpha = 0.5)
+
+train_data_summ %>%
+  ggplot(.) +
+  geom_point(aes(x=b1z_3_res_mean/b1z_3_res_sd, y= b1r_3_res_mean/b1r_3_res_sd), color= "green",alpha = 0.5)+
+  geom_point(aes(x=b1r_3_res_mean/b1r_3_res_sd, y= b1p_3_res_mean/b1p_3_res_sd), color= "red",alpha = 0.5)+
+  geom_point(aes(x=b1p_3_res_mean/b1p_3_res_sd, y= b1z_3_res_mean/b1z_3_res_sd), color= "blue",alpha = 0.5)
+
+test_data_summ %>%
+  ggplot(.) +
+  geom_point(aes(x=pz_2_res_mean/pz_2_res_sd, y= pz_1_res_mean/pz_1_res_sd), color= "green",alpha = 0.5)+
+  geom_point(aes(x=pp_2_res_mean/pp_2_res_sd, y= pp_1_res_mean/pp_1_res_sd), color= "red",alpha = 0.5)
+
+test_data_summ %>%
+  ggplot(.) +
+  geom_point(aes(x=pz_2_res_mean/pz_2_res_sd, y= pp_2_res_mean/pp_2_res_sd), color= "green",alpha = 0.5)+
+  geom_point(aes(x=pz_1_res_mean/pz_1_res_sd, y= pp_1_res_mean/pp_1_res_sd), color= "red",alpha = 0.5)
+
+test_data_summ %>%
+  ggplot(.) +
+  geom_point(aes(x=b1z_3_res_q75, y= b1z_3_res_q25), color= "green",alpha = 0.5)+
+  geom_point(aes(x=b1r_3_res_q75, y= b1r_3_res_q25), color= "red",alpha = 0.5)+
+  geom_point(aes(x=b1p_3_res_q75, y= b1p_3_res_q25), color= "blue",alpha = 0.5)+
+  geom_abline(aes(slope=1, intercept = -0.225), color= "green")+
+  geom_abline(aes(slope=1, intercept = -0.0825), color= "blue")+
+  geom_rect(aes(xmin = -0.025, xmax=0.175, ymin=-0.125,ymax=0.06),color="blue", alpha=0.0025, fill = "blue")+
+  geom_rect(aes(xmin = 0.05, xmax=0.21, ymin=-0.16,ymax=0.0),color="green", alpha=0.0025, fill = "green")
+
+
+train_data_summ %>%
+  ggplot(.) +
+  geom_point(aes(x=b1z_3_res_q75, y= b1z_3_res_q25), color= "green",alpha = 0.5)+
+  geom_point(aes(x=b1r_3_res_q75, y= b1r_3_res_q25), color= "red",alpha = 0.5)+
+  geom_point(aes(x=b1p_3_res_q75, y= b1p_3_res_q25), color= "blue",alpha = 0.5)+
+  geom_abline(aes(slope=1, intercept = -0.225), color= "green")+
+  geom_abline(aes(slope=1, intercept = -0.0825), color= "blue")
+
+test_data_summ %>%
+  ggplot(.) +
+  geom_point(aes(x=b1z_4_res_q75, y= b1z_4_res_q25), color= "green",alpha = 0.5)+
+  geom_point(aes(x=b1r_4_res_q75, y= b1r_4_res_q25), color= "red",alpha = 0.5)+
+  geom_point(aes(x=b1p_4_res_q75, y= b1p_4_res_q25), color= "blue",alpha = 0.5)+
+  geom_abline(aes(slope=1, intercept = -0.225), color= "green")+
+  geom_abline(aes(slope=1, intercept = -0.0825), color= "blue")+
+  geom_rect(aes(xmin = -0.025, xmax=0.175, ymin=-0.125,ymax=0.06),color="blue", alpha=0.0025, fill = "blue")+
+  geom_rect(aes(xmin = 0.05, xmax=0.21, ymin=-0.16,ymax=0.0),color="green", alpha=0.0025, fill = "green")
+
+
+train_data_summ %>%
+  ggplot(.) +
+  geom_point(aes(x=b1z_4_res_q75, y= b1z_4_res_q25), color= "green",alpha = 0.5)+
+  geom_point(aes(x=b1r_4_res_q75, y= b1r_4_res_q25), color= "red",alpha = 0.5)+
+  geom_point(aes(x=b1p_4_res_q75, y= b1p_4_res_q25), color= "blue",alpha = 0.5)+
+  geom_abline(aes(slope=1, intercept = -0.225), color= "green")+
+  geom_abline(aes(slope=1, intercept = -0.0825), color= "blue")+
+  geom_rect(aes(xmin = -0.025, xmax=0.175, ymin=-0.125,ymax=0.06),color="blue", alpha=0.0025, fill = "blue")+
+  geom_rect(aes(xmin = 0.05, xmax=0.21, ymin=-0.16,ymax=0.0),color="green", alpha=0.0025, fill = "green")
+```
+
+## Fault identification and labeling
+
+This is an approach at automated labeling - nassuming the physcis based (motion) model is any good...  
+
+the approach is as follows:
+
+1. standardize residuals with its sd.  
+2. pick 100 experiment IDs with highest standardized residuals  
+3. fault identification - primary vs. secondary, front vs. rear - based on z motion...  
+### q75 low and high
+
+```{r flags}
+
+# some crazy thresholds (for standardized residual values)
+# establishing thresholds based on training q75
+th_b1p_1_low = min(train_data_summ$b1p_1_res_q75)
+th_b1p_2_low = min(train_data_summ$b1p_2_res_q75)
+th_b1p_3_low = min(train_data_summ$b1p_3_res_q75)
+th_b1p_4_low = min(train_data_summ$b1p_4_res_q75)
+th_b1p_5_low = min(train_data_summ$b1p_5_res_q75)
+
+th_b1z_1_low = min(train_data_summ$b1z_1_res_q75)
+th_b1z_2_low = min(train_data_summ$b1z_2_res_q75)
+th_b1z_3_low = min(train_data_summ$b1z_3_res_q75)
+th_b1z_4_low = min(train_data_summ$b1z_4_res_q75)
+th_b1z_5_low = min(train_data_summ$b1z_5_res_q75)
+
+th_b1r_1_low = min(train_data_summ$b1r_1_res_q75)
+th_b1r_2_low = min(train_data_summ$b1r_2_res_q75)
+th_b1r_3_low = min(train_data_summ$b1r_3_res_q75)
+th_b1r_4_low = min(train_data_summ$b1r_4_res_q75)
+th_b1r_5_low = min(train_data_summ$b1r_5_res_q75)
+
+
+th_b1p_1_high = max(train_data_summ$b1p_1_res_q75)
+th_b1p_2_high = max(train_data_summ$b1p_2_res_q75)
+th_b1p_3_high = max(train_data_summ$b1p_3_res_q75)
+th_b1p_4_high = max(train_data_summ$b1p_4_res_q75)
+th_b1p_5_high = max(train_data_summ$b1p_5_res_q75)
+
+th_b1z_1_high = max(train_data_summ$b1z_1_res_q75)
+th_b1z_2_high = max(train_data_summ$b1z_2_res_q75)
+th_b1z_3_high = max(train_data_summ$b1z_3_res_q75)
+th_b1z_4_high = max(train_data_summ$b1z_4_res_q75)
+th_b1z_5_high = max(train_data_summ$b1z_5_res_q75)
+
+th_b1r_1_high = max(train_data_summ$b1r_1_res_q75)
+th_b1r_2_high = max(train_data_summ$b1r_2_res_q75)
+th_b1r_3_high = max(train_data_summ$b1r_3_res_q75)
+th_b1r_4_high = max(train_data_summ$b1r_4_res_q75)
+th_b1r_5_high = max(train_data_summ$b1r_5_res_q75)
+
+th_b2p_1_low = min(train_data_summ$b2p_1_res_q75)
+th_b2p_2_low = min(train_data_summ$b2p_2_res_q75)
+th_b2p_3_low = min(train_data_summ$b2p_3_res_q75)
+th_b2p_4_low = min(train_data_summ$b2p_4_res_q75)
+th_b2p_5_low = min(train_data_summ$b2p_5_res_q75)
+
+th_b2z_1_low = min(train_data_summ$b2z_1_res_q75)
+th_b2z_2_low = min(train_data_summ$b2z_2_res_q75)
+th_b2z_3_low = min(train_data_summ$b2z_3_res_q75)
+th_b2z_4_low = min(train_data_summ$b2z_4_res_q75)
+th_b2z_5_low = min(train_data_summ$b2z_5_res_q75)
+
+th_b2r_1_low = min(train_data_summ$b2r_1_res_q75)
+th_b2r_2_low = min(train_data_summ$b2r_2_res_q75)
+th_b2r_3_low = min(train_data_summ$b2r_3_res_q75)
+th_b2r_4_low = min(train_data_summ$b2r_4_res_q75)
+th_b2r_5_low = min(train_data_summ$b2r_5_res_q75)
+
+
+th_b2p_1_high = max(train_data_summ$b2p_1_res_q75)
+th_b2p_2_high = max(train_data_summ$b2p_2_res_q75)
+th_b2p_3_high = max(train_data_summ$b2p_3_res_q75)
+th_b2p_4_high = max(train_data_summ$b2p_4_res_q75)
+th_b2p_5_high = max(train_data_summ$b2p_5_res_q75)
+
+th_b2z_1_high = max(train_data_summ$b2z_1_res_q75)
+th_b2z_2_high = max(train_data_summ$b2z_2_res_q75)
+th_b2z_3_high = max(train_data_summ$b2z_3_res_q75)
+th_b2z_4_high = max(train_data_summ$b2z_4_res_q75)
+th_b2z_5_high = max(train_data_summ$b2z_5_res_q75)
+
+th_b2r_1_high = max(train_data_summ$b2r_1_res_q75)
+th_b2r_2_high = max(train_data_summ$b2r_2_res_q75)
+th_b2r_3_high = max(train_data_summ$b2r_3_res_q75)
+th_b2r_4_high = max(train_data_summ$b2r_4_res_q75)
+th_b2r_5_high = max(train_data_summ$b2r_5_res_q75)
+
+
+test_data_summ %>% 
+  filter(0.9*th_b1z_1_low > b1z_1_res_q75 | b1z_1_res_q75 > 1.1*th_b1z_1_high |
+         0.9*th_b1z_4_low > b1z_4_res_q75 | b1z_4_res_q75 > 1.1*th_b1z_4_high |
+         0.9*th_b1z_3_low > b1z_3_res_q75 | b1z_3_res_q75 > 1.1*th_b1z_3_high |
+         0.9*th_b1z_2_low > b1z_2_res_q75 | b1z_2_res_q75 > 1.1*th_b1z_2_high |
+         0.9*th_b2z_1_low > b2z_1_res_q75 | b2z_1_res_q75 > 1.1*th_b2z_1_high |
+         0.9*th_b2z_3_low > b2z_3_res_q75 | b2z_3_res_q75 > 1.1*th_b2z_3_high |
+         0.9*th_b2z_2_low > b2z_2_res_q75 | b2z_2_res_q75 > 1.1*th_b2z_2_high |
+         0.9*th_b2z_4_low > b2z_4_res_q75 | b2z_4_res_q75 > 1.1*th_b2z_4_high) %>%
+  count()
+
+
+```
+
+### q25 low and Q75 high
+
+```{r two_var_th}
+
+th_b1p_1_low = min(train_data_summ$b1p_1_res_q25)
+th_b1p_2_low = min(train_data_summ$b1p_2_res_q25)
+th_b1p_3_low = min(train_data_summ$b1p_3_res_q25)
+th_b1p_4_low = min(train_data_summ$b1p_4_res_q25)
+th_b1p_5_low = min(train_data_summ$b1p_5_res_q25)
+
+th_b1z_1_low = min(train_data_summ$b1z_1_res_q25)
+th_b1z_2_low = min(train_data_summ$b1z_2_res_q25)
+th_b1z_3_low = min(train_data_summ$b1z_3_res_q25)
+th_b1z_4_low = min(train_data_summ$b1z_4_res_q25)
+th_b1z_5_low = min(train_data_summ$b1z_5_res_q25)
+
+th_b1r_1_low = min(train_data_summ$b1r_1_res_q25)
+th_b1r_2_low = min(train_data_summ$b1r_2_res_q25)
+th_b1r_3_low = min(train_data_summ$b1r_3_res_q25)
+th_b1r_4_low = min(train_data_summ$b1r_4_res_q25)
+th_b1r_5_low = min(train_data_summ$b1r_5_res_q25)
+
+
+th_b1p_1_high = max(train_data_summ$b1p_1_res_q75)
+th_b1p_2_high = max(train_data_summ$b1p_2_res_q75)
+th_b1p_3_high = max(train_data_summ$b1p_3_res_q75)
+th_b1p_4_high = max(train_data_summ$b1p_4_res_q75)
+th_b1p_5_high = max(train_data_summ$b1p_5_res_q75)
+
+th_b1z_1_high = max(train_data_summ$b1z_1_res_q75)
+th_b1z_2_high = max(train_data_summ$b1z_2_res_q75)
+th_b1z_3_high = max(train_data_summ$b1z_3_res_q75)
+th_b1z_4_high = max(train_data_summ$b1z_4_res_q75)
+th_b1z_5_high = max(train_data_summ$b1z_5_res_q75)
+
+th_b1r_1_high = max(train_data_summ$b1r_1_res_q75)
+th_b1r_2_high = max(train_data_summ$b1r_2_res_q75)
+th_b1r_3_high = max(train_data_summ$b1r_3_res_q75)
+th_b1r_4_high = max(train_data_summ$b1r_4_res_q75)
+th_b1r_5_high = max(train_data_summ$b1r_5_res_q75)
+
+th_b2p_1_low = min(train_data_summ$b2p_1_res_q25)
+th_b2p_2_low = min(train_data_summ$b2p_2_res_q25)
+th_b2p_3_low = min(train_data_summ$b2p_3_res_q25)
+th_b2p_4_low = min(train_data_summ$b2p_4_res_q25)
+th_b2p_5_low = min(train_data_summ$b2p_5_res_q25)
+
+th_b2z_1_low = min(train_data_summ$b2z_1_res_q25)
+th_b2z_2_low = min(train_data_summ$b2z_2_res_q25)
+th_b2z_3_low = min(train_data_summ$b2z_3_res_q25)
+th_b2z_4_low = min(train_data_summ$b2z_4_res_q25)
+th_b2z_5_low = min(train_data_summ$b2z_5_res_q25)
+
+th_b2r_1_low = min(train_data_summ$b2r_1_res_q25)
+th_b2r_2_low = min(train_data_summ$b2r_2_res_q25)
+th_b2r_3_low = min(train_data_summ$b2r_3_res_q25)
+th_b2r_4_low = min(train_data_summ$b2r_4_res_q25)
+th_b2r_5_low = min(train_data_summ$b2r_5_res_q25)
+
+
+th_b2p_1_high = max(train_data_summ$b2p_1_res_q75)
+th_b2p_2_high = max(train_data_summ$b2p_2_res_q75)
+th_b2p_3_high = max(train_data_summ$b2p_3_res_q75)
+th_b2p_4_high = max(train_data_summ$b2p_4_res_q75)
+th_b2p_5_high = max(train_data_summ$b2p_5_res_q75)
+
+th_b2z_1_high = max(train_data_summ$b2z_1_res_q75)
+th_b2z_2_high = max(train_data_summ$b2z_2_res_q75)
+th_b2z_3_high = max(train_data_summ$b2z_3_res_q75)
+th_b2z_4_high = max(train_data_summ$b2z_4_res_q75)
+th_b2z_5_high = max(train_data_summ$b2z_5_res_q75)
+
+th_b2r_1_high = max(train_data_summ$b2r_1_res_q75)
+th_b2r_2_high = max(train_data_summ$b2r_2_res_q75)
+th_b2r_3_high = max(train_data_summ$b2r_3_res_q75)
+th_b2r_4_high = max(train_data_summ$b2r_4_res_q75)
+th_b2r_5_high = max(train_data_summ$b2r_5_res_q75)
+
+
+test_data_summ %>%
+  ggplot(.)+
+  geom_histogram(aes(x=b1z_4_res_q25))+
+  geom_vline(xintercept = th_b1z_4_low)+
+  geom_vline(xintercept = 1.1*th_b1z_4_low,color="red")+
+  geom_vline(xintercept = th_b1z_4_high)+
+  geom_vline(xintercept = 1.1*th_b1z_4_high,color="red")
+  
+
+
+test_data_summ %>% 
+  filter(1.05*th_b1z_4_low > b1z_4_res_q25 | b1z_4_res_q75 > 1.05*th_b1z_4_high |
+         1.05*th_b1z_3_low > b1z_3_res_q25 | b1z_3_res_q75 > 1.05*th_b1z_3_high |
+         1.05*th_b1z_2_low > b1z_2_res_q25 | b1z_2_res_q75 > 1.05*th_b1z_2_high |
+         1.05*th_b1z_1_low > b1z_1_res_q25 | b1z_1_res_q75 > 1.05*th_b1z_1_high |
+         1.05*th_b2z_3_low > b2z_3_res_q25 | b2z_3_res_q75 > 1.05*th_b2z_3_high |
+         1.05*th_b2z_2_low > b2z_2_res_q25 | b2z_2_res_q75 > 1.05*th_b2z_2_high |
+         1.05*th_b2z_1_low > b2z_1_res_q25 | b2z_1_res_q75 > 1.05*th_b2z_1_high |
+         1.05*th_b2z_4_low > b2z_4_res_q25 | b2z_4_res_q75 > 1.05*th_b2z_4_high) %>%
+  count()
+
+test_data_summ %>% 
+  filter(1.0*th_b1z_4_low > b1z_4_res_q25 | b1z_4_res_q75 > 1.0*th_b1z_4_high |
+         1.0*th_b1z_3_low > b1z_3_res_q25 | b1z_3_res_q75 > 1.0*th_b1z_3_high |
+         1.0*th_b1z_2_low > b1z_2_res_q25 | b1z_2_res_q75 > 1.0*th_b1z_2_high |
+         1.0*th_b2z_3_low > b2z_3_res_q25 | b2z_3_res_q75 > 1.0*th_b2z_3_high |
+         1.0*th_b2z_2_low > b2z_2_res_q25 | b2z_2_res_q75 > 1.0*th_b2z_2_high |
+         1.0*th_b2z_4_low > b2z_4_res_q25 | b2z_4_res_q75 > 1.0*th_b2z_4_high) %>%
+  count()
+```
+
 ## BACKUP {.tabset}    
 
 also known as previus/old stuff  
